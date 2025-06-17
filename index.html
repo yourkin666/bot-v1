@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多模态聊天机器人</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1E88E5',
+                        secondary: '#E3F2FD'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :where([class^="ri-"])::before { 
+            content: "\f3c2"; 
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background-color: #E8E8E8;
+            border-radius: 18px 18px 0 18px;
+        }
+        
+        .bot-message {
+            background-color: #E3F2FD;
+            border-radius: 18px 18px 18px 0;
+        }
+        
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .typing-indicator span {
+            height: 8px;
+            width: 8px;
+            background-color: #1E88E5;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            opacity: 0.6;
+        }
+        
+        .typing-indicator span:nth-child(1) {
+            animation: bounce 1s infinite 0s;
+        }
+        
+        .typing-indicator span:nth-child(2) {
+            animation: bounce 1s infinite 0.2s;
+        }
+        
+        .typing-indicator span:nth-child(3) {
+            animation: bounce 1s infinite 0.4s;
+        }
+        
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        .input-area {
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .message-input {
+            resize: none;
+            min-height: 24px;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+        
+        .message-input::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .message-input::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .message-input::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+        
+        .audio-wave {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+        }
+        
+        .audio-wave span {
+            display: inline-block;
+            width: 3px;
+            height: 100%;
+            margin: 0 2px;
+            background-color: #1E88E5;
+            border-radius: 3px;
+            animation: wave 1s infinite ease-in-out;
+        }
+        
+        .audio-wave span:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+        
+        .audio-wave span:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+        
+        .audio-wave span:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+        
+        .audio-wave span:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes wave {
+            0%, 100% {
+                height: 15px;
+            }
+            50% {
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- 头部导航 -->
+    <header class="bg-white shadow-sm py-3 px-4 flex items-center justify-between">
+        <div class="flex items-center">
+            <span class="text-xl font-['Pacifico'] text-primary">logo</span>
+            <h1 class="ml-2 text-lg font-medium text-gray-800">智能助手</h1>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center">
+                <label class="text-sm text-gray-600 mr-2">模型:</label>
+                <select id="modelSelect" class="text-sm border rounded px-2 py-1 bg-white text-gray-700">
+                    <option value="loading">加载中...</option>
+                </select>
+            </div>
+            <button id="clearChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-delete-bin-line"></i>
+                </div>
+                <span class="ml-1 text-sm">清空对话</span>
+            </button>
+            <button class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-settings-3-line"></i>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <!-- 聊天内容区域 -->
+    <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-gray-50">
+        <!-- 欢迎消息 -->
+        <div class="flex mb-4">
+            <div class="message-bubble bot-message p-3 text-gray-800">
+                <p>你好！我是基于 SiliconFlow API 的智能AI助手，可以回答问题、进行创意交流。请问有什么可以帮到你的吗？</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 输入区域 -->
+    <div class="input-area bg-white px-4 py-3">
+        <!-- 预览区域 -->
+        <div id="previewArea" class="hidden mb-3">
+            <div id="imagePreview" class="hidden relative inline-block">
+                <img id="previewImage" class="h-20 w-auto rounded" alt="预览图片">
+                <button id="removeImageBtn" class="absolute -top-2 -right-2 bg-gray-800 bg-opacity-70 rounded-full w-5 h-5 flex items-center justify-center text-white">
+                    <div class="w-3 h-3 flex items-center justify-center">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <div id="audioRecording" class="hidden bg-gray-100 rounded p-2 inline-flex items-center">
+                <div class="audio-wave mr-2">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <span class="text-sm text-gray-600">正在录音...</span>
+                <button id="stopRecordingBtn" class="ml-2 text-red-500">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-stop-circle-fill"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-end">
+            <div class="flex space-x-2 mr-3">
+                <button id="uploadImageBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-image-line"></i>
+                    </div>
+                </button>
+                <button id="startVoiceBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-mic-line"></i>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="flex-1 relative">
+                <textarea id="messageInput" class="message-input w-full border-none focus:ring-0 rounded-xl bg-gray-100 px-4 py-2 text-gray-800 placeholder-gray-500" placeholder="输入您想说的话..." rows="1"></textarea>
+            </div>
+            
+            <button id="sendMessageBtn" class="ml-3 px-4 py-2 !rounded-button bg-gray-200 text-gray-500 hover:bg-gray-300 transition-colors disabled:opacity-50 whitespace-nowrap">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-send-plane-fill"></i>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- 文件上传隐藏输入 -->
+    <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+
+    <script id="chatFunctionality">
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageInput = document.getElementById('messageInput');
+            const sendMessageBtn = document.getElementById('sendMessageBtn');
+            const uploadImageBtn = document.getElementById('uploadImageBtn');
+            const imageFileInput = document.getElementById('imageFileInput');
+            const previewArea = document.getElementById('previewArea');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImage = document.getElementById('previewImage');
+            const removeImageBtn = document.getElementById('removeImageBtn');
+            const startVoiceBtn = document.getElementById('startVoiceBtn');
+            const audioRecording = document.getElementById('audioRecording');
+            const stopRecordingBtn = document.getElementById('stopRecordingBtn');
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            const modelSelect = document.getElementById('modelSelect');
+            
+            let isRecording = false;
+            let selectedImage = null;
+            let currentModel = 'deepseek-ai/DeepSeek-V2.5';
+            let conversationHistory = [];
+            
+            // 加载可用模型
+            async function loadModels() {
+                try {
+                    const response = await fetch('/api/models');
+                    const data = await response.json();
+                    
+                    modelSelect.innerHTML = '';
+                    data.models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.id;
+                        option.textContent = model.name;
+                        if (model.default || model.id === currentModel) {
+                            option.selected = true;
+                            currentModel = model.id;
+                        }
+                        modelSelect.appendChild(option);
+                    });
+                } catch (error) {
+                    console.error('加载模型失败:', error);
+                    modelSelect.innerHTML = '<option value="">加载失败</option>';
+                }
+            }
+            
+            // 模型选择事件
+            modelSelect.addEventListener('change', function() {
+                currentModel = this.value;
+                console.log('切换模型:', currentModel);
+            });
+            
+            // 页面加载时加载模型
+            loadModels();
+            
+            // 自动调整文本框高度
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                updateSendButton();
+            });
+            
+            // 更新发送按钮状态
+            function updateSendButton() {
+                if (messageInput.value.trim() || selectedImage) {
+                    sendMessageBtn.classList.remove('bg-gray-200', 'text-gray-500');
+                    sendMessageBtn.classList.add('bg-primary', 'text-white');
+                } else {
+                    sendMessageBtn.classList.add('bg-gray-200', 'text-gray-500');
+                    sendMessageBtn.classList.remove('bg-primary', 'text-white');
+                }
+            }
+            
+            // 发送消息
+            async function sendMessage() {
+                const messageText = messageInput.value.trim();
+                
+                if (!messageText && !selectedImage) return;
+                
+                // 添加用户消息到聊天区域
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'flex justify-end mb-4';
+                
+                let messageContent = '';
+                if (messageText) {
+                    messageContent += `<p>${messageText}</p>`;
+                }
+                
+                if (selectedImage) {
+                    if (messageText) {
+                        messageContent += '<div class="mt-2">';
+                    }
+                    messageContent += `<img src="${selectedImage}" alt="用户上传图片" class="rounded w-full h-auto max-w-xs">`;
+                    if (messageText) {
+                        messageContent += '</div>';
+                    }
+                }
+                
+                userMessageDiv.innerHTML = `
+                    <div class="message-bubble user-message p-3 text-gray-800">
+                        ${messageContent}
+                    </div>
+                `;
+                
+                chatContainer.appendChild(userMessageDiv);
+                
+                // 保存到对话历史
+                const userMessage = {
+                    role: 'user',
+                    text: messageText,
+                    image: selectedImage
+                };
+                conversationHistory.push(userMessage);
+                
+                // 清空输入框和预览
+                const currentImage = selectedImage;
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                selectedImage = null;
+                previewArea.classList.add('hidden');
+                imagePreview.classList.add('hidden');
+                
+                // 显示机器人正在输入的状态
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'flex mb-4 typing-message';
+                typingDiv.innerHTML = `
+                    <div class="message-bubble bot-message p-3 text-gray-800">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                `;
+                
+                chatContainer.appendChild(typingDiv);
+                scrollToBottom();
+                
+                try {
+                    // 发送到后端API
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messages: conversationHistory,
+                            model: currentModel
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    // 移除输入中状态
+                    const typingMessages = document.getElementsByClassName('typing-message');
+                    if (typingMessages.length > 0) {
+                        chatContainer.removeChild(typingMessages[0]);
+                    }
+                    
+                    if (response.ok && data.success) {
+                        // 添加机器人回复
+                        const botMessageDiv = document.createElement('div');
+                        botMessageDiv.className = 'flex mb-4';
+                        botMessageDiv.innerHTML = `
+                            <div class="message-bubble bot-message p-3 text-gray-800">
+                                ${data.response.replace(/\n/g, '<br>')}
+                            </div>
+                        `;
+                        
+                        chatContainer.appendChild(botMessageDiv);
+                        
+                        // 保存机器人回复到历史
+                        conversationHistory.push({
+                            role: 'assistant',
+                            text: data.response
+                        });
+                    } else {
+                        // 显示错误信息
+                        const errorMessageDiv = document.createElement('div');
+                        errorMessageDiv.className = 'flex mb-4';
+                        errorMessageDiv.innerHTML = `
+                            <div class="message-bubble bot-message p-3 text-red-600">
+                                ❌ 抱歉，发生了错误: ${data.error || '未知错误'}
+                            </div>
+                        `;
+                        chatContainer.appendChild(errorMessageDiv);
+                    }
+                } catch (error) {
+                    // 移除输入中状态
+                    const typingMessages = document.getElementsByClassName('typing-message');
+                    if (typingMessages.length > 0) {
+                        chatContainer.removeChild(typingMessages[0]);
+                    }
+                    
+                    // 显示网络错误
+                    const errorMessageDiv = document.createElement('div');
+                    errorMessageDiv.className = 'flex mb-4';
+                    errorMessageDiv.innerHTML = `
+                        <div class="message-bubble bot-message p-3 text-red-600">
+                            ❌ 网络连接错误，请检查后端服务是否启动 (${error.message})
+                        </div>
+                    `;
+                    chatContainer.appendChild(errorMessageDiv);
+                }
+                
+                scrollToBottom();
+                updateSendButton();
+            }
+            
+            // 滚动到底部
+            function scrollToBottom() {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // 发送按钮点击事件
+            sendMessageBtn.addEventListener('click', sendMessage);
+            
+            // 回车键发送消息
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // 上传图片按钮点击事件
+            uploadImageBtn.addEventListener('click', function() {
+                imageFileInput.click();
+            });
+            
+            // 图片文件选择事件
+            imageFileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        selectedImage = e.target.result;
+                        previewImage.src = selectedImage;
+                        previewArea.classList.remove('hidden');
+                        imagePreview.classList.remove('hidden');
+                        updateSendButton();
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+            
+            // 移除预览图片
+            removeImageBtn.addEventListener('click', function() {
+                selectedImage = null;
+                imagePreview.classList.add('hidden');
+                if (!isRecording) {
+                    previewArea.classList.add('hidden');
+                }
+                imageFileInput.value = '';
+                updateSendButton();
+            });
+            
+            // 语音按钮点击事件
+            startVoiceBtn.addEventListener('click', function() {
+                if (!isRecording) {
+                    // 开始录音
+                    isRecording = true;
+                    previewArea.classList.remove('hidden');
+                    audioRecording.classList.remove('hidden');
+                    
+                    // 模拟录音 - 实际应用中需要使用Web Audio API
+                    console.log('开始录音...');
+                } else {
+                    stopRecording();
+                }
+            });
+            
+            // 停止录音按钮点击事件
+            stopRecordingBtn.addEventListener('click', stopRecording);
+            
+            // 停止录音函数
+            function stopRecording() {
+                if (isRecording) {
+                    isRecording = false;
+                    audioRecording.classList.add('hidden');
+                    if (!selectedImage) {
+                        previewArea.classList.add('hidden');
+                    }
+                    
+                    // 模拟语音转文字
+                    setTimeout(() => {
+                        messageInput.value = '这是通过语音输入的文字';
+                        messageInput.style.height = 'auto';
+                        messageInput.style.height = (messageInput.scrollHeight) + 'px';
+                        updateSendButton();
+                    }, 500);
+                    
+                    console.log('停止录音...');
+                }
+            }
+            
+            // 清空聊天记录
+            clearChatBtn.addEventListener('click', function() {
+                // 保留第一条欢迎消息
+                while (chatContainer.children.length > 1) {
+                    chatContainer.removeChild(chatContainer.lastChild);
+                }
+                // 清空对话历史
+                conversationHistory = [];
+            });
+            
+            // 初始化
+            messageInput.focus();
+            updateSendButton();
+        });
+    </script>
+
+    <script id="textareaAutoResize">
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('messageInput');
+            
+            // 自动调整文本框高度的函数
+            function adjustTextareaHeight() {
+                messageInput.style.height = 'auto';
+                messageInput.style.height = (messageInput.scrollHeight) + 'px';
+            }
+            
+            // 监听输入事件
+            messageInput.addEventListener('input', adjustTextareaHeight);
+            
+            // 初始化
+            adjustTextareaHeight();
+        });
+    </script>
+</body>
+</html> 
