@@ -89,6 +89,29 @@
             }
         }
         
+        /* 打字机效果样式 */
+        .typewriter-text {
+            display: inline;
+        }
+        
+        .typewriter-cursor {
+            display: inline-block;
+            background-color: #1E88E5;
+            margin-left: 2px;
+            width: 2px;
+            height: 1.2em;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+        
         .chat-container::-webkit-scrollbar {
             width: 6px;
         }
@@ -429,16 +452,21 @@
                     }
                     
                     if (response.ok && data.success) {
-                        // 添加机器人回复
+                        // 添加机器人回复容器（带打字机效果）
                         const botMessageDiv = document.createElement('div');
                         botMessageDiv.className = 'flex mb-4';
                         botMessageDiv.innerHTML = `
                             <div class="message-bubble bot-message p-3 text-gray-800">
-                                ${data.response.replace(/\n/g, '<br>')}
+                                <span class="typewriter-text"></span><span class="typewriter-cursor"></span>
                             </div>
                         `;
                         
                         chatContainer.appendChild(botMessageDiv);
+                        scrollToBottom();
+                        
+                        // 使用打字机效果显示回复
+                        const messageElement = botMessageDiv.querySelector('.message-bubble');
+                        await typewriterEffect(messageElement, data.response, 25);
                         
                         // 保存机器人回复到历史
                         conversationHistory.push({
@@ -481,6 +509,37 @@
             // 滚动到底部
             function scrollToBottom() {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // 打字机效果函数
+            function typewriterEffect(element, text, speed = 30) {
+                return new Promise((resolve) => {
+                    let i = 0;
+                    const textSpan = element.querySelector('.typewriter-text');
+                    const cursor = element.querySelector('.typewriter-cursor');
+                    
+                    function type() {
+                        if (i < text.length) {
+                            // 处理换行符
+                            if (text.charAt(i) === '\n') {
+                                textSpan.innerHTML += '<br>';
+                            } else {
+                                textSpan.innerHTML += text.charAt(i);
+                            }
+                            i++;
+                            scrollToBottom(); // 在打字过程中保持滚动到底部
+                            setTimeout(type, speed);
+                        } else {
+                            // 打字完成后移除光标
+                            if (cursor) {
+                                cursor.remove();
+                            }
+                            resolve();
+                        }
+                    }
+                    
+                    type();
+                });
             }
             
             // 发送按钮点击事件
