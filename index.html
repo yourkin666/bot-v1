@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多模态聊天机器人</title>
+    <title>多模态智能助手 - SiliconFlow & Groq</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
@@ -201,7 +201,7 @@
     <header class="bg-white shadow-sm py-3 px-4 flex items-center justify-between">
         <div class="flex items-center">
             <span class="text-xl font-['Pacifico'] text-primary">logo</span>
-            <h1 class="ml-2 text-lg font-medium text-gray-800">智能助手</h1>
+            <h1 class="ml-2 text-lg font-medium text-gray-800">多模态智能助手</h1>
         </div>
         <div class="flex items-center space-x-3">
             <div class="flex items-center">
@@ -229,7 +229,13 @@
         <!-- 欢迎消息 -->
         <div class="flex mb-4">
             <div class="message-bubble bot-message p-3 text-gray-800">
-                <p>你好！我是基于 SiliconFlow API 的智能AI助手，可以回答问题、进行创意交流。请问有什么可以帮到你的吗？</p>
+                <p>你好！我是多模态智能AI助手，集成了SiliconFlow和Groq的强大能力：</p>
+                <ul class="mt-2 ml-4 list-disc text-sm text-gray-600">
+                    <li>📝 <strong>文本对话</strong>：回答问题、创意写作、知识问答</li>
+                    <li>🖼️ <strong>图片分析</strong>：描述图片内容、图片问答、OCR识别</li>
+                    <li>🚀 <strong>智能切换</strong>：自动选择最适合的模型处理您的请求</li>
+                </ul>
+                <p class="mt-2">您可以直接发送文字，或点击 📷 按钮上传图片进行分析。请问有什么可以帮到您的吗？</p>
             </div>
         </div>
     </div>
@@ -452,12 +458,34 @@
                     }
                     
                     if (response.ok && data.success) {
+                        // 检查是否自动切换了模型
+                        if (data.model && data.model !== currentModel) {
+                            // 显示模型切换提示
+                            const switchNoticeDiv = document.createElement('div');
+                            switchNoticeDiv.className = 'flex mb-2';
+                            switchNoticeDiv.innerHTML = `
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 text-sm text-blue-700">
+                                    <i class="ri-information-line"></i> 检测到图片内容，已自动切换到多模态模型: ${data.model}
+                                </div>
+                            `;
+                            chatContainer.appendChild(switchNoticeDiv);
+                        }
+                        
                         // 添加机器人回复容器（带打字机效果）
                         const botMessageDiv = document.createElement('div');
                         botMessageDiv.className = 'flex mb-4';
+                        
+                        // 显示使用的服务提供商信息
+                        const providerBadge = data.provider === 'groq' ? 
+                            '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
+                            '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
+                        
                         botMessageDiv.innerHTML = `
                             <div class="message-bubble bot-message p-3 text-gray-800">
-                                <span class="typewriter-text"></span><span class="typewriter-cursor"></span>
+                                ${providerBadge}
+                                <div class="mt-1">
+                                    <span class="typewriter-text"></span><span class="typewriter-cursor"></span>
+                                </div>
                             </div>
                         `;
                         
@@ -465,7 +493,7 @@
                         scrollToBottom();
                         
                         // 使用打字机效果显示回复
-                        const messageElement = botMessageDiv.querySelector('.message-bubble');
+                        const messageElement = botMessageDiv.querySelector('.message-bubble > div');
                         await typewriterEffect(messageElement, data.response, 25);
                         
                         // 保存机器人回复到历史
@@ -559,19 +587,55 @@
             });
             
             // 图片文件选择事件
-            imageFileInput.addEventListener('change', function() {
+            imageFileInput.addEventListener('change', async function() {
                 if (this.files && this.files[0]) {
-                    const reader = new FileReader();
+                    const file = this.files[0];
                     
-                    reader.onload = function(e) {
-                        selectedImage = e.target.result;
-                        previewImage.src = selectedImage;
-                        previewArea.classList.remove('hidden');
-                        imagePreview.classList.remove('hidden');
-                        updateSendButton();
-                    };
+                    // 检查文件大小（4MB限制）
+                    if (file.size > 4 * 1024 * 1024) {
+                        alert(`图片文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持4MB`);
+                        return;
+                    }
                     
-                    reader.readAsDataURL(this.files[0]);
+                    // 检查文件类型
+                    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+                    if (!allowedTypes.includes(file.type)) {
+                        alert('不支持的文件格式，请上传 PNG、JPG、JPEG、GIF 或 WebP 格式的图片');
+                        return;
+                    }
+                    
+                    // 显示上传进度
+                    uploadImageBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
+                    uploadImageBtn.disabled = true;
+                    
+                    try {
+                        // 使用FormData上传到后端
+                        const formData = new FormData();
+                        formData.append('image', file);
+                        
+                        const response = await fetch('/api/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            selectedImage = result.image_data;
+                            previewImage.src = selectedImage;
+                            previewArea.classList.remove('hidden');
+                            imagePreview.classList.remove('hidden');
+                            updateSendButton();
+                        } else {
+                            alert('图片上传失败: ' + result.error);
+                        }
+                    } catch (error) {
+                        alert('图片上传失败: ' + error.message);
+                    } finally {
+                        // 恢复上传按钮
+                        uploadImageBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-image-line"></i></div>';
+                        uploadImageBtn.disabled = false;
+                    }
                 }
             });
             
