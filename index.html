@@ -200,6 +200,9 @@
     <!-- 头部导航 -->
     <header class="bg-white shadow-sm py-3 px-4 flex items-center justify-between">
         <div class="flex items-center">
+            <button id="toggleSidebar" class="lg:hidden mr-3 w-8 h-8 rounded flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="ri-menu-line"></i>
+            </button>
             <span class="text-xl font-['Pacifico'] text-primary">logo</span>
             <h1 class="ml-2 text-lg font-medium text-gray-800">多模态智能助手</h1>
         </div>
@@ -210,22 +213,77 @@
                     <option value="loading">加载中...</option>
                 </select>
             </div>
+            <button id="newChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    <i class="ri-add-line"></i>
+                </div>
+                <span class="ml-1 text-sm">新对话</span>
+            </button>
             <button id="clearChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
                 <div class="w-5 h-5 flex items-center justify-center">
                     <i class="ri-delete-bin-line"></i>
                 </div>
                 <span class="ml-1 text-sm">清空对话</span>
             </button>
-            <button class="flex items-center text-gray-600 hover:text-primary transition-colors">
+            <button id="historyToggle" class="flex items-center text-gray-600 hover:text-primary transition-colors">
                 <div class="w-5 h-5 flex items-center justify-center">
-                    <i class="ri-settings-3-line"></i>
+                    <i class="ri-history-line"></i>
                 </div>
+                <span class="ml-1 text-sm">历史</span>
             </button>
         </div>
     </header>
 
-    <!-- 聊天内容区域 -->
-    <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-gray-50">
+    <!-- 主要内容区域 -->
+    <div class="flex flex-1 overflow-hidden relative">
+        <!-- 历史对话侧边栏 -->
+        <div id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 -translate-x-full absolute lg:relative z-30 h-full lg:translate-x-0">
+            <!-- 侧边栏头部 -->
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">
+                        <i class="ri-history-line mr-2"></i>对话历史
+                    </h2>
+                    <button id="closeSidebar" class="lg:hidden p-1 text-gray-400 hover:text-gray-600 rounded">
+                        <i class="ri-close-line text-xl"></i>
+                    </button>
+                </div>
+                
+                <!-- 搜索框 -->
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="搜索对话..." 
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+                </div>
+            </div>
+            
+            <!-- 统计信息 -->
+            <div id="statsSection" class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <div class="text-lg font-semibold text-blue-600" id="totalSessions">0</div>
+                        <div class="text-xs text-gray-500">总对话</div>
+                    </div>
+                    <div>
+                        <div class="text-lg font-semibold text-green-600" id="totalMessages">0</div>
+                        <div class="text-xs text-gray-500">总消息</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 对话列表 -->
+            <div class="flex-1 overflow-y-auto">
+                <div id="sessionsList" class="p-2">
+                    <!-- 对话列表项将在这里动态生成 -->
+                </div>
+                <div id="loadMoreSessions" class="p-4 text-center hidden">
+                    <button class="text-blue-500 hover:text-blue-600 text-sm">加载更多...</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 聊天内容区域 -->
+        <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-gray-50">
         <!-- 欢迎消息 -->
         <div class="flex mb-4">
             <div class="message-bubble bot-message p-3 text-gray-800">
@@ -294,6 +352,7 @@
                 </div>
             </button>
         </div>
+        </div>
     </div>
 
     <!-- 文件上传隐藏输入 -->
@@ -320,6 +379,10 @@
             let selectedImage = null;
             let currentModel = 'deepseek-ai/DeepSeek-V2.5';
             let conversationHistory = [];
+            let currentSessionId = null;
+            let sessionsData = [];
+            let currentPage = 1;
+            let isLoadingSessions = false;
             
             // 加载可用模型
             async function loadModels() {
@@ -350,8 +413,404 @@
                 console.log('切换模型:', currentModel);
             });
             
-            // 页面加载时加载模型
+            // 页面加载时加载模型和历史记录
             loadModels();
+            loadSessions();
+            
+            // 历史对话相关的DOM元素
+            const sidebar = document.getElementById('sidebar');
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const closeSidebar = document.getElementById('closeSidebar');
+            const historyToggle = document.getElementById('historyToggle');
+            const newChatBtn = document.getElementById('newChatBtn');
+            const searchInput = document.getElementById('searchInput');
+            const sessionsList = document.getElementById('sessionsList');
+            const totalSessions = document.getElementById('totalSessions');
+            const totalMessages = document.getElementById('totalMessages');
+            const loadMoreSessions = document.getElementById('loadMoreSessions');
+            
+            // 历史对话相关功能
+            
+            // 加载会话列表
+            async function loadSessions(page = 1, reset = false) {
+                if (isLoadingSessions) return;
+                isLoadingSessions = true;
+                
+                try {
+                    const response = await fetch(`/api/sessions?page=${page}&limit=20`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        if (reset) {
+                            sessionsData = data.sessions;
+                            sessionsList.innerHTML = '';
+                        } else {
+                            sessionsData = [...sessionsData, ...data.sessions];
+                        }
+                        
+                        renderSessions(data.sessions, !reset);
+                        updateStatistics(data.statistics);
+                        
+                        // 显示/隐藏"加载更多"按钮
+                        if (data.pagination.has_more) {
+                            loadMoreSessions.classList.remove('hidden');
+                            currentPage = page;
+                        } else {
+                            loadMoreSessions.classList.add('hidden');
+                        }
+                    }
+                } catch (error) {
+                    console.error('加载会话列表失败:', error);
+                } finally {
+                    isLoadingSessions = false;
+                }
+            }
+            
+            // 渲染会话列表
+            function renderSessions(sessions, append = false) {
+                if (!append) {
+                    sessionsList.innerHTML = '';
+                }
+                
+                sessions.forEach(session => {
+                    const sessionDiv = document.createElement('div');
+                    sessionDiv.className = `session-item p-3 mb-2 bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors ${currentSessionId === session.id ? 'bg-blue-50 border-2 border-blue-200' : ''}`;
+                    sessionDiv.dataset.sessionId = session.id;
+                    
+                    const timeStr = new Date(session.updated_at).toLocaleString('zh-CN', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    sessionDiv.innerHTML = `
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-medium text-gray-800 truncate">${session.title}</h4>
+                                <div class="flex items-center mt-1 text-xs text-gray-500">
+                                    <i class="ri-message-3-line mr-1"></i>
+                                    <span>${session.message_count} 条消息</span>
+                                    <span class="mx-2">•</span>
+                                    <span>${timeStr}</span>
+                                </div>
+                                ${session.model ? `<div class="mt-1 text-xs text-blue-600">${session.model.split('/').pop()}</div>` : ''}
+                            </div>
+                            <div class="flex items-center space-x-1 ml-2">
+                                <button class="session-rename p-1 text-gray-400 hover:text-gray-600 rounded" title="重命名">
+                                    <i class="ri-edit-2-line text-xs"></i>
+                                </button>
+                                <button class="session-delete p-1 text-gray-400 hover:text-red-600 rounded" title="删除">
+                                    <i class="ri-delete-bin-line text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 点击会话项
+                    sessionDiv.addEventListener('click', (e) => {
+                        if (e.target.closest('.session-rename') || e.target.closest('.session-delete')) {
+                            return;
+                        }
+                        loadSession(session.id);
+                    });
+                    
+                    // 重命名按钮
+                    sessionDiv.querySelector('.session-rename').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        renameSession(session.id, session.title);
+                    });
+                    
+                    // 删除按钮
+                    sessionDiv.querySelector('.session-delete').addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteSession(session.id);
+                    });
+                    
+                    sessionsList.appendChild(sessionDiv);
+                });
+            }
+            
+            // 更新统计信息
+            function updateStatistics(stats) {
+                totalSessions.textContent = stats.total_sessions;
+                totalMessages.textContent = stats.total_messages;
+            }
+            
+            // 创建新对话
+            async function createNewSession() {
+                try {
+                    const response = await fetch('/api/sessions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            model: currentModel
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.success) {
+                        currentSessionId = data.session.id;
+                        conversationHistory = [];
+                        clearChatDisplay();
+                        loadSessions(1, true); // 重新加载会话列表
+                        
+                        // 关闭侧边栏（移动端）
+                        if (window.innerWidth < 1024) {
+                            sidebar.classList.add('-translate-x-full');
+                        }
+                    }
+                } catch (error) {
+                    console.error('创建新对话失败:', error);
+                }
+            }
+            
+            // 加载指定会话
+            async function loadSession(sessionId) {
+                try {
+                    const response = await fetch(`/api/sessions/${sessionId}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        currentSessionId = sessionId;
+                        conversationHistory = [];
+                        clearChatDisplay();
+                        
+                        // 渲染历史消息
+                        data.messages.forEach(msg => {
+                            if (msg.role === 'user') {
+                                const userMessage = {
+                                    role: 'user',
+                                    text: msg.content,
+                                    image: msg.image_data
+                                };
+                                conversationHistory.push(userMessage);
+                                displayUserMessage(msg.content, msg.image_data);
+                            } else if (msg.role === 'assistant') {
+                                conversationHistory.push({
+                                    role: 'assistant',
+                                    text: msg.content
+                                });
+                                displayBotMessage(msg.content, msg.provider);
+                            }
+                        });
+                        
+                        // 更新会话列表中的选中状态
+                        document.querySelectorAll('.session-item').forEach(item => {
+                            if (item.dataset.sessionId === sessionId) {
+                                item.classList.add('bg-blue-50', 'border-2', 'border-blue-200');
+                            } else {
+                                item.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
+                            }
+                        });
+                        
+                        // 关闭侧边栏（移动端）
+                        if (window.innerWidth < 1024) {
+                            sidebar.classList.add('-translate-x-full');
+                        }
+                        
+                        scrollToBottom();
+                    }
+                } catch (error) {
+                    console.error('加载会话失败:', error);
+                }
+            }
+            
+            // 重命名会话
+            async function renameSession(sessionId, currentTitle) {
+                const newTitle = prompt('请输入新的对话标题:', currentTitle);
+                if (newTitle && newTitle !== currentTitle) {
+                    try {
+                        const response = await fetch(`/api/sessions/${sessionId}`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                title: newTitle
+                            })
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            loadSessions(1, true); // 重新加载会话列表
+                        }
+                    } catch (error) {
+                        console.error('重命名会话失败:', error);
+                    }
+                }
+            }
+            
+            // 删除会话
+            async function deleteSession(sessionId) {
+                if (confirm('确定要删除这个对话吗？此操作不可撤销。')) {
+                    try {
+                        const response = await fetch(`/api/sessions/${sessionId}`, {
+                            method: 'DELETE'
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            if (currentSessionId === sessionId) {
+                                currentSessionId = null;
+                                conversationHistory = [];
+                                clearChatDisplay();
+                            }
+                            loadSessions(1, true); // 重新加载会话列表
+                        }
+                    } catch (error) {
+                        console.error('删除会话失败:', error);
+                    }
+                }
+            }
+            
+            // 清空聊天显示
+            function clearChatDisplay() {
+                chatContainer.innerHTML = `
+                    <!-- 欢迎消息 -->
+                    <div class="flex mb-4">
+                        <div class="message-bubble bot-message p-3 text-gray-800">
+                            <p>你好！我是多模态智能AI助手，集成了SiliconFlow和Groq的强大能力：</p>
+                            <ul class="mt-2 ml-4 list-disc text-sm text-gray-600">
+                                <li>📝 <strong>文本对话</strong>：回答问题、创意写作、知识问答</li>
+                                <li>🖼️ <strong>图片分析</strong>：描述图片内容、图片问答、OCR识别</li>
+                                <li>🚀 <strong>智能切换</strong>：自动选择最适合的模型处理您的请求</li>
+                            </ul>
+                            <p class="mt-2">您可以直接发送文字，或点击 📷 按钮上传图片进行分析。请问有什么可以帮到您的吗？</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 显示用户消息
+            function displayUserMessage(text, image) {
+                const userMessageDiv = document.createElement('div');
+                userMessageDiv.className = 'flex mb-4 justify-end';
+                
+                let messageContent = '';
+                if (image) {
+                    messageContent += `<img src="${image}" class="max-w-xs rounded mb-2 block">`;
+                }
+                if (text) {
+                    messageContent += `<div>${text}</div>`;
+                }
+                
+                userMessageDiv.innerHTML = `
+                    <div class="message-bubble user-message p-3 text-gray-800">
+                        ${messageContent}
+                    </div>
+                `;
+                
+                chatContainer.appendChild(userMessageDiv);
+            }
+            
+            // 显示机器人消息
+            function displayBotMessage(text, provider) {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'flex mb-4';
+                
+                const providerBadge = provider === 'groq' ? 
+                    '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
+                    '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
+                
+                botMessageDiv.innerHTML = `
+                    <div class="message-bubble bot-message p-3 text-gray-800">
+                        ${providerBadge}
+                        <div class="mt-1">${text.replace(/\n/g, '<br>')}</div>
+                    </div>
+                `;
+                
+                chatContainer.appendChild(botMessageDiv);
+            }
+            
+            // 侧边栏控制事件
+            toggleSidebar.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            
+            closeSidebar.addEventListener('click', () => {
+                sidebar.classList.add('-translate-x-full');
+            });
+            
+            historyToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+            });
+            
+            // 新对话按钮
+            newChatBtn.addEventListener('click', createNewSession);
+            
+            // 搜索功能
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        searchMessages(query);
+                    } else {
+                        loadSessions(1, true);
+                    }
+                }, 300);
+            });
+            
+            // 搜索消息
+            async function searchMessages(query) {
+                try {
+                    const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        sessionsList.innerHTML = '';
+                        
+                        if (data.results.length === 0) {
+                            sessionsList.innerHTML = '<div class="p-4 text-center text-gray-500">未找到相关内容</div>';
+                            return;
+                        }
+                        
+                        // 按会话分组显示搜索结果
+                        const groupedResults = {};
+                        data.results.forEach(msg => {
+                            if (!groupedResults[msg.session_id]) {
+                                groupedResults[msg.session_id] = {
+                                    session_title: msg.session_title,
+                                    messages: []
+                                };
+                            }
+                            groupedResults[msg.session_id].messages.push(msg);
+                        });
+                        
+                        Object.entries(groupedResults).forEach(([sessionId, sessionData]) => {
+                            const sessionDiv = document.createElement('div');
+                            sessionDiv.className = 'p-3 mb-2 bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors';
+                            sessionDiv.dataset.sessionId = sessionId;
+                            
+                            const previewText = sessionData.messages[0].content.substring(0, 100) + (sessionData.messages[0].content.length > 100 ? '...' : '');
+                            
+                            sessionDiv.innerHTML = `
+                                <div class="text-sm font-medium text-gray-800 mb-1">${sessionData.session_title}</div>
+                                <div class="text-xs text-gray-600 mb-2">${previewText}</div>
+                                <div class="text-xs text-blue-600">找到 ${sessionData.messages.length} 条匹配消息</div>
+                            `;
+                            
+                            sessionDiv.addEventListener('click', () => {
+                                loadSession(sessionId);
+                                searchInput.value = '';
+                            });
+                            
+                            sessionsList.appendChild(sessionDiv);
+                        });
+                    }
+                } catch (error) {
+                    console.error('搜索失败:', error);
+                }
+            }
+            
+            // 加载更多会话
+            loadMoreSessions.addEventListener('click', () => {
+                loadSessions(currentPage + 1);
+            });
             
             // 自动调整文本框高度
             messageInput.addEventListener('input', function() {
@@ -437,6 +896,26 @@
                 scrollToBottom();
                 
                 try {
+                    // 如果当前没有会话，先创建一个新会话
+                    if (!currentSessionId) {
+                        const sessionResponse = await fetch('/api/sessions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                title: messageText.length > 30 ? messageText.substring(0, 30) + '...' : messageText,
+                                model: currentModel
+                            })
+                        });
+                        
+                        const sessionData = await sessionResponse.json();
+                        if (sessionData.success) {
+                            currentSessionId = sessionData.session.id;
+                            loadSessions(1, true); // 重新加载会话列表
+                        }
+                    }
+                    
                     // 发送到后端API
                     const response = await fetch('/api/chat', {
                         method: 'POST',
@@ -445,7 +924,8 @@
                         },
                         body: JSON.stringify({
                             messages: conversationHistory,
-                            model: currentModel
+                            model: currentModel,
+                            session_id: currentSessionId
                         })
                     });
                     
@@ -691,12 +1171,18 @@
             
             // 清空聊天记录
             clearChatBtn.addEventListener('click', function() {
-                // 保留第一条欢迎消息
-                while (chatContainer.children.length > 1) {
-                    chatContainer.removeChild(chatContainer.lastChild);
+                if (confirm('确定要清空当前对话吗？')) {
+                    conversationHistory = [];
+                    currentSessionId = null;
+                    clearChatDisplay();
+                    
+                    // 更新会话列表中的选中状态
+                    document.querySelectorAll('.session-item').forEach(item => {
+                        item.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
+                    });
+                    
+                    console.log('对话历史已清空');
                 }
-                // 清空对话历史
-                conversationHistory = [];
             });
             
             // 初始化
