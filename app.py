@@ -14,6 +14,7 @@ import os
 from typing import List, Dict, Optional
 import logging
 from dotenv import load_dotenv
+from database import ChatDatabase
 
 # 加载环境变量
 load_dotenv()
@@ -254,11 +255,12 @@ class MultiModalChatBotService:
                 "error": f"Groq API错误: {str(e)}"
             }
 
-# 初始化多模态聊天机器人服务
+# 初始化多模态聊天机器人服务和数据库
 if not GROQ_API_KEY:
     logger.warning("Groq API密钥未配置，多模态功能将不可用")
 
 chatbot_service = MultiModalChatBotService(SILICONFLOW_API_KEY, GROQ_API_KEY)
+chat_db = ChatDatabase()
 
 @app.route('/')
 def index():
@@ -300,6 +302,7 @@ def chat():
         
         messages = data.get('messages', [])
         model = data.get('model', 'deepseek-ai/DeepSeek-V2.5')
+        session_id = data.get('session_id')  # 可选的会话ID
         
         if not messages:
             return jsonify({
@@ -307,15 +310,48 @@ def chat():
                 'error': '消息不能为空'
             }), 400
         
+        # 获取最后一条用户消息用于存储
+        last_user_message = None
+        for msg in reversed(messages):
+            if msg.get('role') == 'user':
+                last_user_message = msg
+                break
+        
         # 获取AI回复
         result = chatbot_service.get_response(messages, model)
         
         if result['success']:
+            # 如果有会话ID，保存消息到数据库
+            if session_id and last_user_message:
+                # 保存用户消息
+                user_content = last_user_message.get('text', '')
+                user_image = last_user_message.get('image')
+                
+                chat_db.add_message(
+                    session_id=session_id,
+                    role='user',
+                    content=user_content,
+                    content_type='multimodal' if user_image else 'text',
+                    image_data=user_image,
+                    model=model
+                )
+                
+                # 保存AI回复
+                chat_db.add_message(
+                    session_id=session_id,
+                    role='assistant',
+                    content=result['response'],
+                    content_type='text',
+                    model=result.get('model'),
+                    provider=result.get('provider')
+                )
+            
             return jsonify({
                 'success': True,
                 'response': result['response'],
                 'provider': result.get('provider'),
-                'model': result.get('model')
+                'model': result.get('model'),
+                'session_id': session_id
             })
         else:
             return jsonify({
@@ -391,6 +427,204 @@ def upload_image():
             'error': f'图片上传失败: {str(e)}'
         }), 500
 
+@app.route('/api/sessions', methods=['GET'])
+def get_sessions():
+    """获取对话会话列表"""
+    try:
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 20))
+        offset = (page - 1) * limit
+        
+        sessions = chat_db.get_sessions(limit=limit, offset=offset)
+        statistics = chat_db.get_statistics()
+        
+        return jsonify({
+            'success': True,
+            'sessions': sessions,
+            'statistics': statistics,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'has_more': len(sessions) == limit
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"获取会话列表错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'获取会话列表失败: {str(e)}'
+        }), 500
+
+@app.route('/api/sessions', methods=['POST'])
+def create_session():
+    """创建新的对话会话"""
+    try:
+        data = request.get_json()
+        title = data.get('title') if data else None
+        model = data.get('model') if data else None
+        
+        session_id = chat_db.create_session(title=title, model=model)
+        session = chat_db.get_session_by_id(session_id)
+        
+        return jsonify({
+            'success': True,
+            'session': session
+        })
+        
+    except Exception as e:
+        logger.error(f"创建会话错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'创建会话失败: {str(e)}'
+        }), 500
+
+@app.route('/api/sessions/<session_id>', methods=['GET'])
+def get_session_messages(session_id):
+    """获取会话的消息历史"""
+    try:
+        session = chat_db.get_session_by_id(session_id)
+        if not session:
+            return jsonify({
+                'success': False,
+                'error': '会话不存在'
+            }), 404
+        
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 50))
+        offset = (page - 1) * limit
+        
+        messages = chat_db.get_messages(session_id, limit=limit, offset=offset)
+        
+        return jsonify({
+            'success': True,
+            'session': session,
+            'messages': messages,
+            'pagination': {
+                'page': page,
+                'limit': limit,
+                'has_more': len(messages) == limit
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"获取会话消息错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'获取会话消息失败: {str(e)}'
+        }), 500
+
+@app.route('/api/sessions/<session_id>', methods=['PUT'])
+def update_session(session_id):
+    """更新会话信息"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'error': '无效的请求数据'
+            }), 400
+        
+        title = data.get('title')
+        if title:
+            success = chat_db.update_session_title(session_id, title)
+            if not success:
+                return jsonify({
+                    'success': False,
+                    'error': '会话不存在或更新失败'
+                }), 404
+        
+        # 获取更新后的会话信息
+        session = chat_db.get_session_by_id(session_id)
+        
+        return jsonify({
+            'success': True,
+            'session': session
+        })
+        
+    except Exception as e:
+        logger.error(f"更新会话错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'更新会话失败: {str(e)}'
+        }), 500
+
+@app.route('/api/sessions/<session_id>', methods=['DELETE'])
+def delete_session(session_id):
+    """删除会话"""
+    try:
+        success = chat_db.delete_session(session_id)
+        if not success:
+            return jsonify({
+                'success': False,
+                'error': '会话不存在或删除失败'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'message': '会话已删除'
+        })
+        
+    except Exception as e:
+        logger.error(f"删除会话错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'删除会话失败: {str(e)}'
+        }), 500
+
+@app.route('/api/sessions/<session_id>/archive', methods=['POST'])
+def archive_session(session_id):
+    """归档会话"""
+    try:
+        success = chat_db.archive_session(session_id)
+        if not success:
+            return jsonify({
+                'success': False,
+                'error': '会话不存在或归档失败'
+            }), 404
+        
+        return jsonify({
+            'success': True,
+            'message': '会话已归档'
+        })
+        
+    except Exception as e:
+        logger.error(f"归档会话错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'归档会话失败: {str(e)}'
+        }), 500
+
+@app.route('/api/search', methods=['GET'])
+def search_messages():
+    """搜索消息"""
+    try:
+        query = request.args.get('q', '').strip()
+        session_id = request.args.get('session_id')
+        limit = int(request.args.get('limit', 50))
+        
+        if not query:
+            return jsonify({
+                'success': False,
+                'error': '搜索关键词不能为空'
+            }), 400
+        
+        messages = chat_db.search_messages(query, session_id=session_id, limit=limit)
+        
+        return jsonify({
+            'success': True,
+            'query': query,
+            'results': messages,
+            'total': len(messages)
+        })
+        
+    except Exception as e:
+        logger.error(f"搜索消息错误: {e}")
+        return jsonify({
+            'success': False,
+            'error': f'搜索失败: {str(e)}'
+        }), 500
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """健康检查"""
@@ -401,7 +635,8 @@ def health_check():
         'capabilities': {
             'siliconflow_available': bool(SILICONFLOW_API_KEY),
             'groq_available': bool(GROQ_API_KEY),
-            'multimodal_support': bool(GROQ_API_KEY)
+            'multimodal_support': bool(GROQ_API_KEY),
+            'history_storage': True
         }
     })
 
