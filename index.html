@@ -213,26 +213,148 @@
                     <option value="loading">加载中...</option>
                 </select>
             </div>
-            <button id="newChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
-                <div class="w-5 h-5 flex items-center justify-center">
-                    <i class="ri-add-line"></i>
+            
+            <!-- 快速设置区域 -->
+            <div class="flex items-center space-x-2 border-l border-gray-300 pl-3">
+                <!-- Temperature快速调节 -->
+                <div class="flex items-center bg-gray-100 rounded-lg px-2 py-1">
+                    <span class="text-xs text-gray-600 mr-1">创造性:</span>
+                    <span id="headerTemperatureValue" class="text-xs font-semibold text-blue-600 min-w-[24px]">0.7</span>
+                    <button id="headerTemperatureBtn" class="ml-1 text-gray-500 hover:text-gray-700">
+                        <i class="ri-settings-4-line text-sm"></i>
+                    </button>
                 </div>
-                <span class="ml-1 text-sm">新对话</span>
-            </button>
-            <button id="clearChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
-                <div class="w-5 h-5 flex items-center justify-center">
-                    <i class="ri-delete-bin-line"></i>
+                
+                <!-- System Prompt状态指示 -->
+                <div class="flex items-center">
+                    <button id="headerSystemPromptBtn" class="flex items-center bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 transition-colors">
+                        <i id="systemPromptIcon" class="ri-chat-settings-line text-sm text-gray-500 mr-1"></i>
+                        <span id="systemPromptStatus" class="text-xs text-gray-600">系统提示</span>
+                    </button>
                 </div>
-                <span class="ml-1 text-sm">清空对话</span>
-            </button>
-            <button id="historyToggle" class="flex items-center text-gray-600 hover:text-primary transition-colors">
-                <div class="w-5 h-5 flex items-center justify-center">
-                    <i class="ri-history-line"></i>
-                </div>
-                <span class="ml-1 text-sm">历史</span>
-            </button>
+            </div>
+            
+            <div class="border-l border-gray-300 pl-3 flex items-center space-x-3">
+                <button id="newChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-add-line"></i>
+                    </div>
+                    <span class="ml-1 text-sm">新对话</span>
+                </button>
+                <button id="clearChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-delete-bin-line"></i>
+                    </div>
+                    <span class="ml-1 text-sm">清空对话</span>
+                </button>
+                <button id="historyToggle" class="flex items-center text-gray-600 hover:text-primary transition-colors">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-history-line"></i>
+                    </div>
+                    <span class="ml-1 text-sm">历史</span>
+                </button>
+            </div>
         </div>
     </header>
+
+    <!-- System Prompt 设置弹窗 -->
+    <div id="systemPromptModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    <i class="ri-chat-settings-line mr-2"></i>系统提示设置
+                </h3>
+                <button id="closeSystemPromptBtn" class="text-gray-400 hover:text-gray-600">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">系统提示内容</label>
+                <textarea id="systemPromptInput" 
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                          rows="4"
+                          placeholder="输入系统提示，例如：你是一个专业的技术助手，请用简洁明了的语言回答问题..."></textarea>
+                <p class="text-xs text-gray-500 mt-1">系统提示将影响AI的回答风格和行为，留空则不设置系统提示</p>
+            </div>
+            
+            <!-- 预设模板 -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">快速模板</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个专业的技术助手，请用简洁明了的语言回答编程和技术相关问题。">
+                        💻 技术助手
+                    </button>
+                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个创意写作助手，擅长创作故事、诗歌和文案，请用富有想象力的语言回答。">
+                        ✍️ 创意写作
+                    </button>
+                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个学习助手，请用通俗易懂的语言解释复杂概念，多举例说明。">
+                        📚 学习助手
+                    </button>
+                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个商务助手，请用专业、正式的语言处理商业相关问题。">
+                        💼 商务助手
+                    </button>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button id="clearSystemPromptBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    清空
+                </button>
+                <button id="saveSystemPromptBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Temperature 快速调节弹窗 -->
+    <div id="temperatureModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 w-full max-w-sm mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">
+                    <i class="ri-settings-4-line mr-2"></i>创造性设置
+                </h3>
+                <button id="closeTemperatureBtn" class="text-gray-400 hover:text-gray-600">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-3">
+                    当前值: <span id="temperatureValue" class="text-blue-600 font-semibold text-lg">0.7</span>
+                </label>
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="text-xs text-gray-500">精确(0)</span>
+                    <input type="range" id="temperatureSlider" 
+                           min="0" max="2" step="0.1" value="0.7"
+                           class="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <span class="text-xs text-gray-500">创造(2)</span>
+                </div>
+                
+                <!-- 预设值 -->
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="0.1">
+                        精准 (0.1)
+                    </button>
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="0.7">
+                        平衡 (0.7)
+                    </button>
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="1.5">
+                        创意 (1.5)
+                    </button>
+                </div>
+                
+                <p class="text-xs text-gray-500">数值越低回答越准确，数值越高回答越有创意</p>
+            </div>
+            
+            <div class="flex justify-end">
+                <button id="saveTemperatureBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- 主要内容区域 -->
     <div class="flex flex-1 overflow-hidden relative">
@@ -375,8 +497,52 @@
             const clearChatBtn = document.getElementById('clearChatBtn');
             const modelSelect = document.getElementById('modelSelect');
             
+            // 设置相关元素
+            const headerTemperatureBtn = document.getElementById('headerTemperatureBtn');
+            const headerTemperatureValue = document.getElementById('headerTemperatureValue');
+            const headerSystemPromptBtn = document.getElementById('headerSystemPromptBtn');
+            const systemPromptStatus = document.getElementById('systemPromptStatus');
+            const systemPromptIcon = document.getElementById('systemPromptIcon');
+            
+            // System Prompt 弹窗元素
+            const systemPromptModal = document.getElementById('systemPromptModal');
+            const closeSystemPromptBtn = document.getElementById('closeSystemPromptBtn');
+            const systemPromptInput = document.getElementById('systemPromptInput');
+            const saveSystemPromptBtn = document.getElementById('saveSystemPromptBtn');
+            const clearSystemPromptBtn = document.getElementById('clearSystemPromptBtn');
+            
+            // Temperature 弹窗元素
+            const temperatureModal = document.getElementById('temperatureModal');
+            const closeTemperatureBtn = document.getElementById('closeTemperatureBtn');
+            const temperatureSlider = document.getElementById('temperatureSlider');
+            const temperatureValue = document.getElementById('temperatureValue');
+            const saveTemperatureBtn = document.getElementById('saveTemperatureBtn');
+            
             let isRecording = false;
             let selectedImage = null;
+            
+            // 设置相关变量
+            let systemPrompt = '';
+            let temperature = 0.7;
+            
+            // 更新界面状态显示
+            function updateUIStatus() {
+                // 更新temperature显示
+                headerTemperatureValue.textContent = temperature;
+                
+                // 更新system prompt状态
+                if (systemPrompt && systemPrompt.trim()) {
+                    systemPromptStatus.textContent = '已设置';
+                    systemPromptIcon.className = 'ri-chat-settings-fill text-sm text-blue-500 mr-1';
+                    headerSystemPromptBtn.classList.add('bg-blue-50', 'border', 'border-blue-200');
+                    headerSystemPromptBtn.classList.remove('bg-gray-100');
+                } else {
+                    systemPromptStatus.textContent = '系统提示';
+                    systemPromptIcon.className = 'ri-chat-settings-line text-sm text-gray-500 mr-1';
+                    headerSystemPromptBtn.classList.remove('bg-blue-50', 'border', 'border-blue-200');
+                    headerSystemPromptBtn.classList.add('bg-gray-100');
+                }
+            }
             let currentModel = 'deepseek-ai/DeepSeek-V2.5';
             let conversationHistory = [];
             let currentSessionId = null;
@@ -925,7 +1091,9 @@
                         body: JSON.stringify({
                             messages: conversationHistory,
                             model: currentModel,
-                            session_id: currentSessionId
+                            session_id: currentSessionId,
+                            system_prompt: systemPrompt,
+                            temperature: temperature
                         })
                     });
                     
@@ -1184,6 +1352,134 @@
                     console.log('对话历史已清空');
                 }
             });
+            
+            // 设置功能相关事件处理
+            
+            // 加载设置
+            function loadSettings() {
+                const savedSystemPrompt = localStorage.getItem('chatbot_system_prompt');
+                const savedTemperature = localStorage.getItem('chatbot_temperature');
+                
+                if (savedSystemPrompt) {
+                    systemPrompt = savedSystemPrompt;
+                }
+                
+                if (savedTemperature) {
+                    temperature = parseFloat(savedTemperature);
+                }
+                
+                updateUIStatus();
+            }
+            
+            // 保存设置
+            function saveSettings() {
+                localStorage.setItem('chatbot_system_prompt', systemPrompt);
+                localStorage.setItem('chatbot_temperature', temperature.toString());
+            }
+            
+            // 显示成功提示
+            function showSuccessMessage(message) {
+                const successDiv = document.createElement('div');
+                successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                successDiv.innerHTML = `<i class="ri-check-line mr-2"></i>${message}`;
+                document.body.appendChild(successDiv);
+                
+                setTimeout(() => {
+                    if (document.body.contains(successDiv)) {
+                        document.body.removeChild(successDiv);
+                    }
+                }, 3000);
+            }
+            
+            // ===== System Prompt 相关事件 =====
+            
+            // 打开系统提示设置
+            headerSystemPromptBtn.addEventListener('click', function() {
+                systemPromptInput.value = systemPrompt;
+                systemPromptModal.classList.remove('hidden');
+            });
+            
+            // 关闭系统提示弹窗
+            closeSystemPromptBtn.addEventListener('click', function() {
+                systemPromptModal.classList.add('hidden');
+            });
+            
+            // 点击弹窗背景关闭
+            systemPromptModal.addEventListener('click', function(e) {
+                if (e.target === systemPromptModal) {
+                    systemPromptModal.classList.add('hidden');
+                }
+            });
+            
+            // 系统提示模板按钮
+            document.querySelectorAll('.system-prompt-template').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const template = this.dataset.template;
+                    systemPromptInput.value = template;
+                });
+            });
+            
+            // 清空系统提示
+            clearSystemPromptBtn.addEventListener('click', function() {
+                systemPromptInput.value = '';
+            });
+            
+            // 保存系统提示
+            saveSystemPromptBtn.addEventListener('click', function() {
+                systemPrompt = systemPromptInput.value.trim();
+                saveSettings();
+                updateUIStatus();
+                systemPromptModal.classList.add('hidden');
+                showSuccessMessage('系统提示已保存');
+            });
+            
+            // ===== Temperature 相关事件 =====
+            
+            // 打开温度设置
+            headerTemperatureBtn.addEventListener('click', function() {
+                temperatureSlider.value = temperature;
+                temperatureValue.textContent = temperature;
+                temperatureModal.classList.remove('hidden');
+            });
+            
+            // 关闭温度弹窗
+            closeTemperatureBtn.addEventListener('click', function() {
+                temperatureModal.classList.add('hidden');
+            });
+            
+            // 点击弹窗背景关闭
+            temperatureModal.addEventListener('click', function(e) {
+                if (e.target === temperatureModal) {
+                    temperatureModal.classList.add('hidden');
+                }
+            });
+            
+            // Temperature滑块变化事件
+            temperatureSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                temperatureValue.textContent = value;
+            });
+            
+            // 温度预设按钮
+            document.querySelectorAll('.temperature-preset').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const temp = parseFloat(this.dataset.temp);
+                    temperatureSlider.value = temp;
+                    temperatureValue.textContent = temp;
+                });
+            });
+            
+            // 保存温度设置
+            saveTemperatureBtn.addEventListener('click', function() {
+                temperature = parseFloat(temperatureSlider.value);
+                saveSettings();
+                updateUIStatus();
+                temperatureModal.classList.add('hidden');
+                showSuccessMessage('创造性设置已保存');
+            });
+            
+            // 页面加载时加载设置
+            loadSettings();
             
             // 初始化
             messageInput.focus();

@@ -75,7 +75,7 @@ class MultiModalChatBotService:
         self.siliconflow_base_url = SILICONFLOW_BASE_URL.rstrip('/') + '/chat/completions'
         self.groq_base_url = GROQ_BASE_URL.rstrip('/') + '/chat/completions'
         
-    def get_response(self, messages: List[Dict], model: str = "deepseek-ai/DeepSeek-V2.5") -> Dict:
+    def get_response(self, messages: List[Dict], model: str = "deepseek-ai/DeepSeek-V2.5", system_prompt: str = None, temperature: float = 0.7) -> Dict:
         """获取AI回复，自动选择合适的服务提供商"""
         
         # 检查是否有图片内容
@@ -97,9 +97,9 @@ class MultiModalChatBotService:
         
         # 根据模型提供商选择API
         if model_info["provider"] == "groq":
-            return self._get_groq_response(messages, model)
+            return self._get_groq_response(messages, model, system_prompt, temperature)
         else:
-            return self._get_siliconflow_response(messages, model)
+            return self._get_siliconflow_response(messages, model, system_prompt, temperature)
     
     def _has_image_content(self, messages: List[Dict]) -> bool:
         """检查消息中是否包含图片"""
@@ -115,7 +115,7 @@ class MultiModalChatBotService:
                 return m
         return None
     
-    def _get_siliconflow_response(self, messages: List[Dict], model: str) -> Dict:
+    def _get_siliconflow_response(self, messages: List[Dict], model: str, system_prompt: str = None, temperature: float = 0.7) -> Dict:
         """使用SiliconFlow API获取回复"""
         if not self.siliconflow_api_key:
             return {
@@ -130,6 +130,14 @@ class MultiModalChatBotService:
         
         # 转换消息格式（只处理文本）
         api_messages = []
+        
+        # 添加系统提示（如果有）
+        if system_prompt:
+            api_messages.append({
+                "role": "system",
+                "content": system_prompt
+            })
+        
         for msg in messages:
             if msg['role'] == 'user':
                 text_content = msg.get('text', '')
@@ -151,7 +159,7 @@ class MultiModalChatBotService:
             "messages": api_messages,
             "stream": False,
             "max_tokens": 2000,
-            "temperature": 0.7
+            "temperature": temperature
         }
         
         logger.info(f"使用SiliconFlow API，模型: {model}")
@@ -177,7 +185,7 @@ class MultiModalChatBotService:
                 "error": f"SiliconFlow API错误: {str(e)}"
             }
     
-    def _get_groq_response(self, messages: List[Dict], model: str) -> Dict:
+    def _get_groq_response(self, messages: List[Dict], model: str, system_prompt: str = None, temperature: float = 0.7) -> Dict:
         """使用Groq API获取回复"""
         if not self.groq_api_key:
             return {
@@ -192,6 +200,14 @@ class MultiModalChatBotService:
         
         # 转换消息格式（支持多模态）
         api_messages = []
+        
+        # 添加系统提示（如果有）
+        if system_prompt:
+            api_messages.append({
+                "role": "system",
+                "content": system_prompt
+            })
+        
         for msg in messages:
             if msg['role'] == 'user':
                 content = []
@@ -213,10 +229,19 @@ class MultiModalChatBotService:
                         }
                     })
                 
-                api_messages.append({
-                    "role": "user",
-                    "content": content if len(content) > 1 else (content[0]["text"] if content else "")
-                })
+                # 对于Groq API，总是使用数组格式来支持多模态
+                # 如果没有内容，提供默认文本
+                if content:
+                    api_messages.append({
+                        "role": "user",
+                        "content": content
+                    })
+                else:
+                    # 没有内容，使用空字符串
+                    api_messages.append({
+                        "role": "user",
+                        "content": ""
+                    })
             else:
                 api_messages.append({
                     "role": msg['role'],
@@ -226,7 +251,7 @@ class MultiModalChatBotService:
         data = {
             "model": model,
             "messages": api_messages,
-            "temperature": 0.7,
+            "temperature": temperature,
             "max_completion_tokens": 1024,
             "top_p": 1,
             "stream": False
@@ -303,12 +328,18 @@ def chat():
         messages = data.get('messages', [])
         model = data.get('model', 'deepseek-ai/DeepSeek-V2.5')
         session_id = data.get('session_id')  # 可选的会话ID
+        system_prompt = data.get('system_prompt')  # 系统提示
+        temperature = data.get('temperature', 0.7)  # 温度参数
         
         if not messages:
             return jsonify({
                 'success': False,
                 'error': '消息不能为空'
             }), 400
+        
+        # 验证temperature参数
+        if not isinstance(temperature, (int, float)) or not (0 <= temperature <= 2):
+            temperature = 0.7
         
         # 获取最后一条用户消息用于存储
         last_user_message = None
@@ -318,7 +349,7 @@ def chat():
                 break
         
         # 获取AI回复
-        result = chatbot_service.get_response(messages, model)
+        result = chatbot_service.get_response(messages, model, system_prompt, temperature)
         
         if result['success']:
             # 如果有会话ID，保存消息到数据库
