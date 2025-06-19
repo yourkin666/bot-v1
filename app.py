@@ -17,7 +17,8 @@ from typing import List, Dict, Optional
 import logging
 from dotenv import load_dotenv
 from database import ChatDatabase
-from datetime import datetime
+from datetime import datetime, timedelta
+import re
 
 # 加载环境变量
 load_dotenv()
@@ -985,14 +986,14 @@ class BochaSearchService:
     
     def format_search_results_for_ai(self, search_result: Dict, max_results: int = 5) -> str:
         """
-        将搜索结果格式化为适合AI深度理解和分析的文本
+        将搜索结果格式化为适合AI深度理解和分析的Markdown格式文本
         
         Args:
             search_result: 搜索结果字典
             max_results: 最大结果数量
             
         Returns:
-            格式化的搜索结果文本，包含详细内容供AI分析
+            格式化的Markdown搜索结果文本，包含详细内容供AI分析
         """
         if not search_result.get("success"):
             return f"搜索失败: {search_result.get('error', '未知错误')}"
@@ -1003,15 +1004,31 @@ class BochaSearchService:
         if not results:
             return f"对于查询 '{query}' 没有找到相关搜索结果。"
         
-        # 构建详细的搜索结果供AI分析
-        formatted_text = f"""=== 联网搜索结果分析 ===
-查询关键词: {query}
-搜索时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-搜索引擎: {search_result.get('search_provider', '博查AI')}
-结果总数: {search_result.get('total_count', len(results))}
+        # 构建Markdown格式的搜索结果供AI分析
+        formatted_text = f"""# 🔍 联网搜索结果
 
-=== 详细搜索结果 ===
-"""
+**查询关键词:** {query}  
+**搜索时间:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}  
+**搜索引擎:** {search_result.get('search_provider', '博查AI')}  
+**结果总数:** {search_result.get('total_count', len(results))}
+
+## 📊 搜索结果详情
+
+| 序号 | 来源网站 | 发布时间 | 标题 |
+|------|----------|----------|------|"""
+        
+        # 构建表格内容
+        for i, result in enumerate(results[:max_results], 1):
+            title = result.get("title", "无标题")
+            site_name = result.get("siteName", "未知来源")
+            publish_date = result.get("publishedDate", "未知时间")
+            
+            # 清理标题中可能包含的管道符号，避免破坏表格格式
+            title_clean = title.replace('|', '&#124;')[:50] + ('...' if len(title) > 50 else '')
+            
+            formatted_text += f"\n| {i} | {site_name} | {publish_date} | {title_clean} |"
+        
+        formatted_text += "\n\n"
         
         # 详细处理每个搜索结果
         for i, result in enumerate(results[:max_results], 1):
@@ -1022,34 +1039,84 @@ class BochaSearchService:
             site_name = result.get("siteName", "")
             publish_date = result.get("publishedDate", "")
             
-            formatted_text += f"""
-【结果 {i}】
-标题: {title}
-来源网站: {site_name}
-发布时间: {publish_date}
-链接: {url}
+            formatted_text += f"""### {i}. {title}
 
-内容摘要:
+**来源网站:** {site_name}  
+**发布时间:** {publish_date}  
+**链接:** [{url}]({url})
+
+**内容摘要:**
 {summary if summary else snippet}
 
-详细描述:
-{snippet if summary else ""}
----
+"""
+            if snippet and summary:
+                formatted_text += f"""**详细描述:**
+{snippet}
+
 """
         
         # 添加AI分析指导
-        formatted_text += f"""
-=== AI分析指导 ===
-请基于以上搜索结果：
-1. 提取关键信息和数据
-2. 整理成结构化的格式（如表格、列表等）
-3. 区分事实信息和观点
-4. 提供准确的来源引用  
-5. 如果涉及数据或价格信息，请组织成清晰的表格形式
-6. 总结最重要的发现和结论
+        analysis_guide = """---
 
-注意：以上信息来自实时搜索，请确保回答的准确性和时效性。
+## 🤖 AI分析指导
+
+请基于以上搜索结果，按照以下要求进行分析：
+
+1. **📋 提取关键信息和数据**
+2. **📊 整理成结构化的格式**（如表格、列表等）
+3. **🔍 区分事实信息和观点**
+4. **📚 提供准确的来源引用**  
+5. **💹 如果涉及数据或价格信息，请组织成清晰的表格形式**
+6. **📝 总结最重要的发现和结论**
+
+> **注意:** 以上信息来自实时搜索，请确保回答的准确性和时效性。
+
+**📝 格式要求:**
+- 使用 **Markdown 格式** 回复，包括标题、表格、列表、链接等
+- 对于数据和价格信息，**必须使用表格格式**呈现
+- 使用适当的标题层级（##、###）组织内容
+- 重要信息使用 **粗体** 强调
+- 引用来源时使用链接格式：[来源名称](链接地址)
+- 使用无序列表（-）或有序列表（1.）来组织要点
+
+**示例格式:**
+## 📊 价格信息
+
+| 来源网站 | 发布时间 | 价格（元/克） |
+|----------|----------|---------------|
+| 网站A | 2024-XX-XX | XXX |
+| 网站B | 2024-XX-XX | XXX |
+
+## 🔢 数学计算与公式（如需要）
+
+对于涉及数学概念或计算的问题，请使用适当的数学表达：
+
+**行内公式示例：**
+- 平均价格：\\( \\bar{x} = \\frac{1}{n}\\sum_{i=1}^{n}x_i \\)
+- 增长率：\\( r = \\frac{V_f - V_i}{V_i} \\times 100\\% \\)
+
+**块级公式示例：**
+
+\\[
+\\text{泰勒展开式} = f(a) + f'(a)(x-a) + \\frac{f''(a)}{2!}(x-a)^2 + \\cdots
+\\]
+
+**数学概念解释格式：**
+- 使用 \\( \\) 包围行内数学符号
+- 使用 \\[ \\] 包围重要的块级公式
+- 为公式中的符号提供清晰的说明
+
+## 📝 分析结论
+
+1. **价格趋势:** ...
+2. **主要发现:** ...
+
+## 📚 参考来源
+
+1. [来源1](链接1)
+2. [来源2](链接2)
 """
+        formatted_text += analysis_guide
         
         return formatted_text
 
@@ -1276,6 +1343,108 @@ def _preprocess_multimedia_messages(messages: List[Dict]) -> List[Dict]:
     
     return processed_messages
 
+def preprocess_chinese_date_terms(text: str) -> str:
+    """
+    预处理中文日期词汇，将"今日"、"昨日"等词汇转换为具体日期
+    
+    Args:
+        text: 原始文本
+        
+    Returns:
+        处理后的文本，中文日期词汇已被替换为具体日期
+    """
+    if not text:
+        return text
+    
+    # 获取当前时间
+    now = datetime.now()
+    today = now.date()
+    
+    processed_text = text
+    
+    # 处理相对日期表达 (如: 3天前, 2天后)
+    relative_patterns = [
+        (r'(\d+)\s*天前', lambda m: (today - timedelta(days=int(m.group(1)))).strftime('%Y年%m月%d日')),
+        (r'(\d+)\s*天后', lambda m: (today + timedelta(days=int(m.group(1)))).strftime('%Y年%m月%d日')),
+        (r'(\d+)\s*周前', lambda m: (today - timedelta(weeks=int(m.group(1)))).strftime('%Y年%m月%d日')),
+        (r'(\d+)\s*周后', lambda m: (today + timedelta(weeks=int(m.group(1)))).strftime('%Y年%m月%d日')),
+        (r'(\d+)\s*个月前', lambda m: (today - timedelta(days=int(m.group(1)) * 30)).strftime('%Y年%m月%d日')),
+        (r'(\d+)\s*个月后', lambda m: (today + timedelta(days=int(m.group(1)) * 30)).strftime('%Y年%m月%d日')),
+    ]
+    
+    for pattern, replacement_func in relative_patterns:
+        def replace_match(match):
+            original = match.group(0)
+            converted_date = replacement_func(match)
+            return f"{original}({converted_date})"
+        
+        processed_text = re.sub(pattern, replace_match, processed_text)
+    
+    # 简单的词汇映射，使用一次性替换避免重复
+    simple_mappings = [
+        ('今日', today.strftime('%Y年%m月%d日')),
+        ('今天', today.strftime('%Y年%m月%d日')),
+        ('今儿', today.strftime('%Y年%m月%d日')),
+        ('今儿个', today.strftime('%Y年%m月%d日')),
+        ('昨日', (today - timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('昨天', (today - timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('昨儿', (today - timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('昨儿个', (today - timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('明日', (today + timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('明天', (today + timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('明儿', (today + timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('明儿个', (today + timedelta(days=1)).strftime('%Y年%m月%d日')),
+        ('前日', (today - timedelta(days=2)).strftime('%Y年%m月%d日')),
+        ('前天', (today - timedelta(days=2)).strftime('%Y年%m月%d日')),
+        ('后日', (today + timedelta(days=2)).strftime('%Y年%m月%d日')),
+        ('后天', (today + timedelta(days=2)).strftime('%Y年%m月%d日')),
+        ('本周', f"本周({today.strftime('%Y年%m月%d日')}这一周)"),
+        ('这周', f"这周({today.strftime('%Y年%m月%d日')}这一周)"),
+        ('这一周', f"这一周({today.strftime('%Y年%m月%d日')}这一周)"),
+        ('上周', f"上周({(today - timedelta(days=7)).strftime('%Y年%m月%d日')}那一周)"),
+        ('上一周', f"上一周({(today - timedelta(days=7)).strftime('%Y年%m月%d日')}那一周)"),
+        ('下周', f"下周({(today + timedelta(days=7)).strftime('%Y年%m月%d日')}那一周)"),
+        ('下一周', f"下一周({(today + timedelta(days=7)).strftime('%Y年%m月%d日')}那一周)"),
+        ('本月', today.strftime('%Y年%m月')),
+        ('这个月', today.strftime('%Y年%m月')),
+        ('上月', (today.replace(day=1) - timedelta(days=1)).strftime('%Y年%m月')),
+        ('上个月', (today.replace(day=1) - timedelta(days=1)).strftime('%Y年%m月')),
+        ('下月', (today.replace(day=28) + timedelta(days=4)).replace(day=1).strftime('%Y年%m月')),
+        ('下个月', (today.replace(day=28) + timedelta(days=4)).replace(day=1).strftime('%Y年%m月')),
+        ('现在', now.strftime('%Y年%m月%d日 %H:%M')),
+        ('此时', now.strftime('%Y年%m月%d日 %H:%M')),
+        ('当前', now.strftime('%Y年%m月%d日 %H:%M')),
+        ('目前', now.strftime('%Y年%m月%d日 %H:%M')),
+    ]
+    
+    # 按照词汇长度从长到短排序，避免短词汇先匹配导致长词汇无法匹配
+    simple_mappings.sort(key=lambda x: len(x[0]), reverse=True)
+    
+    for chinese_term, replacement in simple_mappings:
+        if chinese_term in processed_text:
+            processed_text = processed_text.replace(chinese_term, replacement)
+    
+    # 处理星期相关
+    weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    chinese_weekdays = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日']
+    
+    current_weekday = today.weekday()  # 0=Monday, 6=Sunday
+    
+    for i, (short_name, long_name) in enumerate(zip(weekdays, chinese_weekdays)):
+        days_diff = i - current_weekday
+        target_date = today + timedelta(days=days_diff)
+        date_str = target_date.strftime('%Y年%m月%d日')
+        
+        # 如果是本周的某一天，标注为本周
+        if abs(days_diff) <= 3:  # 前后3天内认为是本周
+            week_indicator = "本周" if days_diff >= 0 else "上周" if days_diff < -3 else "本周"
+            if short_name in processed_text:
+                processed_text = processed_text.replace(short_name, f"{short_name}({week_indicator}{date_str})")
+            if long_name in processed_text:
+                processed_text = processed_text.replace(long_name, f"{long_name}({week_indicator}{date_str})")
+    
+    return processed_text
+
 @app.route('/')
 def index():
     """提供前端页面"""
@@ -1338,15 +1507,25 @@ def chat():
                 last_user_message = msg
                 break
         
+        # 预处理用户消息中的日期词汇
+        for message in messages:
+            if message.get('role') == 'user' and message.get('text'):
+                original_text = message['text']
+                processed_text = preprocess_chinese_date_terms(original_text)
+                if processed_text != original_text:
+                    message['text'] = processed_text
+                    logger.info(f"日期预处理: '{original_text}' -> '{processed_text}'")
+        
         # 预处理多媒体内容，提取可分析的信息
         processed_messages = _preprocess_multimedia_messages(messages)
         
         # 如果启用搜索，使用智能判断模式
         if enable_search:
             # 先让AI判断是否需要搜索
-            enhanced_system_prompt = """你是一个智能助手，可以选择性地使用网络搜索来回答问题。
+            enhanced_system_prompt = """你是一个智能助手，可以选择性地使用网络搜索来回答问题。具备优雅的ChatGPT式回答风格。
 
-请分析用户的问题，如果问题涉及以下内容，请回复"SEARCH_REQUIRED:"后跟搜索关键词：
+🎯 判断规则：
+如果问题涉及以下内容，请回复"SEARCH_REQUIRED:"后跟搜索关键词：
 - 实时信息（如当前时间、日期、价格、股价、汇率）
 - 最新新闻、事件
 - 天气信息
@@ -1355,11 +1534,49 @@ def chat():
 - 当前政策法规
 - 最新技术发展
 
-如果问题是一般知识、编程帮助、创意写作、数学计算等不需要实时信息的内容，请直接回答。
+如果是一般知识、编程帮助、创意写作、数学概念等不需要实时信息的内容，请直接回答。
+
+📝 对于数学/科学概念，请使用以下格式：
+
+**CRITICAL: 直接使用LaTeX分隔符，不要使用任何占位符！**
+
+## 📚 概念定义
+[简洁清晰的定义]
+
+## 🔢 数学表达
+
+$$
+[在这里写完整的LaTeX公式，不要使用占位符]
+$$
+
+其中：
+- \\( 具体符号 \\) 表示具体含义
+- \\( 具体符号 \\) 表示具体含义
+
+## 💡 直观理解
+[用通俗易懂的语言和比喻解释]
+
+## 📖 经典例子
+| 函数 | 展开式 | 特点 | 应用 |
+|------|--------|------|------|
+| \\( e^x \\) | \\( 1 + x + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots \\) | 收敛快 | 指数增长 |
+
+## 🚀 实际应用
+- **领域1**: 具体应用说明
+- **领域2**: 具体应用说明
+
+## 💭 深入思考
+[启发性的思考点或相关概念]
+
+**重要提示**: 
+- 必须使用 \\( \\) 包围行内数学公式
+- 必须使用 $$ $$ 包围块级数学公式（前后换行）
+- 绝对不要使用MATH_LATEX_BLOCK_X或MATH_LATEX_INLINE_X这样的占位符
+- 直接输出LaTeX代码
 
 示例：
 用户："黄金价格是多少" → 回复："SEARCH_REQUIRED:黄金价格"
-用户："如何学习Python" → 直接回答编程学习建议
+用户："什么是泰勒展开式" → 直接用上述格式详细回答
 用户："今天天气怎么样" → 回复："SEARCH_REQUIRED:今天天气"
 用户："写一首诗" → 直接创作诗歌"""
             
@@ -2251,37 +2468,114 @@ def chat_with_search():
         messages = [
             {
                 'role': 'system',
-                'content': f"""CRITICAL INSTRUCTION: You are a data extraction specialist. You MUST extract and present information from search results.
+                'content': f"""You are an intelligent assistant that combines web search results with elegant presentation. Your responses should be informative, well-structured, and visually appealing like ChatGPT.
 
-FORBIDDEN behaviors:
-- DO NOT say "I'd be happy to help" or similar generic responses
-- DO NOT ask what the user needs help with
-- DO NOT ignore the search results provided
-- DO NOT give generic answers
+🎯 CORE PRINCIPLES:
+1. **Use search results as primary source**: Extract information from provided search data
+2. **Structure like ChatGPT**: Use clear headings, tables, lists, and professional formatting
+3. **Be comprehensive yet accessible**: Explain complex concepts clearly
+4. **Include visual elements**: Use emojis, tables, and markdown formatting
 
-MANDATORY tasks:
-1. Extract ALL price and data information from search results
-2. Present in clear table format
-3. Include specific numbers, dates, and sources
-4. Answer the user's question directly using the search data
+📝 RESPONSE FORMAT REQUIREMENTS:
 
-For price queries, use this EXACT format:
+For **mathematical concepts** (like Taylor series, calculus, etc.):
+```markdown
+## 📚 概念定义
+[Clear, concise definition]
+
+## 🔢 数学表达
+
+$$
+[Write complete LaTeX formula here - NO placeholders]
+$$
+
+其中：
+- \\( actual_symbol \\) 表示具体含义
+- \\( actual_symbol \\) 表示具体含义
+
+## 💡 直观理解
+[Intuitive explanation with analogies]
+
+## 📖 经典例子
+| 函数 | 展开式 | 收敛范围 | 应用 |
+|------|--------|----------|------|
+| \\( e^x \\) | \\( 1 + x + \\frac{{x^2}}{{2!}} + \\frac{{x^3}}{{3!}} + \\cdots \\) | 所有实数 | 指数增长 |
+| \\( \\sin x \\) | \\( x - \\frac{{x^3}}{{3!}} + \\frac{{x^5}}{{5!}} - \\cdots \\) | 所有实数 | 振荡分析 |
+
+## 🚀 实际应用
+- **领域1**: 具体应用
+- **领域2**: 具体应用
+
+## 💭 深入思考
+[Thought-provoking insights]
+
+**CRITICAL LATEX REQUIREMENTS**: 
+- Use \\( \\) for inline math like \\( f(x) \\), \\( x^2 \\), \\( \\sin(x) \\)
+- Use $$ $$ for display math (with line breaks before and after)
+- ABSOLUTELY FORBIDDEN: MATH_LATEX_BLOCK_X or MATH_LATEX_INLINE_X or any placeholders
+- Write complete LaTeX formulas directly in response
+- Example: \\( e^x = 1 + x + \\frac{{x^2}}{{2!}} + \\cdots \\)
+- Example display: 
+
+$$
+f(x) = \\sum_{{n=0}}^{{\\infty}} \\frac{{f^{{(n)}}(a)}}{{n!}} (x-a)^n
+$$
 ```
-=== 黄金价格信息 ===
+
+For **price/data queries**:
+```markdown
+## 📊 [主题] 信息
 数据更新时间：{datetime.now().strftime('%Y-%m-%d %H:%M')}
 
-| 品类/机构 | 价格 | 单位 | 涨跌 | 来源 |
-|----------|------|------|------|------|
-[Extract actual prices from search results]
+| 来源/机构 | 价格/数据 | 单位 | 变化 | 更新时间 |
+|----------|-----------|------|------|----------|
+[Extract from search results]
 
-=== 关键发现 ===
-[Summarize key findings from search data]
+## 📈 关键发现
+- **主要趋势**: ...
+- **重要数据**: ...
 
-=== 数据来源 ===
-[List all sources with dates]
+## 📚 数据来源
+[List sources with links]
 ```
 
-IMPORTANT: The user has provided search results. You MUST use them to answer. Do not give generic responses."""
+For **general information**:
+```markdown
+## 🔍 [主题概述]
+[Brief introduction]
+
+## 📋 核心要点
+- **要点1**: 详细说明
+- **要点2**: 详细说明
+
+## 📊 详细信息
+[Use tables, lists, or structured content]
+
+## 🔗 参考资料
+[Source links from search results]
+```
+
+🎨 FORMATTING RULES:
+- Use **bold** for emphasis
+- Use \\( \\) for inline math, \\[ \\] for display math
+- Use tables for structured data
+- Use emojis for section headers (📊📚🔍🚀💡)
+- Include source links in markdown format
+- Use proper heading hierarchy (##, ###)
+
+❌ AVOID:
+- Generic responses without using search data
+- Poor formatting or plain text responses
+- Ignoring the mathematical or technical nature of questions
+
+✅ ALWAYS:
+- Extract specific information from search results
+- Present in visually appealing format
+- Include proper mathematical notation when relevant
+- Cite sources appropriately
+- Match the tone and structure of professional AI assistants
+
+Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
             },
             {
                 'role': 'user',
