@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学公式最终测试</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true
+            },
+            chtml: {
+                scale: 1.2
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-box {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .formula {
+            font-size: 1.1em;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>数学公式渲染测试</h1>
+    
+    <div class="test-box">
+        <h2>您的积分公式</h2>
+        <div class="formula">
+            <p>行内公式：这是高斯积分 $\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$ 的例子。</p>
+        </div>
+        <div class="formula">
+            <p>块级公式：</p>
+            $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+        </div>
+    </div>
+    
+    <div class="test-box">
+        <h2>其他测试公式</h2>
+        <div class="formula">
+            <p>简单公式：$E = mc^2$</p>
+            <p>分数：$\frac{1}{2}$</p>
+            <p>求和：$\sum_{i=1}^n i = \frac{n(n+1)}{2}$</p>
+        </div>
+        <div class="formula">
+            <p>复杂公式：</p>
+            $$\frac{d}{dx} \int_a^x f(t) dt = f(x)$$
+        </div>
+    </div>
+    
+    <script>
+        // 简单的状态检查
+        setTimeout(() => {
+            const mathElements = document.querySelectorAll('mjx-container');
+            console.log(`检测到 ${mathElements.length} 个渲染的数学公式`);
+            if (mathElements.length === 0) {
+                document.body.innerHTML += '<div style="color: red; font-weight: bold; text-align: center; margin: 20px;">⚠️ 数学公式未正确渲染</div>';
+            } else {
+                document.body.innerHTML += '<div style="color: green; font-weight: bold; text-align: center; margin: 20px;">✅ 数学公式渲染成功</div>';
+            }
+        }, 3000);
+    </script>
+</body>
+</html> 

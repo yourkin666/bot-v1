@@ -1222,11 +1222,25 @@ class FunctionCallExecutor:
 function_executor = FunctionCallExecutor(bocha_search_service)
 
 def _preprocess_multimedia_messages(messages: List[Dict]) -> List[Dict]:
-    """预处理多媒体消息，智能处理音频、视频和图片，充分利用多模态能力"""
+    """
+    预处理多媒体消息，提取可分析的信息
+    将音频转录为文本，视频提取关键帧等
+    """
+    # 处理None或空输入
+    if not messages:
+        return []
+    
     processed_messages = []
     
     for msg in messages:
-        processed_msg = msg.copy()
+        # 创建消息的副本以避免修改原始数据
+        processed_msg = dict(msg)
+        
+        # 确保基本字段存在
+        if 'role' not in processed_msg:
+            processed_msg['role'] = 'user'  # 默认为用户角色
+        if 'text' not in processed_msg:
+            processed_msg['text'] = ''  # 默认为空文本
         
         if msg.get('role') == 'user':
             additional_text = []

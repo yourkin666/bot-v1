@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学公式优化展示</title>
+    <script>
+        // 与主应用相同的优化配置
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: {'[+]': ['base', 'ams', 'newcommand', 'configmacros', 'action', 'unicode']},
+                macros: {
+                    RR: "{\\mathbb{R}}",
+                    CC: "{\\mathbb{C}}",
+                    NN: "{\\mathbb{N}}",
+                    ZZ: "{\\mathbb{Z}}",
+                    QQ: "{\\mathbb{Q}}",
+                    d: "{\\mathrm{d}}",
+                    e: "{\\mathrm{e}}",
+                    i: "{\\mathrm{i}}",
+                    vec: ["\\mathbf{#1}", 1],
+                    norm: ["\\left\\|#1\\right\\|", 1],
+                    abs: ["\\left|#1\\right|", 1],
+                    floor: ["\\left\\lfloor#1\\right\\rfloor", 1],
+                    ceil: ["\\left\\lceil#1\\right\\rceil", 1],
+                    diff: ["\\frac{\\mathrm{d}#1}{\\mathrm{d}#2}", 2],
+                    pdiff: ["\\frac{\\partial#1}{\\partial#2}", 2]
+                }
+            },
+            chtml: {
+                scale: 1.1,
+                minScale: 0.5,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0em'
+            },
+            options: {
+                processHtmlClass: 'markdown-content',
+                ignoreHtmlClass: 'tex2jax_ignore'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .section h2 {
+            color: #2c3e50;
+            margin-top: 0;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section h2::before {
+            content: "🧮";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .markdown-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        /* 数学公式样式 - 与主应用相同 */
+        .markdown-content mjx-container {
+            margin: 0.3em 0;
+            line-height: 1.4;
+        }
+        
+        .markdown-content mjx-container[display="inline"] {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.15em;
+            padding: 0.1em 0.2em;
+            background-color: rgba(240, 248, 255, 0.8);
+            border-radius: 3px;
+            border: 1px solid rgba(173, 216, 230, 0.3);
+        }
+        
+        .markdown-content mjx-container[display="block"] {
+            display: block;
+            margin: 1.2em auto;
+            padding: 1em;
+            text-align: center;
+            max-width: 100%;
+            overflow-x: auto;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+        
+        .markdown-content mjx-container[jax="CHTML"] {
+            font-size: 1.05em;
+            font-family: 'Times New Roman', 'STIX Two Math', serif;
+        }
+        
+        .markdown-content mjx-container[display="block"]:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        .demo-box {
+            background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .demo-box h3 {
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .feature-item h4 {
+            color: #28a745;
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
+        }
+        
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="status-indicator" id="status">
+        🔄 正在加载...
+    </div>
+    
+    <div class="container">
+        <h1>🎯 数学公式优化展示</h1>
+        <p class="subtitle">体验最新的MathJax渲染优化效果</p>
+        
+        <div class="demo-box">
+            <h3>✨ 您的高斯积分公式</h3>
+            <div class="markdown-content">
+                <p>行内显示：著名的高斯积分 $\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$ 在概率论中极其重要。</p>
+                <p>块级显示：</p>
+                $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>优化功能特性</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4>🎨 美观样式</h4>
+                    <p>行内公式背景高亮，块级公式渐变背景</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📱 响应式设计</h4>
+                    <p>移动设备和高分辨率屏幕优化</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🔄 智能重试</h4>
+                    <p>MathJax加载失败自动重试机制</p>
+                </div>
+                <div class="feature-item">
+                    <h4>⚡ 性能优化</h4>
+                    <p>智能检测，只渲染包含数学公式的内容</p>
+                </div>
+                <div class="feature-item">
+                    <h4>🎯 悬停效果</h4>
+                    <p>块级公式支持悬停动画效果</p>
+                </div>
+                <div class="feature-item">
+                    <h4>📐 自定义宏</h4>
+                    <p>支持常用数学符号和函数宏定义</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>基础数学公式</h2>
+            <div class="markdown-content">
+                <p><strong>物理公式：</strong>爱因斯坦质能方程 $E = mc^2$</p>
+                <p><strong>分数：</strong>简单分数 $\frac{1}{2}$，复杂分数 $\frac{a+b}{c+d}$</p>
+                <p><strong>根号：</strong>平方根 $\sqrt{2}$，立方根 $\sqrt[3]{8}$</p>
+                <p><strong>上下标：</strong>$x^2 + y^2 = z^2$，$H_2O$，$a_1^2 + a_2^2$</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>高级数学表达式</h2>
+            <div class="markdown-content">
+                <p><strong>求和公式：</strong></p>
+                $$\sum_{i=1}^n i = \frac{n(n+1)}{2}$$
+                
+                <p><strong>积分公式：</strong></p>
+                $$\int_0^1 x^2 dx = \frac{1}{3}$$
+                
+                <p><strong>极限：</strong></p>
+                $$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
+                
+                <p><strong>微分方程：</strong></p>
+                $$\frac{dy}{dx} + P(x)y = Q(x)$$
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>矩阵和向量</h2>
+            <div class="markdown-content">
+                <p><strong>2×2矩阵：</strong></p>
+                $$A = \begin{pmatrix} a & b \\ c & d \end{pmatrix}$$
+                
+                <p><strong>向量运算：</strong></p>
+                $$\vec{a} \cdot \vec{b} = |\vec{a}||\vec{b}|\cos\theta$$
+                
+                <p><strong>行列式：</strong></p>
+                $$\det(A) = ad - bc$$
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>特殊函数和符号</h2>
+            <div class="markdown-content">
+                <p><strong>希腊字母：</strong>$\alpha, \beta, \gamma, \delta, \pi, \theta, \phi, \psi, \omega$</p>
+                <p><strong>数学集合：</strong>$\mathbb{R}, \mathbb{C}, \mathbb{N}, \mathbb{Z}, \mathbb{Q}$</p>
+                <p><strong>特殊符号：</strong>$\infty, \partial, \nabla, \pm, \mp, \cdot, \times$</p>
+                <p><strong>关系符号：</strong>$\leq, \geq, \neq, \approx, \equiv, \propto$</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>复杂公式示例</h2>
+            <div class="markdown-content">
+                <p><strong>泰勒级数：</strong></p>
+                $$e^x = \sum_{n=0}^{\infty} \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$$
+                
+                <p><strong>傅里叶变换：</strong></p>
+                $$F(\omega) = \int_{-\infty}^{\infty} f(t) e^{-i\omega t} dt$$
+                
+                <p><strong>薛定谔方程：</strong></p>
+                $$i\hbar\frac{\partial}{\partial t}\Psi = \hat{H}\Psi$$
+                
+                <p><strong>麦克斯韦方程组：</strong></p>
+                $$\nabla \cdot \vec{E} = \frac{\rho}{\epsilon_0}$$
+                $$\nabla \times \vec{B} = \mu_0\vec{J} + \mu_0\epsilon_0\frac{\partial\vec{E}}{\partial t}$$
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 状态监控
+        function updateStatus() {
+            const statusEl = document.getElementById('status');
+            const mathElements = document.querySelectorAll('mjx-container');
+            
+            if (mathElements.length > 0) {
+                statusEl.textContent = `✅ 已渲染 ${mathElements.length} 个数学公式`;
+                statusEl.style.background = '#28a745';
+            } else if (window.MathJax && window.MathJax.typesetPromise) {
+                statusEl.textContent = '⏳ MathJax已加载，等待渲染...';
+                statusEl.style.background = '#ffc107';
+            } else {
+                statusEl.textContent = '🔄 正在加载MathJax...';
+                statusEl.style.background = '#17a2b8';
+            }
+        }
+        
+        // 定期更新状态
+        const statusInterval = setInterval(updateStatus, 1000);
+        
+        // 页面加载完成后停止状态更新
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                clearInterval(statusInterval);
+                updateStatus();
+                
+                // 5秒后隐藏状态指示器
+                setTimeout(() => {
+                    const statusEl = document.getElementById('status');
+                    statusEl.style.opacity = '0';
+                    statusEl.style.transition = 'opacity 0.5s ease';
+                }, 5000);
+            }, 3000);
+        });
+        
+        // 添加公式渲染完成的动画效果
+        document.addEventListener('DOMContentLoaded', () => {
+            // 监听MathJax渲染完成事件
+            document.addEventListener('mathRendered', (e) => {
+                console.log('数学公式渲染完成:', e.detail.element);
+            });
+        });
+    </script>
+</body>
+</html> 

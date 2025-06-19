@@ -1037,7 +1037,6 @@ class TestChatbotAPI:
         else:
             # 其他情况，至少应该有基本的分析引导
             assert any(keyword in processed_text for keyword in ["场景", "动作", "内容", "分析"])
-            print("ℹ️ 视频处理进入其他降级模式")
         
         # 如果成功提取了视频帧，应该有图片数据
         if "image" in processed_msg:
@@ -1671,44 +1670,377 @@ class TestChatbotAPI:
     @pytest.mark.api
     def test_multimedia_preprocessing_edge_cases(self):
         """测试多媒体预处理的边界情况"""
-        from app import _preprocess_multimedia_messages
+        test_data = {
+            "messages": [{
+                "role": "user",
+                "text": "测试边界情况",
+                "image": "invalid-base64-data",  # 无效的base64数据
+                "audio": "",  # 空音频数据
+                "video": None  # None视频数据
+            }],
+            "model": "deepseek-ai/DeepSeek-V2.5"
+        }
         
-        # 测试空消息列表
-        empty_result = _preprocess_multimedia_messages([])
-        assert empty_result == []
+        response = self.session.post(
+            f"{self.base_url}/api/chat",
+            json=test_data,
+            timeout=30
+        )
         
-        # 测试只有文本的消息
-        text_only = [{'role': 'user', 'text': '纯文本消息'}]
-        text_result = _preprocess_multimedia_messages(text_only)
-        assert len(text_result) == 1
-        assert text_result[0]['text'] == '纯文本消息'
+        # 应该能够处理边界情况而不崩溃
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("success") is True
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_chinese_date_preprocessing_api(self):
+        """测试中文日期预处理API功能"""
+        test_cases = [
+            "今天天气怎么样？",
+            "昨天发生了什么？", 
+            "明天有什么安排？",
+            "3天前的报告如何？",
+            "下周一的会议准备好了吗？",
+            "现在是什么时间？"
+        ]
         
-        # 测试无效的音频数据
-        invalid_audio = [{
-            'role': 'user',
-            'text': '测试',
-            'audio': 'invalid-audio-data'
-        }]
-        invalid_result = _preprocess_multimedia_messages(invalid_audio)
-        assert len(invalid_result) == 1
-        # 应该包含错误处理信息
-        assert '测试' in invalid_result[0]['text']
+        for test_text in test_cases:
+            test_data = {
+                "messages": [{"role": "user", "text": test_text}],
+                "model": "deepseek-ai/DeepSeek-V2.5"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_data,
+                timeout=30
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get("success") is True
+            
+            # 验证回复中包含了处理后的日期信息
+            response_text = data.get("response", "")
+            assert len(response_text) > 0
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_math_formula_support_api(self):
+        """测试数学公式支持API"""
+        math_test_cases = [
+            {
+                "text": "请解释这个积分：$$\\int_{0}^{1} x^2 dx$$",
+                "expected_latex": "\\int"
+            },
+            {
+                "text": "当 $x = 5$ 时，$f(x) = 2x + 1$ 的值是多少？",
+                "expected_latex": "$x = 5$"
+            },
+            {
+                "text": "证明欧拉公式：$e^{i\\pi} + 1 = 0$",
+                "expected_latex": "e^{i\\pi}"
+            },
+            {
+                "text": "计算这个矩阵的行列式：$$\\begin{vmatrix} 1 & 2 \\\\ 3 & 4 \\end{vmatrix}$$",
+                "expected_latex": "\\begin{vmatrix}"
+            }
+        ]
         
-        # 测试组合媒体消息
-        mixed_message = [{
-            'role': 'user',
-            'text': '组合消息',
-            'image': self.create_test_image_base64(),
-            'audio': self.create_test_audio_base64()
-        }]
-        mixed_result = _preprocess_multimedia_messages(mixed_message)
-        assert len(mixed_result) == 1
-        processed_msg = mixed_result[0]
+        for test_case in math_test_cases:
+            test_data = {
+                "messages": [{"role": "user", "text": test_case["text"]}],
+                "model": "deepseek-ai/DeepSeek-V2.5"
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_data,
+                timeout=30
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get("success") is True
+            
+            # 验证返回的响应能够处理数学公式
+            response_text = data.get("response", "")
+            assert len(response_text) > 0
+
+    @pytest.mark.integration
+    @pytest.mark.api 
+    def test_enhanced_system_prompt_api(self):
+        """测试增强的系统提示API功能"""
+        # 测试数学教学系统提示
+        math_system_prompt = """你是一位专业的数学老师，擅长用LaTeX格式解释数学概念。
+        请用以下格式回答数学问题：
+        1. 先给出简洁的解释
+        2. 然后用LaTeX公式展示步骤
+        3. 最后给出结果
+        每个数学公式都要用$$包围用于显示。"""
         
-        # 图片应该保留
-        assert 'image' in processed_msg
-        # 音频应该被处理为文本
-        assert '组合消息' in processed_msg['text']
+        test_data = {
+            "messages": [{"role": "user", "text": "求解二次方程 x² + 2x - 3 = 0"}],
+            "model": "deepseek-ai/DeepSeek-V2.5",
+            "system_prompt": math_system_prompt
+        }
+        
+        response = self.session.post(
+            f"{self.base_url}/api/chat",
+            json=test_data,
+            timeout=30
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("success") is True
+        
+        response_text = data.get("response", "")
+        assert len(response_text) > 0
+        # 应该包含数学教学的特征
+        assert any(keyword in response_text for keyword in ["解", "公式", "步骤", "结果"])
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_temperature_parameter_variations(self):
+        """测试不同温度参数的API调用"""
+        base_message = "请用一句话描述人工智能的发展趋势"
+        temperatures = [0.1, 0.5, 0.7, 1.0, 1.5]
+        
+        responses = []
+        for temp in temperatures:
+            test_data = {
+                "messages": [{"role": "user", "text": base_message}],
+                "model": "deepseek-ai/DeepSeek-V2.5",
+                "temperature": temp
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_data,
+                timeout=30
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get("success") is True
+            
+            response_text = data.get("response", "")
+            assert len(response_text) > 0
+            responses.append(response_text)
+        
+        # 验证不同温度下的回复不完全相同（虽然可能相似）
+        unique_responses = set(responses)
+        # 至少应该有一些变化，但不强制要求完全不同
+        assert len(responses) == len(temperatures)
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_session_with_date_processing(self):
+        """测试会话中的日期处理功能"""
+        # 创建会话
+        session_data = {
+            "title": "日期处理测试会话",
+            "model": "deepseek-ai/DeepSeek-V2.5"
+        }
+        
+        response = self.session.post(f"{self.base_url}/api/sessions", json=session_data, timeout=10)
+        assert response.status_code == 200
+        session_info = response.json()
+        assert session_info.get("success") is True
+        session_id = session_info.get("session_id")
+        self.test_session_id = session_id
+        
+        # 在会话中发送包含日期词汇的消息
+        date_messages = [
+            "今天的任务完成了吗？",
+            "昨天的会议总结在哪里？",
+            "明天需要准备什么？",
+            "下周一的安排如何？"
+        ]
+        
+        for message_text in date_messages:
+            test_data = {
+                "messages": [{"role": "user", "text": message_text}],
+                "model": "deepseek-ai/DeepSeek-V2.5",
+                "session_id": session_id
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_data,
+                timeout=30
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get("success") is True
+        
+        # 验证会话中的消息已保存
+        response = self.session.get(f"{self.base_url}/api/sessions/{session_id}", timeout=10)
+        assert response.status_code == 200
+        session_data = response.json()
+        assert len(session_data.get("messages", [])) >= len(date_messages) * 2  # 用户消息 + AI回复
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_multimodal_with_date_processing(self):
+        """测试多模态内容与日期处理的结合"""
+        test_data = {
+            "messages": [{
+                "role": "user",
+                "text": "请分析今天拍摄的这张图片",
+                "image": self.create_test_image_base64()
+            }],
+            "model": "meta-llama/llama-4-scout-17b-16e-instruct"
+        }
+        
+        response = self.session.post(
+            f"{self.base_url}/api/chat",
+            json=test_data,
+            timeout=60
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("success") is True
+        assert data.get("provider") == "groq"  # 应该切换到支持图片的提供商
+        
+        response_text = data.get("response", "")
+        assert len(response_text) > 0
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_enhanced_error_handling_api(self):
+        """测试增强的错误处理API"""
+        error_test_cases = [
+            {
+                "name": "empty_messages",
+                "data": {
+                    "messages": [],
+                    "model": "deepseek-ai/DeepSeek-V2.5"
+                },
+                "expected_status": 400
+            },
+            {
+                "name": "invalid_temperature",
+                "data": {
+                    "messages": [{"role": "user", "text": "test"}],
+                    "model": "deepseek-ai/DeepSeek-V2.5",
+                    "temperature": 5.0  # 超出范围
+                },
+                "expected_status": 200  # 应该自动修正为默认值
+            },
+            {
+                "name": "invalid_model",
+                "data": {
+                    "messages": [{"role": "user", "text": "test"}],
+                    "model": "non-existent-model"
+                },
+                "expected_status": 200  # 应该有错误信息但不是HTTP错误
+            }
+        ]
+        
+        for test_case in error_test_cases:
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_case["data"],
+                timeout=30
+            )
+            
+            assert response.status_code == test_case["expected_status"], f"测试用例 {test_case['name']} 失败"
+            
+            if test_case["expected_status"] == 200:
+                data = response.json()
+                # 根据不同的错误情况验证响应
+                if test_case["name"] == "invalid_model":
+                    assert data.get("success") is False or "error" in data
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_comprehensive_feature_integration(self):
+        """测试综合功能集成"""
+        # 测试同时使用多种功能的复杂场景
+        complex_test_data = {
+            "messages": [{
+                "role": "user",
+                "text": "请帮我分析今天收到的这个数学问题：$$\\sum_{n=1}^{\\infty} \\frac{1}{n^2} = \\frac{\\pi^2}{6}$$，明天我需要向学生解释这个巴塞尔问题。"
+            }],
+            "model": "deepseek-ai/DeepSeek-V2.5",
+            "system_prompt": "你是一位数学教授，擅长用简洁明了的方式解释复杂的数学概念。",
+            "temperature": 0.7,
+            "enable_search": False  # 禁用搜索以测试纯AI回复
+        }
+        
+        response = self.session.post(
+            f"{self.base_url}/api/chat",
+            json=complex_test_data,
+            timeout=60
+        )
+        
+        assert response.status_code == 200
+        data = response.json()
+        assert data.get("success") is True
+        
+        response_text = data.get("response", "")
+        assert len(response_text) > 0
+        
+        # 验证AI理解了复杂的请求（包含日期处理、数学公式、系统提示）
+        assert any(keyword in response_text for keyword in ["巴塞尔", "数学", "无穷级数", "解释"])
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_latex_formula_preservation(self):
+        """测试LaTeX公式保存功能"""
+        # 创建一个包含复杂数学公式的会话
+        session_data = {
+            "title": "数学公式测试",
+            "model": "deepseek-ai/DeepSeek-V2.5"
+        }
+        
+        response = self.session.post(f"{self.base_url}/api/sessions", json=session_data, timeout=10)
+        assert response.status_code == 200
+        session_info = response.json()
+        session_id = session_info.get("session_id")
+        self.test_session_id = session_id
+        
+        # 发送包含LaTeX公式的消息
+        latex_formulas = [
+            "麦克斯韦方程组：$$\\nabla \\cdot \\mathbf{E} = \\frac{\\rho}{\\varepsilon_0}$$",
+            "薛定谔方程：$$i\\hbar\\frac{\\partial}{\\partial t}|\\psi\\rangle = \\hat{H}|\\psi\\rangle$$",
+            "爱因斯坦质能方程：$E = mc^2$"
+        ]
+        
+        for formula in latex_formulas:
+            test_data = {
+                "messages": [{"role": "user", "text": formula}],
+                "model": "deepseek-ai/DeepSeek-V2.5",
+                "session_id": session_id
+            }
+            
+            response = self.session.post(
+                f"{self.base_url}/api/chat",
+                json=test_data,
+                timeout=30
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data.get("success") is True
+        
+        # 验证公式在会话历史中得到保存
+        response = self.session.get(f"{self.base_url}/api/sessions/{session_id}", timeout=10)
+        assert response.status_code == 200
+        session_data = response.json()
+        
+        messages = session_data.get("messages", [])
+        formula_messages = [msg for msg in messages if msg.get("role") == "user"]
+        
+        # 验证LaTeX公式被正确保存
+        for msg in formula_messages:
+            content = msg.get("content", "")
+            assert any(marker in content for marker in ["$$", "$", "\\"])  # 包含LaTeX标记
 
 if __name__ == '__main__':
     # 运行特定的测试

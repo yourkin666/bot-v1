@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>积分公式测试</title>
+    <script>
+        // 配置MathJax - 与主应用相同的配置
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics', 'cancel', 'mathtools']},
+                processEscapes: true,
+                processEnvironments: true,
+                tags: 'ams',
+                processRefs: true,
+                macros: {
+                    RR: "{\\mathbb{R}}",
+                    CC: "{\\mathbb{C}}",
+                    NN: "{\\mathbb{N}}",
+                    ZZ: "{\\mathbb{Z}}",
+                    QQ: "{\\mathbb{Q}}",
+                    vec: ["\\mathbf{#1}", 1],
+                    norm: ["\\left\\|#1\\right\\|", 1],
+                    abs: ["\\left|#1\\right|", 1],
+                    floor: ["\\left\\lfloor#1\\right\\rfloor", 1],
+                    ceil: ["\\left\\lceil#1\\right\\rceil", 1]
+                }
+            },
+            chtml: {
+                scale: 1.3,
+                minScale: 1.0,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0'
+            },
+            options: {
+                processHtmlClass: 'markdown-content|math-content',
+                ignoreHtmlClass: 'tex2jax_ignore',
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/color', '[tex]/newcommand', '[tex]/autoload', '[tex]/cancel', '[tex]/mathtools']
+            },
+            startup: {
+                pageReady: () => {
+                    console.log('MathJax页面准备就绪');
+                    return MathJax.startup.defaultPageReady();
+                },
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax已准备就绪');
+                }
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            line-height: 1.8;
+            background: #f8f9fa;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .test-section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .test-section h2 {
+            color: #495057;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        
+        .math-content {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        
+        .inline-math {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .block-math {
+            background: #fff3e0;
+            padding: 25px;
+            border-radius: 6px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        /* 数学公式样式 */
+        .math-content mjx-container {
+            margin: 0.5em 0;
+        }
+        
+        .math-content mjx-container[display="block"] {
+            margin: 1.5em auto;
+            text-align: center;
+        }
+        
+        .math-content mjx-container[jax="CHTML"] {
+            font-size: 1.2em;
+        }
+        
+        .math-content mjx-container[display="inline"] {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.2em;
+        }
+        
+        .math-content mjx-container[display="block"] {
+            display: block;
+            margin: 1.5em auto;
+            text-align: center;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        
+        .debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #6c757d;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧮 积分公式渲染测试</h1>
+        
+        <div class="test-section">
+            <h2>您的高斯积分公式</h2>
+            
+            <div class="inline-math">
+                <strong>行内公式：</strong>
+                <div class="math-content">
+                    这是著名的高斯积分：$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$，它在概率论中非常重要。
+                </div>
+            </div>
+            
+            <div class="block-math">
+                <strong>块级公式：</strong>
+                <div class="math-content">
+                    $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>相关积分公式</h2>
+            
+            <div class="math-content">
+                <p><strong>标准正态分布：</strong></p>
+                $$\int_{-\infty}^{\infty} \frac{1}{\sqrt{2\pi}} e^{-\frac{x^2}{2}} dx = 1$$
+                
+                <p><strong>一般高斯积分：</strong></p>
+                $$\int_{-\infty}^{\infty} e^{-ax^2} dx = \sqrt{\frac{\pi}{a}} \quad (a > 0)$$
+                
+                <p><strong>带参数的高斯积分：</strong></p>
+                $$\int_{-\infty}^{\infty} e^{-ax^2 + bx + c} dx = \sqrt{\frac{\pi}{a}} e^{c + \frac{b^2}{4a}} \quad (a > 0)$$
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>其他常见积分</h2>
+            
+            <div class="math-content">
+                <p><strong>伽马函数：</strong></p>
+                $$\Gamma(n) = \int_0^{\infty} x^{n-1} e^{-x} dx$$
+                
+                <p><strong>贝塔函数：</strong></p>
+                $$B(x,y) = \int_0^1 t^{x-1}(1-t)^{y-1} dt$$
+                
+                <p><strong>椭圆积分：</strong></p>
+                $$K(k) = \int_0^{\frac{\pi}{2}} \frac{d\theta}{\sqrt{1-k^2\sin^2\theta}}$$
+            </div>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            <strong>调试信息：</strong><br>
+            MathJax状态: <span id="mathJaxStatus" class="status">检查中...</span><br>
+            渲染状态: <span id="renderStatus" class="status">等待中...</span><br>
+            页面加载时间: <span id="loadTime">计算中...</span>
+        </div>
+    </div>
+    
+    <script>
+        // 调试和状态监控
+        const startTime = Date.now();
+        
+        function updateStatus() {
+            const mathJaxStatus = document.getElementById('mathJaxStatus');
+            const renderStatus = document.getElementById('renderStatus');
+            const loadTime = document.getElementById('loadTime');
+            
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                mathJaxStatus.textContent = '已加载';
+                mathJaxStatus.className = 'status success';
+                
+                // 检查是否有渲染的数学公式
+                const mathElements = document.querySelectorAll('mjx-container');
+                if (mathElements.length > 0) {
+                    renderStatus.textContent = `已渲染 ${mathElements.length} 个公式`;
+                    renderStatus.className = 'status success';
+                } else {
+                    renderStatus.textContent = '未检测到渲染结果';
+                    renderStatus.className = 'status error';
+                }
+            } else {
+                mathJaxStatus.textContent = '未加载';
+                mathJaxStatus.className = 'status error';
+                renderStatus.textContent = '等待MathJax加载';
+                renderStatus.className = 'status error';
+            }
+            
+            loadTime.textContent = `${Date.now() - startTime}ms`;
+        }
+        
+        // 定期更新状态
+        setInterval(updateStatus, 1000);
+        
+        // 页面加载完成事件
+        window.addEventListener('load', function() {
+            console.log('页面加载完成');
+            updateStatus();
+            
+            // 5秒后再次检查
+            setTimeout(() => {
+                console.log('延迟检查MathJax状态');
+                updateStatus();
+                
+                // 如果MathJax已加载但没有渲染结果，尝试手动渲染
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    const mathElements = document.querySelectorAll('mjx-container');
+                    if (mathElements.length === 0) {
+                        console.log('尝试手动渲染数学公式');
+                        window.MathJax.typesetPromise([document.body]).then(() => {
+                            console.log('手动渲染完成');
+                            updateStatus();
+                        }).catch(err => {
+                            console.error('手动渲染失败:', err);
+                        });
+                    }
+                }
+            }, 5000);
+        });
+        
+        // MathJax事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.MathJax) {
+                window.MathJax.startup.promise.then(() => {
+                    console.log('MathJax启动完成');
+                    updateStatus();
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

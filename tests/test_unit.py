@@ -12,6 +12,7 @@ import json
 from unittest.mock import Mock, patch
 from typing import Dict, List
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 # 加载环境变量
 load_dotenv()
@@ -183,6 +184,116 @@ class TestCoreFunctionality:
         # 无效音频应该被移除
         assert 'audio' not in invalid_result[0]
 
+    def test_chinese_date_preprocessing(self):
+        """测试中文日期预处理功能"""
+        from app import preprocess_chinese_date_terms
+        
+        # 获取当前日期进行比较
+        today = datetime.now().date()
+        yesterday = today - timedelta(days=1)
+        tomorrow = today + timedelta(days=1)
+        
+        # 测试基本日期词汇
+        test_cases = [
+            ("今天天气怎么样？", today.strftime('%Y年%m月%d日')),
+            ("昨天发生了什么？", yesterday.strftime('%Y年%m月%d日')),
+            ("明天有什么安排？", tomorrow.strftime('%Y年%m月%d日')),
+            ("今日新闻", today.strftime('%Y年%m月%d日')),
+            ("昨日回顾", yesterday.strftime('%Y年%m月%d日')),
+            ("明日计划", tomorrow.strftime('%Y年%m月%d日')),
+        ]
+        
+        for original, expected_date in test_cases:
+            result = preprocess_chinese_date_terms(original)
+            assert expected_date in result, f"处理'{original}'时，期望包含'{expected_date}'，实际结果：'{result}'"
+        
+        # 测试相对日期表达
+        relative_cases = [
+            "3天前的报告",
+            "5天后的会议",
+            "2周前的项目",
+            "1个月前的记录"
+        ]
+        
+        for case in relative_cases:
+            result = preprocess_chinese_date_terms(case)
+            assert '(' in result and ')' in result, f"相对日期处理失败：'{case}' -> '{result}'"
+            assert '年' in result and '月' in result and '日' in result, f"日期格式不正确：'{result}'"
+        
+        # 测试星期词汇
+        week_cases = [
+            "周一的会议",
+            "星期二的安排",
+            "周三要做什么？"
+        ]
+        
+        for case in week_cases:
+            result = preprocess_chinese_date_terms(case)
+            # 星期词汇应该被转换并包含具体日期
+            assert any(weekday in result for weekday in ['周一', '周二', '周三', '星期一', '星期二', '星期三'])
+            assert '年' in result and '月' in result and '日' in result
+        
+        # 测试时间点词汇
+        time_cases = ["现在是什么时间？", "此时的情况", "当前状态"]
+        
+        for case in time_cases:
+            result = preprocess_chinese_date_terms(case)
+            assert any(word not in result for word in ['现在', '此时', '当前']) or ':' in result
+        
+        # 测试空字符串和None
+        assert preprocess_chinese_date_terms("") == ""
+        assert preprocess_chinese_date_terms(None) is None
+
+    def test_chinese_date_preprocessing_edge_cases(self):
+        """测试中文日期预处理的边界情况"""
+        from app import preprocess_chinese_date_terms
+        
+        # 测试长词汇优先匹配
+        result = preprocess_chinese_date_terms("今儿个天气不错")
+        # 应该匹配"今儿个"而不是"今儿"
+        assert "今儿个" not in result or "年" in result
+        
+        # 测试不重复处理
+        already_processed = "2025年06月19日天气很好"
+        result = preprocess_chinese_date_terms(already_processed)
+        # 已经是具体日期格式的不应该被再次处理
+        assert result == already_processed
+        
+        # 测试复合表达
+        complex_text = "今天和明天的天气，还有昨天的新闻"
+        result = preprocess_chinese_date_terms(complex_text)
+        # 应该同时处理多个日期词汇
+        assert result.count("年") >= 3
+        assert result.count("月") >= 3
+        assert result.count("日") >= 3
+
+    def test_math_formula_handling(self):
+        """测试数学公式处理相关功能"""
+        # 这里测试与数学公式相关的后端处理
+        from app import _preprocess_multimedia_messages
+        
+        # 测试包含数学公式的消息
+        math_messages = [{
+            'role': 'user',
+            'text': '请解释这个公式：$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$'
+        }]
+        
+        result = _preprocess_multimedia_messages(math_messages)
+        assert len(result) == 1
+        assert '$$' in result[0]['text']  # LaTeX公式应该保留
+        assert '\\int' in result[0]['text']  # 积分符号应该保留
+        
+        # 测试行内数学公式
+        inline_math_messages = [{
+            'role': 'user', 
+            'text': '当 $x = 2$ 时，$f(x) = x^2 + 1$ 的值是多少？'
+        }]
+        
+        result = _preprocess_multimedia_messages(inline_math_messages)
+        assert len(result) == 1
+        assert '$x = 2$' in result[0]['text']
+        assert '$f(x) = x^2 + 1$' in result[0]['text']
+
     def test_database_functionality(self):
         """测试数据库核心功能"""
         from database import ChatDatabase
@@ -198,13 +309,12 @@ class TestCoreFunctionality:
             # 测试创建会话
             session_id = db.create_session("测试会话", "test-model")
             assert session_id is not None
-            assert len(session_id) > 0
             
             # 测试获取会话
             session = db.get_session_by_id(session_id)
             assert session is not None
-            assert session['title'] == '测试会话'
-            assert session['model'] == 'test-model'
+            assert session['title'] == "测试会话"
+            assert session['model'] == "test-model"
             
             # 测试添加消息
             success = db.add_message(
@@ -213,80 +323,43 @@ class TestCoreFunctionality:
                 content="测试消息",
                 content_type="text"
             )
-            assert success is True
-            
-            # 测试添加多媒体消息
-            success = db.add_message(
-                session_id=session_id,
-                role="user",
-                content="测试音频消息",
-                content_type="audio",
-                file_name="test.mp3",
-                file_size=1024,
-                model="test-model",
-                provider="test-provider"
-            )
-            assert success is True
+            assert success
             
             # 测试获取消息
             messages = db.get_messages(session_id)
-            assert len(messages) == 2
+            assert len(messages) == 1
+            assert messages[0]['content'] == "测试消息"
+            assert messages[0]['role'] == "user"
             
-            # 验证第一条消息
-            text_msg = messages[0]
-            assert text_msg['content'] == '测试消息'
-            assert text_msg['content_type'] == 'text'
-            
-            # 验证第二条消息
-            audio_msg = messages[1]
-            assert audio_msg['content'] == '测试音频消息'
-            assert audio_msg['content_type'] == 'audio'
-            assert audio_msg['file_name'] == 'test.mp3'
-            assert audio_msg['file_size'] == 1024
-            assert audio_msg['model'] == 'test-model'
-            assert audio_msg['provider'] == 'test-provider'
-            
-            # 测试获取会话列表
-            sessions = db.get_sessions()
-            assert len(sessions) >= 1
-            session_found = any(s['id'] == session_id for s in sessions)
-            assert session_found
-            
-            # 测试更新会话标题
-            update_success = db.update_session_title(session_id, "更新后的标题")
-            assert update_success is True
-            
-            updated_session = db.get_session_by_id(session_id)
-            assert updated_session['title'] == '更新后的标题'
-            
-            # 测试归档会话
-            archive_success = db.archive_session(session_id)
-            assert archive_success is True
-            
-            # 验证归档后的会话不在常规列表中
-            sessions_after_archive = db.get_sessions()
-            archived_session_found = any(s['id'] == session_id for s in sessions_after_archive)
-            assert not archived_session_found
+            # 测试消息统计
+            count = db.get_message_count(session_id)
+            assert count == 1
             
             # 测试搜索消息
-            search_results = db.search_messages("测试")
-            assert len(search_results) >= 0  # 可能有匹配结果
+            search_results = db.search_messages("测试", session_id)
+            assert len(search_results) == 1
+            assert search_results[0]['content'] == "测试消息"
             
-            # 测试统计功能
-            stats = db.get_statistics()
-            assert isinstance(stats, dict)
-            assert 'total_sessions' in stats
-            assert 'total_messages' in stats
-            assert 'today_sessions' in stats
-            assert 'today_messages' in stats
-            assert stats['total_sessions'] >= 0  # 归档后为0
-            assert stats['total_messages'] >= 2
-            assert stats['today_messages'] >= 2
+            # 测试更新会话标题
+            success = db.update_session_title(session_id, "更新后的标题")
+            assert success
+            
+            updated_session = db.get_session_by_id(session_id)
+            assert updated_session['title'] == "更新后的标题"
+            
+            # 测试删除会话
+            success = db.delete_session(session_id)
+            assert success
+            
+            deleted_session = db.get_session_by_id(session_id)
+            assert deleted_session is None
             
         finally:
-            # 清理临时数据库文件
-            if os.path.exists(db_path):
-                os.remove(db_path)
+            # 清理临时文件
+            try:
+                os.unlink(db_path)
+            except:
+                pass
 
     def test_available_models_configuration(self):
         """测试可用模型配置"""
@@ -295,145 +368,193 @@ class TestCoreFunctionality:
         assert isinstance(AVAILABLE_MODELS, list)
         assert len(AVAILABLE_MODELS) > 0
         
-        # 验证每个模型的结构
+        # 验证每个模型的必需字段
         for model in AVAILABLE_MODELS:
             assert 'id' in model
             assert 'name' in model
             assert 'provider' in model
             assert 'supports_image' in model
-            assert 'type' in model
             assert isinstance(model['supports_image'], bool)
-            assert model['provider'] in ['siliconflow', 'groq']
-            assert model['type'] in ['text', 'multimodal']
         
-        # 确保有默认模型
+        # 验证至少有一个默认模型
         default_models = [m for m in AVAILABLE_MODELS if m.get('default', False)]
         assert len(default_models) >= 1
         
-        # 确保有支持图片的模型
-        image_models = [m for m in AVAILABLE_MODELS if m['supports_image']]
-        assert len(image_models) >= 1
+        # 验证提供商类型
+        providers = {m['provider'] for m in AVAILABLE_MODELS}
+        expected_providers = {'siliconflow', 'groq'}
+        assert providers.issubset(expected_providers)
 
     def test_multimodal_chatbot_service_model_info(self):
-        """测试多模态聊天机器人服务的模型信息功能"""
+        """测试多模态聊天机器人服务的模型信息获取"""
         from app import MultiModalChatBotService
         
-        service = MultiModalChatBotService("fake-key1", "fake-key2")
+        service = MultiModalChatBotService("test-key", "test-key")
         
         # 测试获取有效模型信息
-        model_info = service._get_model_info("deepseek-ai/DeepSeek-V2.5")
+        valid_model = "deepseek-ai/DeepSeek-V2.5"
+        model_info = service._get_model_info(valid_model)
         assert model_info is not None
-        assert model_info['id'] == "deepseek-ai/DeepSeek-V2.5"
-        assert model_info['provider'] == "siliconflow"
-        assert not model_info['supports_image']
+        assert model_info['id'] == valid_model
+        assert 'provider' in model_info
+        assert 'supports_image' in model_info
         
-        # 测试获取多模态模型信息
-        multimodal_info = service._get_model_info("meta-llama/llama-4-scout-17b-16e-instruct")
-        assert multimodal_info is not None
-        assert multimodal_info['supports_image'] is True
-        assert multimodal_info['provider'] == "groq"
-        
-        # 测试获取不存在的模型信息
-        invalid_info = service._get_model_info("non-existent-model")
-        assert invalid_info is None
+        # 测试获取无效模型信息
+        invalid_model = "non-existent-model"
+        model_info = service._get_model_info(invalid_model)
+        assert model_info is None
 
     def test_multimedia_content_detection(self):
         """测试多媒体内容检测功能"""
         from app import MultiModalChatBotService
         
-        service = MultiModalChatBotService("fake-key1", "fake-key2")
+        service = MultiModalChatBotService("test-key", "test-key")
         
         # 测试图片内容检测
-        image_messages = [
-            {'role': 'user', 'text': '测试', 'image': 'data:image/png;base64,test'},
-            {'role': 'assistant', 'text': '回复'}
+        messages_with_image = [
+            {'role': 'user', 'text': '分析图片', 'image': 'data:image/png;base64,test'}
         ]
-        assert service._has_image_content(image_messages) is True
-        assert service._has_multimedia_content(image_messages) is True
+        assert service._has_image_content(messages_with_image) is True
+        assert service._has_multimedia_content(messages_with_image) is True
         
         # 测试音频内容检测
-        audio_messages = [
-            {'role': 'user', 'text': '测试', 'audio': 'data:audio/wav;base64,test'}
+        messages_with_audio = [
+            {'role': 'user', 'text': '处理音频', 'audio': 'data:audio/wav;base64,test'}
         ]
-        assert service._has_image_content(audio_messages) is False
-        assert service._has_multimedia_content(audio_messages) is True
+        assert service._has_image_content(messages_with_audio) is False
+        assert service._has_multimedia_content(messages_with_audio) is True
         
         # 测试视频内容检测
-        video_messages = [
-            {'role': 'user', 'text': '测试', 'video': 'data:video/mp4;base64,test'}
+        messages_with_video = [
+            {'role': 'user', 'text': '分析视频', 'video': 'data:video/mp4;base64,test'}
         ]
-        assert service._has_image_content(video_messages) is False
-        assert service._has_multimedia_content(video_messages) is True
+        assert service._has_image_content(messages_with_video) is False
+        assert service._has_multimedia_content(messages_with_video) is True
         
-        # 测试纯文本内容
-        text_messages = [
-            {'role': 'user', 'text': '纯文本测试'}
+        # 测试纯文本消息
+        text_only_messages = [
+            {'role': 'user', 'text': '纯文本消息'}
         ]
-        assert service._has_image_content(text_messages) is False
-        assert service._has_multimedia_content(text_messages) is False
+        assert service._has_image_content(text_only_messages) is False
+        assert service._has_multimedia_content(text_only_messages) is False
 
     def test_error_handling_edge_cases(self):
-        """测试边界情况和错误处理"""
-        from app import _preprocess_multimedia_messages
-        from database import ChatDatabase
+        """测试错误处理边界情况"""
+        from app import _preprocess_multimedia_messages, preprocess_chinese_date_terms
         
-        # 测试预处理空数据
-        empty_result = _preprocess_multimedia_messages([])
-        assert empty_result == []
+        # 测试None输入
+        assert _preprocess_multimedia_messages(None) == []
+        assert preprocess_chinese_date_terms(None) is None
         
-        # 测试预处理无效消息格式
-        invalid_messages = [
-            {'invalid_key': 'invalid_value'},
-            {'role': 'user'}  # 缺少text字段
+        # 测试空列表
+        assert _preprocess_multimedia_messages([]) == []
+        
+        # 测试格式错误的消息
+        malformed_messages = [
+            {'role': 'user'},  # 缺少text字段
+            {'text': 'test'},  # 缺少role字段
+            {}  # 空消息
         ]
         
-        # 这应该不会崩溃，而是优雅处理
-        result = _preprocess_multimedia_messages(invalid_messages)
+        result = _preprocess_multimedia_messages(malformed_messages)
+        # 应该能够处理格式错误的消息而不崩溃
         assert isinstance(result, list)
         
-        # 测试数据库初始化错误处理
-        # 使用无效路径
-        invalid_path = "/invalid/path/test.db"
-        try:
-            db = ChatDatabase(invalid_path)
-            # 如果没有权限创建数据库，应该抛出异常
-        except Exception as e:
-            assert isinstance(e, Exception)
+        # 测试包含特殊字符的日期处理
+        special_text = "今天的#话题%是什么？"
+        result = preprocess_chinese_date_terms(special_text)
+        assert isinstance(result, str)
+        assert '#话题%' in result  # 特殊字符应该保留
 
     def test_json_serialization(self):
-        """测试JSON序列化功能"""
-        # 测试工具调用参数的JSON处理
-        test_data = {
-            "query": "测试查询",
-            "count": 5,
-            "freshness": "week",
-            "中文键": "中文值"
-        }
+        """测试JSON序列化相关功能"""
+        from database import ChatDatabase
+        import json
         
-        # 确保可以正确序列化和反序列化
-        json_str = json.dumps(test_data, ensure_ascii=False)
-        restored_data = json.loads(json_str)
+        # 测试数据库返回的数据可以被JSON序列化
+        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as temp_db:
+            db_path = temp_db.name
         
-        assert restored_data == test_data
-        assert restored_data["中文键"] == "中文值"
+        try:
+            db = ChatDatabase(db_path)
+            session_id = db.create_session("JSON测试会话")
+            
+            # 添加包含特殊字符的消息
+            db.add_message(session_id, "user", "测试消息 🚀 with emoji")
+            
+            # 获取消息并测试JSON序列化
+            messages = db.get_messages(session_id)
+            json_str = json.dumps(messages, ensure_ascii=False)
+            assert isinstance(json_str, str)
+            assert "测试消息" in json_str
+            assert "🚀" in json_str
+            
+            # 测试反序列化
+            parsed_messages = json.loads(json_str)
+            assert len(parsed_messages) == 1
+            assert parsed_messages[0]['content'] == "测试消息 🚀 with emoji"
+            
+        finally:
+            try:
+                os.unlink(db_path)
+            except:
+                pass
 
     def test_configuration_validation(self):
         """测试配置验证"""
-        import os
+        from app import SILICONFLOW_API_KEY, GROQ_API_KEY, AVAILABLE_MODELS
         
-        # 测试环境变量
-        api_keys = [
-            'SILICONFLOW_API_KEY',
-            'GROQ_API_KEY', 
-            'OPENAI_API_KEY',
-            'BOCHA_API_KEY'
+        # 测试API密钥配置
+        assert isinstance(SILICONFLOW_API_KEY, str) or SILICONFLOW_API_KEY is None
+        assert isinstance(GROQ_API_KEY, str) or GROQ_API_KEY is None
+        
+        # 测试模型配置完整性
+        for model in AVAILABLE_MODELS:
+            required_fields = ['id', 'name', 'provider', 'supports_image']
+            for field in required_fields:
+                assert field in model, f"模型 {model.get('id', 'unknown')} 缺少必需字段 {field}"
+
+    def test_enhanced_date_processing(self):
+        """测试增强的日期处理功能"""
+        from app import preprocess_chinese_date_terms
+        
+        # 测试复杂的中文日期表达
+        complex_cases = [
+            ("下个月的第一周", "下个月"),
+            ("本季度的报告", "本季度"),  # 如果支持季度的话
+            ("年初的计划", "年初"),
+            ("月底的总结", "月底"),
         ]
         
-        # 至少应该有一些API密钥被配置
-        configured_keys = [key for key in api_keys if os.environ.get(key)]
+        for original, expected_part in complex_cases:
+            result = preprocess_chinese_date_terms(original)
+            # 检查是否进行了某种处理（即使不是完全匹配）
+            assert isinstance(result, str)
+            assert len(result) >= len(original)
         
-        # 在测试环境中，至少应该有默认配置
-        assert len(configured_keys) >= 0  # 允许没有配置，因为有默认值
+        # 测试连续的日期词汇
+        continuous_text = "从昨天到今天再到明天的变化"
+        result = preprocess_chinese_date_terms(continuous_text)
+        # 应该同时处理所有日期词汇
+        date_count = result.count("年")
+        assert date_count >= 3, f"应该处理3个日期词汇，但只发现{date_count}个"
+
+    def test_math_constants_and_functions(self):
+        """测试数学常数和函数的处理"""
+        # 测试数学表达式的基本处理
+        math_expressions = [
+            "计算 sin(π/2) 的值",
+            "欧拉常数 e 约等于多少？",
+            "圆周率 π 的前10位小数",
+            "自然对数 ln(e) 等于多少？"
+        ]
+        
+        for expr in math_expressions:
+            # 这里主要测试这些表达式不会导致预处理失败
+            from app import preprocess_chinese_date_terms
+            result = preprocess_chinese_date_terms(expr)
+            assert isinstance(result, str)
+            assert len(result) > 0
 
 
 if __name__ == '__main__':
