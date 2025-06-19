@@ -31,8 +31,61 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
     
     <!-- 数学公式支持 -->
+    <script>
+        // 优化的MathJax配置 - 平衡功能性和可靠性
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true,
+                packages: {'[+]': ['base', 'ams', 'newcommand', 'configmacros', 'action', 'unicode']},
+                macros: {
+                    // 常用数学集合
+                    RR: "{\\mathbb{R}}",
+                    CC: "{\\mathbb{C}}",
+                    NN: "{\\mathbb{N}}",
+                    ZZ: "{\\mathbb{Z}}",
+                    QQ: "{\\mathbb{Q}}",
+                    // 常用函数
+                    d: "{\\mathrm{d}}",
+                    e: "{\\mathrm{e}}",
+                    i: "{\\mathrm{i}}",
+                    // 向量和范数
+                    vec: ["\\mathbf{#1}", 1],
+                    norm: ["\\left\\|#1\\right\\|", 1],
+                    abs: ["\\left|#1\\right|", 1],
+                    // 取整函数
+                    floor: ["\\left\\lfloor#1\\right\\rfloor", 1],
+                    ceil: ["\\left\\lceil#1\\right\\rceil", 1],
+                    // 微分算子
+                    diff: ["\\frac{\\mathrm{d}#1}{\\mathrm{d}#2}", 2],
+                    pdiff: ["\\frac{\\partial#1}{\\partial#2}", 2]
+                }
+            },
+            chtml: {
+                scale: 1.1,
+                minScale: 0.5,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0em'
+            },
+            options: {
+                processHtmlClass: 'markdown-content',
+                ignoreHtmlClass: 'tex2jax_ignore',
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'annotation', 'annotation-xml']
+            },
+            startup: {
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax配置完成，支持高级数学渲染');
+                }
+            }
+        };
+    </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -57,6 +110,7 @@
             }
         }
     </script>
+    
     <style>
         :where([class^="ri-"])::before { 
             content: "\f3c2"; 
@@ -208,6 +262,92 @@
         
         .audio-wave span:nth-child(5) {
             animation-delay: 0.4s;
+        }
+        
+                /* 优化的数学公式样式 */
+        .markdown-content mjx-container {
+            margin: 0.3em 0;
+            line-height: 1.4;
+        }
+        
+        /* 行内数学公式样式 */
+        .markdown-content mjx-container[display="inline"] {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 0.15em;
+            padding: 0.1em 0.2em;
+            background-color: rgba(240, 248, 255, 0.8);
+            border-radius: 3px;
+            border: 1px solid rgba(173, 216, 230, 0.3);
+        }
+        
+        /* 块级数学公式样式 */
+        .markdown-content mjx-container[display="block"] {
+            display: block;
+            margin: 1.2em auto;
+            padding: 1em;
+            text-align: center;
+            max-width: 100%;
+            overflow-x: auto;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #dee2e6;
+        }
+        
+        /* 数学公式字体优化 */
+        .markdown-content mjx-container[jax="CHTML"] {
+            font-size: 1.05em;
+            font-family: 'Times New Roman', 'STIX Two Math', serif;
+        }
+        
+        /* 数学公式悬停效果 */
+        .markdown-content mjx-container[display="block"]:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            transform: translateY(-1px);
+            transition: all 0.2s ease;
+        }
+        
+        /* 数学公式错误样式 */
+        .math-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85em;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
+        }
+        
+        /* 长公式横向滚动优化 */
+        .markdown-content mjx-container[display="block"] mjx-math {
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+        
+        /* 移动设备优化 */
+        @media (max-width: 768px) {
+            .markdown-content mjx-container[display="block"] {
+                font-size: 0.95em;
+                margin: 1em 0;
+                padding: 0.8em;
+            }
+            
+            .markdown-content mjx-container[display="inline"] {
+                font-size: 0.9em;
+                margin: 0 0.1em;
+                padding: 0.05em 0.1em;
+            }
+        }
+        
+        /* 高分辨率屏幕优化 */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .markdown-content mjx-container[jax="CHTML"] {
+                font-size: 1.1em;
+            }
         }
         
         @keyframes wave {
@@ -409,95 +549,122 @@
         
         /* 数学公式样式优化 */
         .markdown-content .MathJax {
-            font-size: 1.1em !important;
+            font-size: 1.15em !important;
             outline: none;
+            color: #2d3748 !important;
         }
         
         .markdown-content .MathJax_Display {
-            margin: 1rem 0 !important;
+            margin: 1.5rem 0 !important;
             text-align: center;
             overflow-x: auto;
             overflow-y: visible;
+            padding: 0.5rem 0;
         }
         
         .markdown-content .MathJax_Preview {
             color: #888;
             font-style: italic;
+            background-color: #f7fafc;
+            padding: 2px 4px;
+            border-radius: 3px;
         }
         
         /* SVG渲染的数学公式样式 */
         .markdown-content mjx-container {
             display: inline-block;
-            margin: 0.2em 0;
+            margin: 0.3em 0.1em;
+            color: #2d3748 !important;
         }
         
         .markdown-content mjx-container[display="block"] {
             display: block;
             text-align: center;
-            margin: 1em 0;
+            margin: 1.5em 0;
             overflow-x: auto;
             overflow-y: visible;
+            padding: 0.8em 0;
+            background-color: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
         }
         
         .markdown-content mjx-math {
-            line-height: 1.2;
+            line-height: 1.3;
+            font-size: 1.1em !important;
         }
         
         /* 处理长公式的滚动 */
         .markdown-content mjx-container[display="block"] mjx-math {
             min-width: min-content;
+            padding: 0 1em;
         }
         
         /* 行内数学公式的基线对齐 */
         .markdown-content mjx-container:not([display="block"]) {
             vertical-align: baseline;
+            background-color: #f7fafc;
+            padding: 2px 4px;
+            border-radius: 3px;
+            border: 1px solid #e2e8f0;
         }
         
         /* 数学公式的错误显示 */
         .markdown-content .MathJax_Error {
-            color: #cc0000 !important;
-            background-color: #ffeeee !important;
-            border: 1px solid #cc0000;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
+            color: #e53e3e !important;
+            background-color: #fed7d7 !important;
+            border: 1px solid #feb2b2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9em;
         }
         
         /* 数学公式显示容器 */
         .markdown-content .math-display-container {
             text-align: center;
             margin: 1.5em 0;
-            padding: 0.5em;
+            padding: 1em;
             overflow-x: auto;
             overflow-y: visible;
-            border-radius: 8px;
-            background-color: #fafafa;
-            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         
         /* 数学公式错误提示 */
         .markdown-content .math-error {
             display: inline-block;
-            color: #dc3545;
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
+            color: #e53e3e;
+            background-color: #fed7d7;
+            border: 1px solid #feb2b2;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
             font-size: 0.9em;
-            margin: 2px;
+            margin: 4px;
+            font-weight: 500;
         }
         
         /* 响应式数学公式 */
         @media (max-width: 768px) {
             .markdown-content .math-display-container {
-                font-size: 0.9em;
-                padding: 0.3em;
-                margin: 1em 0;
+                font-size: 0.95em;
+                padding: 0.8em;
+                margin: 1.2em 0;
             }
             
             .markdown-content mjx-container {
-                font-size: 0.9em !important;
+                font-size: 0.95em !important;
+            }
+            
+            .markdown-content mjx-container[display="block"] {
+                padding: 0.6em 0;
+            }
+            
+            .markdown-content mjx-container[display="block"] mjx-math {
+                padding: 0 0.5em;
             }
         }
         
@@ -1035,7 +1202,7 @@
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics']},
+                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics', 'cancel', 'mathtools']},
                 processEscapes: true,
                 processEnvironments: true,
                 tags: 'ams',
@@ -1048,19 +1215,26 @@
                     ZZ: "{\\mathbb{Z}}",
                     QQ: "{\\mathbb{Q}}",
                     vec: ["\\mathbf{#1}", 1],
-                    norm: ["\\left\\|#1\\right\\|", 1]
+                    norm: ["\\left\\|#1\\right\\|", 1],
+                    abs: ["\\left|#1\\right|", 1],
+                    floor: ["\\left\\lfloor#1\\right\\rfloor", 1],
+                    ceil: ["\\left\\lceil#1\\right\\rceil", 1]
                 }
             },
             svg: {
                 fontCache: 'global',
-                scale: 1.1,
-                minScale: 0.8,
-                mtextInheritFont: true
+                scale: 1.2,
+                minScale: 0.9,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0'
             },
             chtml: {
-                scale: 1.1,
-                minScale: 0.8,
-                mtextInheritFont: true
+                scale: 1.2,
+                minScale: 0.9,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0'
             },
             options: {
                 processHtmlClass: 'markdown-content',
@@ -1071,13 +1245,20 @@
                 }
             },
             loader: {
-                load: ['[tex]/ams', '[tex]/color', '[tex]/newcommand', '[tex]/autoload']
+                load: ['[tex]/ams', '[tex]/color', '[tex]/newcommand', '[tex]/autoload', '[tex]/cancel', '[tex]/mathtools']
             },
             startup: {
                 pageReady: () => {
                     console.log('MathJax页面准备就绪');
                     return MathJax.startup.defaultPageReady().then(() => {
                         console.log('MathJax初始化完成');
+                        // 确保MathJax正确初始化后，重新渲染页面上已有的数学公式
+                        if (document.querySelector('.markdown-content')) {
+                            console.log('重新渲染页面上的数学公式');
+                            MathJax.typesetPromise([document.body]).catch(err => {
+                                console.error('初始化时渲染数学公式失败:', err);
+                            });
+                        }
                     });
                 },
                 ready: () => {
@@ -1100,81 +1281,13 @@
             }
         });
         
-        // Markdown渲染函数
+        // 简化的Markdown渲染函数
         function renderMarkdown(text) {
             console.log('渲染Markdown文本:', text.substring(0, 100) + '...');
             
-            // 预处理：处理数学公式避免被markdown解析
-            let processedText = text;
-            
-            // 先保护数学公式
-            const mathBlocks = [];
-            let mathCounter = 0;
-            
-            // 保护块级数学公式 $$...$$（必须先于行内公式处理）
-            processedText = processedText.replace(/\$\$([\s\S]*?)\$\$/g, (match, content) => {
-                const placeholder = `___MATH_BLOCK_${mathCounter}___`;
-                mathBlocks.push({placeholder, content: match});
-                console.log(`保护块级数学公式 ${mathCounter}:`, match.substring(0, 50));
-                mathCounter++;
-                return placeholder;
-            });
-            
-            // 保护LaTeX块级格式 \[...\]
-            processedText = processedText.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
-                const placeholder = `___MATH_LATEX_BLOCK_${mathCounter}___`;
-                mathBlocks.push({placeholder, content: match});
-                console.log(`保护LaTeX块级公式 ${mathCounter}:`, match.substring(0, 50));
-                mathCounter++;
-                return placeholder;
-            });
-            
-            // 保护LaTeX行内格式 \(...\)
-            processedText = processedText.replace(/\\\(([\s\S]*?)\\\)/g, (match, content) => {
-                const placeholder = `___MATH_LATEX_INLINE_${mathCounter}___`;
-                mathBlocks.push({placeholder, content: match});
-                console.log(`保护LaTeX行内公式 ${mathCounter}:`, match.substring(0, 50));
-                mathCounter++;
-                return placeholder;
-            });
-            
-            // 保护行内数学公式 $...$（排除已经处理的$$）
-            processedText = processedText.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (match, content) => {
-                const placeholder = `___MATH_INLINE_${mathCounter}___`;
-                mathBlocks.push({placeholder, content: match});
-                console.log(`保护行内数学公式 ${mathCounter}:`, match);
-                mathCounter++;
-                return placeholder;
-            });
-            
-            console.log(`共保护了 ${mathBlocks.length} 个数学公式`);
-            
-            // 使用marked渲染markdown
-            let html = marked.parse(processedText);
-            
-            // 恢复数学公式，并添加适当的包装
-            mathBlocks.forEach(({placeholder, content}) => {
-                console.log(`恢复数学公式:`, placeholder, '->', content.substring(0, 30));
-                
-                // 使用简单可靠的字符串替换方法
-                if (placeholder.includes('BLOCK') || content.startsWith('$$') || content.startsWith('\\[')) {
-                    const wrappedContent = `<div class="math-display-container">${content}</div>`;
-                    html = html.split(placeholder).join(wrappedContent);
-                } else {
-                    // 行内数学公式直接替换
-                    html = html.split(placeholder).join(content);
-                }
-                
-                // 调试：检查替换是否成功
-                if (html.includes(placeholder)) {
-                    console.error(`占位符 ${placeholder} 替换失败！原始内容:`, content);
-                } else {
-                    console.log(`占位符 ${placeholder} 替换成功`);
-                }
-            });
-            
-            console.log('Markdown渲染完成，包含数学公式:', mathBlocks.length > 0);
-            return html;
+            // 直接使用marked.js渲染，不做复杂的数学公式保护
+            // MathJax会在后续处理数学公式
+            return marked.parse(text);
         }
         
         // 渲染消息内容的函数
@@ -1198,63 +1311,105 @@
             });
         }
         
-        // 处理数学公式渲染的函数
+        // 优化的数学公式渲染函数
         function renderMath(element) {
-            console.log('开始渲染数学公式，元素:', element);
+            console.log('开始渲染数学公式');
+            
+            // 检查是否包含数学公式
+            const text = element.textContent || element.innerText || '';
+            const hasMath = /\$|\\\(|\\\[|\\int|\\sum|\\frac|\\sqrt|\\alpha|\\beta|\\gamma|\\pi|\\theta|\\phi|\\psi|\\omega/.test(text);
+            
+            if (!hasMath) {
+                console.log('未检测到数学公式标记，跳过渲染');
+                return;
+            }
             
             if (window.MathJax && window.MathJax.typesetPromise) {
-                // 检查是否包含数学公式
-                const mathPatterns = [
-                    /\\\((.*?)\\\)/g,  // \( ... \)
-                    /\\\[(.*?)\\\]/g,  // \[ ... \]
-                    /\$\$(.*?)\$\$/g,  // $$ ... $$
-                    /\$([^$\n]+?)\$/g  // $ ... $
-                ];
-                
-                let hasMath = false;
-                const textContent = element.textContent || element.innerHTML;
-                for (const pattern of mathPatterns) {
-                    if (pattern.test(textContent)) {
-                        hasMath = true;
-                        break;
+                // 清除之前可能存在的渲染结果
+                element.querySelectorAll('mjx-container').forEach(container => {
+                    if (container.parentNode) {
+                        container.remove();
                     }
-                }
+                });
                 
-                if (!hasMath) {
-                    console.log('未检测到数学公式');
-                    return;
-                }
-                
-                console.log('检测到数学公式，开始MathJax渲染');
-                
-                // 重新渲染数学公式
                 window.MathJax.typesetPromise([element]).then(() => {
                     console.log('MathJax渲染完成');
                     
-                    // 确保长公式可以横向滚动
+                    // 优化渲染后的显示效果
                     element.querySelectorAll('mjx-container[display="block"]').forEach(container => {
+                        // 确保块级公式居中显示
                         const parent = container.parentElement;
-                        if (parent && container.scrollWidth > parent.clientWidth) {
-                            parent.style.overflowX = 'auto';
+                        if (parent && !parent.style.textAlign) {
+                            parent.style.textAlign = 'center';
+                        }
+                        
+                        // 处理长公式的滚动
+                        if (container.scrollWidth > container.clientWidth) {
+                            container.style.overflowX = 'auto';
+                            container.style.overflowY = 'hidden';
                         }
                     });
                     
-                    // 滚动到底部确保新内容可见
-                    scrollToBottom();
+                    // 为行内公式添加适当的间距
+                    element.querySelectorAll('mjx-container[display="inline"]').forEach(container => {
+                        container.style.verticalAlign = 'middle';
+                    });
+                    
+                    // 滚动到底部
+                    if (typeof scrollToBottom === 'function') {
+                        setTimeout(scrollToBottom, 150);
+                    }
+                    
+                    // 触发自定义事件，通知渲染完成
+                    element.dispatchEvent(new CustomEvent('mathRendered', {
+                        detail: { element: element }
+                    }));
+                    
                 }).catch((err) => {
                     console.error('MathJax渲染错误:', err);
                     
-                    // 如果渲染失败，尝试显示错误信息
+                    // 显示友好的错误信息
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'math-error';
-                    errorDiv.style.cssText = 'color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 4px 8px; border-radius: 4px; font-family: monospace; margin: 4px 0;';
-                    errorDiv.textContent = `数学公式渲染失败: ${err.message}`;
+                    errorDiv.innerHTML = `
+                        <strong>数学公式渲染失败</strong><br>
+                        <small>${err.message}</small><br>
+                        <em>请检查公式语法是否正确</em>
+                    `;
                     element.appendChild(errorDiv);
                 });
             } else {
-                console.log('MathJax未加载，500ms后重试');
-                // MathJax未加载，延迟重试
-                setTimeout(() => renderMath(element), 500);
+                console.log('MathJax未加载，延迟重试');
+                // MathJax未加载，延迟重试，最多重试5次
+                if (!element._mathRetryCount) {
+                    element._mathRetryCount = 0;
+                }
+                
+                if (element._mathRetryCount < 5) {
+                    element._mathRetryCount++;
+                    setTimeout(() => renderMath(element), 500);
+                } else {
+                    console.error('MathJax加载失败，停止重试');
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'math-error';
+                    errorDiv.textContent = 'MathJax加载失败，无法渲染数学公式';
+                    element.appendChild(errorDiv);
+                }
+            }
+        }
+        
+        // 强制重新渲染所有数学公式的辅助函数
+        function forceRerenderMath() {
+            console.log('强制重新渲染所有数学公式');
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                const mathElements = document.querySelectorAll('.markdown-content');
+                if (mathElements.length > 0) {
+                    window.MathJax.typesetPromise(Array.from(mathElements)).then(() => {
+                        console.log('强制重新渲染完成');
+                    }).catch((err) => {
+                        console.error('强制重新渲染失败:', err);
+                    });
+                }
             }
         }
         
@@ -1758,23 +1913,8 @@
                     '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
                     '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
                 
-                // 检查是否包含Markdown格式或数学公式
-                const hasMarkdown = /[#*`|\\]/.test(text) || 
-                                    text.includes('```') || 
-                                    text.includes('|') ||
-                                    text.includes('$$') ||
-                                    text.includes('\\(') ||
-                                    text.includes('\\[') ||
-                                    /\$[^$]+\$/.test(text);
-                
-                let contentHtml;
-                if (hasMarkdown) {
-                    // 使用Markdown渲染
-                    contentHtml = renderMessageContent(text, true);
-                } else {
-                    // 简单的文本处理
-                    contentHtml = `<div>${text.replace(/\n/g, '<br>')}</div>`;
-                }
+                // 始终使用Markdown渲染，移除不可靠的hasMarkdown判断
+                const contentHtml = renderMessageContent(text, true);
                 
                 botMessageDiv.innerHTML = `
                     <div class="message-bubble bot-message p-3 text-gray-800">
@@ -1785,11 +1925,9 @@
                 
                 chatContainer.appendChild(botMessageDiv);
                 
-                // 应用代码高亮和数学公式渲染
-                if (hasMarkdown) {
-                    highlightCode(botMessageDiv);
-                    renderMath(botMessageDiv);
-                }
+                // 始终应用代码高亮和数学公式渲染
+                highlightCode(botMessageDiv);
+                renderMath(botMessageDiv);
             }
             
             // 侧边栏控制事件

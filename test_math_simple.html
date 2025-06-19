@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学公式测试</title>
+    <script>
+        // 配置MathJax - 必须在MathJax加载之前配置
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics', 'cancel', 'mathtools']},
+                processEscapes: true,
+                processEnvironments: true,
+                tags: 'ams',
+                processRefs: true
+            },
+            chtml: {
+                scale: 1.3,
+                minScale: 1.0,
+                mtextInheritFont: true,
+                displayAlign: 'center',
+                displayIndent: '0'
+            },
+            options: {
+                processHtmlClass: 'math-content',
+                ignoreHtmlClass: 'tex2jax_ignore',
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/color', '[tex]/newcommand', '[tex]/autoload', '[tex]/cancel', '[tex]/mathtools']
+            },
+            startup: {
+                pageReady: () => {
+                    console.log('MathJax页面准备就绪');
+                    return MathJax.startup.defaultPageReady();
+                },
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax已准备就绪');
+                }
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .math-content {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .test-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-item h3 {
+            margin-top: 0;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>数学公式渲染测试</h1>
+    
+    <div class="test-item">
+        <h3>您的积分公式（行内）：</h3>
+        <div class="math-content">
+            这是一个高斯积分：$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$
+        </div>
+    </div>
+    
+    <div class="test-item">
+        <h3>您的积分公式（块级）：</h3>
+        <div class="math-content">
+            $$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+        </div>
+    </div>
+    
+    <div class="test-item">
+        <h3>其他测试公式：</h3>
+        <div class="math-content">
+            <p>行内公式：$E = mc^2$</p>
+            <p>块级公式：</p>
+            $$\frac{d}{dx} \int_a^x f(t) dt = f(x)$$
+            <p>分数：$\frac{1}{2}$</p>
+            <p>求和：$\sum_{i=1}^n i = \frac{n(n+1)}{2}$</p>
+        </div>
+    </div>
+    
+    <script>
+        // 页面加载完成后的调试信息
+        window.addEventListener('load', function() {
+            console.log('页面加载完成');
+            setTimeout(() => {
+                console.log('MathJax对象:', window.MathJax);
+                console.log('页面中的数学公式元素:', document.querySelectorAll('.math-content'));
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 
