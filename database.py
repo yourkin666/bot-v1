@@ -49,6 +49,8 @@ class ChatDatabase:
                     image_data TEXT,
                     model TEXT,
                     provider TEXT,
+                    file_name TEXT,
+                    file_size INTEGER,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (session_id) REFERENCES chat_sessions (id) ON DELETE CASCADE
                 )
@@ -206,7 +208,8 @@ class ChatDatabase:
     
     def add_message(self, session_id: str, role: str, content: str, 
                    content_type: str = 'text', image_data: str = None,
-                   model: str = None, provider: str = None) -> bool:
+                   model: str = None, provider: str = None,
+                   file_name: str = None, file_size: int = None) -> bool:
         """添加消息到会话"""
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -214,9 +217,9 @@ class ChatDatabase:
                 
                 # 插入消息
                 cursor.execute('''
-                INSERT INTO messages (session_id, role, content, content_type, image_data, model, provider)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (session_id, role, content, content_type, image_data, model, provider))
+                INSERT INTO messages (session_id, role, content, content_type, image_data, model, provider, file_name, file_size)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ''', (session_id, role, content, content_type, image_data, model, provider, file_name, file_size))
                 
                 # 更新会话的消息计数和更新时间
                 cursor.execute('''
@@ -238,7 +241,7 @@ class ChatDatabase:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
                 cursor.execute('''
-                SELECT id, role, content, content_type, image_data, model, provider, created_at
+                SELECT id, role, content, content_type, image_data, model, provider, file_name, file_size, created_at
                 FROM messages
                 WHERE session_id = ?
                 ORDER BY created_at ASC
@@ -255,7 +258,9 @@ class ChatDatabase:
                         'image_data': row[4],
                         'model': row[5],
                         'provider': row[6],
-                        'created_at': row[7]
+                        'file_name': row[7],
+                        'file_size': row[8],
+                        'created_at': row[9]
                     }
                     messages.append(message)
                 

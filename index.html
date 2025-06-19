@@ -194,6 +194,184 @@
                 height: 30px;
             }
         }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-controls-inline {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 6px 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-controls-inline:hover {
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .search-label-inline {
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 开关样式 */
+        .switch, .switch-inline {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input, .switch-inline input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider, .slider-inline {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before, .slider-inline:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider, input:checked + .slider-inline {
+            background-color: #1E88E5;
+        }
+
+        input:checked + .slider:before, input:checked + .slider-inline:before {
+            transform: translateX(20px);
+        }
+
+        /* 搜索结果样式 */
+        .search-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(30, 136, 229, 0.1);
+            border-radius: 8px;
+            font-weight: 500;
+            color: #1E88E5;
+        }
+
+        .search-results {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .search-result-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .search-result-title {
+            font-weight: 600;
+            color: #1565C0;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .search-result-url {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .search-result-url:hover {
+            text-decoration: underline;
+        }
+
+        .search-result-snippet {
+            color: #666;
+            line-height: 1.4;
+            font-size: 14px;
+        }
+
+        .model-indicator {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        #modelSelect {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        #modelSelect:hover {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        #modelSelect option {
+            background: #2d3748;
+            color: white;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+
     </style>
 </head>
 <body class="bg-gray-50 h-screen flex flex-col">
@@ -413,9 +591,12 @@
                 <ul class="mt-2 ml-4 list-disc text-sm text-gray-600">
                     <li>📝 <strong>文本对话</strong>：回答问题、创意写作、知识问答</li>
                     <li>🖼️ <strong>图片分析</strong>：描述图片内容、图片问答、OCR识别</li>
+                    <li>🎵 <strong>音频分析</strong>：自动转录语音内容，支持对话分析</li>
+                    <li>🎬 <strong>视频分析</strong>：基于您的描述提供深度内容分析</li>
+                    <li>🎤 <strong>语音录制</strong>：实时语音转文字，智能对话输入</li>
                     <li>🚀 <strong>智能切换</strong>：自动选择最适合的模型处理您的请求</li>
                 </ul>
-                <p class="mt-2">您可以直接发送文字，或点击 📷 按钮上传图片进行分析。请问有什么可以帮到您的吗？</p>
+                <p class="mt-2"><strong>使用提示：</strong>上传音频文件时，系统会自动转录内容；上传视频时，请详细描述视频内容以获得最佳分析效果。</p>
             </div>
         </div>
     </div>
@@ -424,7 +605,7 @@
     <div class="input-area bg-white px-4 py-3">
         <!-- 预览区域 -->
         <div id="previewArea" class="hidden mb-3">
-            <div id="imagePreview" class="hidden relative inline-block">
+            <div id="imagePreview" class="hidden relative inline-block mr-2 mb-2">
                 <img id="previewImage" class="h-20 w-auto rounded" alt="预览图片">
                 <button id="removeImageBtn" class="absolute -top-2 -right-2 bg-gray-800 bg-opacity-70 rounded-full w-5 h-5 flex items-center justify-center text-white">
                     <div class="w-3 h-3 flex items-center justify-center">
@@ -433,31 +614,69 @@
                 </button>
             </div>
             
-            <div id="audioRecording" class="hidden bg-gray-100 rounded p-2 inline-flex items-center">
-                <div class="audio-wave mr-2">
+            <div id="audioPreview" class="hidden relative inline-block mr-2 mb-2">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="ri-file-music-line text-blue-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div id="audioFileName" class="text-sm font-medium text-gray-800">音频文件</div>
+                        <div id="audioFileSize" class="text-xs text-gray-500">0 MB</div>
+                    </div>
+                    <button id="removeAudioBtn" class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
+                        <i class="ri-close-line text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="videoPreview" class="hidden relative inline-block mr-2 mb-2">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="ri-video-line text-green-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div id="videoFileName" class="text-sm font-medium text-gray-800">视频文件</div>
+                        <div id="videoFileSize" class="text-xs text-gray-500">0 MB</div>
+                    </div>
+                    <button id="removeVideoBtn" class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
+                        <i class="ri-close-line text-sm"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="audioRecording" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 inline-flex items-center space-x-3">
+                <div class="audio-wave">
                     <span></span>
                     <span></span>
                     <span></span>
                     <span></span>
                     <span></span>
                 </div>
-                <span class="text-sm text-gray-600">正在录音...</span>
-                <button id="stopRecordingBtn" class="ml-2 text-red-500">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-stop-circle-fill"></i>
-                    </div>
+                <span class="text-sm text-red-700 font-medium">正在录音...</span>
+                <button id="stopRecordingBtn" class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600">
+                    <i class="ri-stop-circle-fill"></i>
                 </button>
             </div>
         </div>
         
         <div class="flex items-end">
             <div class="flex space-x-2 mr-3">
-                <button id="uploadImageBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
+                <button id="uploadImageBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传图片">
                     <div class="w-5 h-5 flex items-center justify-center">
                         <i class="ri-image-line"></i>
                     </div>
                 </button>
-                <button id="startVoiceBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors">
+                <button id="uploadAudioBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传音频">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-file-music-line"></i>
+                    </div>
+                </button>
+                <button id="uploadVideoBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传视频">
+                    <div class="w-5 h-5 flex items-center justify-center">
+                        <i class="ri-video-line"></i>
+                    </div>
+                </button>
+                <button id="startVoiceBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="录音">
                     <div class="w-5 h-5 flex items-center justify-center">
                         <i class="ri-mic-line"></i>
                     </div>
@@ -467,6 +686,24 @@
             <div class="flex-1 relative">
                 <textarea id="messageInput" class="message-input w-full border-none focus:ring-0 rounded-xl bg-gray-100 px-4 py-2 text-gray-800 placeholder-gray-500" placeholder="输入您想说的话..." rows="1"></textarea>
             </div>
+            
+            <!-- 联网搜索开关 -->
+            <div class="search-controls-inline ml-3">
+                <label class="switch-inline">
+                    <input type="checkbox" id="enableSearch" checked>
+                    <span class="slider-inline round"></span>
+                </label>
+                <label for="enableSearch" class="search-label-inline">
+                    <span class="search-status-icon">🌐</span>
+                </label>
+            </div>
+            
+            <!-- 独立搜索按钮 -->
+            <button id="webSearchBtn" class="ml-2 px-3 py-2 !rounded-button bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors whitespace-nowrap" title="独立网络搜索">
+                <div class="w-5 h-5 flex items-center justify-center">
+                    🔍
+                </div>
+            </button>
             
             <button id="sendMessageBtn" class="ml-3 px-4 py-2 !rounded-button bg-gray-200 text-gray-500 hover:bg-gray-300 transition-colors disabled:opacity-50 whitespace-nowrap">
                 <div class="w-5 h-5 flex items-center justify-center">
@@ -479,6 +716,14 @@
 
     <!-- 文件上传隐藏输入 -->
     <input type="file" id="imageFileInput" accept="image/*" class="hidden">
+    <input type="file" id="audioFileInput" accept="audio/*" class="hidden">
+    <input type="file" id="videoFileInput" accept="video/*" class="hidden">
+
+    <!-- 控制面板 -->
+    <div class="controls">
+        <select id="modelSelect">
+        </select>
+    </div>
 
     <script id="chatFunctionality">
         document.addEventListener('DOMContentLoaded', function() {
@@ -486,16 +731,29 @@
             const messageInput = document.getElementById('messageInput');
             const sendMessageBtn = document.getElementById('sendMessageBtn');
             const uploadImageBtn = document.getElementById('uploadImageBtn');
+            const uploadAudioBtn = document.getElementById('uploadAudioBtn');
+            const uploadVideoBtn = document.getElementById('uploadVideoBtn');
             const imageFileInput = document.getElementById('imageFileInput');
+            const audioFileInput = document.getElementById('audioFileInput');
+            const videoFileInput = document.getElementById('videoFileInput');
             const previewArea = document.getElementById('previewArea');
             const imagePreview = document.getElementById('imagePreview');
+            const audioPreview = document.getElementById('audioPreview');
+            const videoPreview = document.getElementById('videoPreview');
             const previewImage = document.getElementById('previewImage');
+            const audioFileName = document.getElementById('audioFileName');
+            const audioFileSize = document.getElementById('audioFileSize');
+            const videoFileName = document.getElementById('videoFileName');
+            const videoFileSize = document.getElementById('videoFileSize');
             const removeImageBtn = document.getElementById('removeImageBtn');
+            const removeAudioBtn = document.getElementById('removeAudioBtn');
+            const removeVideoBtn = document.getElementById('removeVideoBtn');
             const startVoiceBtn = document.getElementById('startVoiceBtn');
             const audioRecording = document.getElementById('audioRecording');
             const stopRecordingBtn = document.getElementById('stopRecordingBtn');
             const clearChatBtn = document.getElementById('clearChatBtn');
             const modelSelect = document.getElementById('modelSelect');
+            const webSearchBtn = document.getElementById('webSearchBtn');
             
             // 设置相关元素
             const headerTemperatureBtn = document.getElementById('headerTemperatureBtn');
@@ -520,6 +778,10 @@
             
             let isRecording = false;
             let selectedImage = null;
+            let selectedAudio = null;
+            let selectedVideo = null;
+            let mediaRecorder = null;
+            let recordedChunks = [];
             
             // 设置相关变量
             let systemPrompt = '';
@@ -550,23 +812,62 @@
             let currentPage = 1;
             let isLoadingSessions = false;
             
+            // 模型图标和描述映射
+            const modelDisplayInfo = {
+                'deepseek-ai/DeepSeek-V2.5': {
+                    icon: '🧠',
+                    description: '深度推理专家'
+                },
+                'Qwen/Qwen2.5-7B-Instruct': {
+                    icon: '🔮',
+                    description: '智能问答助手'
+                },
+                'meta-llama/llama-4-scout-17b-16e-instruct': {
+                    icon: '🦙',
+                    description: '多模态大师'
+                },
+                'meta-llama/llama-4-maverick-17b-128e-instruct': {
+                    icon: '🚀',
+                    description: '创新对话专家'
+                }
+            };
+
             // 加载可用模型
             async function loadModels() {
                 try {
                     const response = await fetch('/api/models');
                     const data = await response.json();
                     
-                    modelSelect.innerHTML = '';
-                    data.models.forEach(model => {
-                        const option = document.createElement('option');
-                        option.value = model.id;
-                        option.textContent = model.name;
-                        if (model.default || model.id === currentModel) {
-                            option.selected = true;
-                            currentModel = model.id;
-                        }
-                        modelSelect.appendChild(option);
-                    });
+                    if (data.success && data.models.length > 0) {
+                        modelSelect.innerHTML = '';
+                        
+                        data.models.forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model.id;
+                            
+                            // 获取模型显示信息
+                            const displayInfo = modelDisplayInfo[model.id] || {
+                                icon: '🤖',
+                                description: '智能助手'
+                            };
+                            
+                            // 构建显示文本
+                            const modelName = model.name.replace(/\(文本\)|\(多模态\)/g, '').trim();
+                            const supportText = model.supports_image ? ' (多模态)' : ' (文本)';
+                            
+                            option.textContent = `${displayInfo.icon} ${modelName} - ${displayInfo.description}${supportText}`;
+                            
+                            if (model.default || model.id === currentModel) {
+                                option.selected = true;
+                                currentModel = model.id;
+                            }
+                            modelSelect.appendChild(option);
+                        });
+                        
+                        console.log('已加载模型:', data.models.length, '个');
+                    } else {
+                        modelSelect.innerHTML = '<option value="">无可用模型</option>';
+                    }
                 } catch (error) {
                     console.error('加载模型失败:', error);
                     modelSelect.innerHTML = '<option value="">加载失败</option>';
@@ -753,7 +1054,18 @@
                                     image: msg.image_data
                                 };
                                 conversationHistory.push(userMessage);
-                                displayUserMessage(msg.content, msg.image_data);
+                                // 根据内容类型确定媒体类型
+                        let image = null, audio = null, video = null;
+                        
+                        if (msg.content_type === 'image') {
+                            image = msg.image_data;
+                        } else if (msg.content_type === 'audio') {
+                            audio = msg.image_data; // image_data字段现在存储所有媒体数据
+                        } else if (msg.content_type === 'video') {
+                            video = msg.image_data;
+                        }
+                        
+                        displayUserMessage(msg.content, image, audio, video, msg.content_type);
                             } else if (msg.role === 'assistant') {
                                 conversationHistory.push({
                                     role: 'assistant',
@@ -851,16 +1163,49 @@
             }
             
             // 显示用户消息
-            function displayUserMessage(text, image) {
+            function displayUserMessage(text, image, audio, video, contentType) {
                 const userMessageDiv = document.createElement('div');
                 userMessageDiv.className = 'flex mb-4 justify-end';
                 
                 let messageContent = '';
-                if (image) {
-                    messageContent += `<img src="${image}" class="max-w-xs rounded mb-2 block">`;
-                }
                 if (text) {
                     messageContent += `<div>${text}</div>`;
+                }
+                
+                if (image) {
+                    messageContent += `<img src="${image}" class="max-w-xs rounded mt-2 block">`;
+                }
+                
+                if (audio) {
+                    messageContent += `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2 max-w-xs">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <div class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-file-music-line text-blue-600 text-sm"></i>
+                                </div>
+                                <div class="text-sm font-medium text-gray-800">音频文件</div>
+                            </div>
+                            <audio controls class="w-full">
+                                <source src="${audio}" type="audio/webm">
+                                您的浏览器不支持音频播放
+                            </audio>
+                        </div>`;
+                }
+                
+                if (video) {
+                    messageContent += `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-video-line text-green-600 text-sm"></i>
+                                </div>
+                                <div class="text-sm font-medium text-gray-800">视频文件</div>
+                            </div>
+                            <video controls class="w-full max-w-xs rounded">
+                                <source src="${video}" type="video/mp4">
+                                您的浏览器不支持视频播放
+                            </video>
+                        </div>`;
                 }
                 
                 userMessageDiv.innerHTML = `
@@ -987,7 +1332,7 @@
             
             // 更新发送按钮状态
             function updateSendButton() {
-                if (messageInput.value.trim() || selectedImage) {
+                if (messageInput.value.trim() || selectedImage || selectedAudio || selectedVideo) {
                     sendMessageBtn.classList.remove('bg-gray-200', 'text-gray-500');
                     sendMessageBtn.classList.add('bg-primary', 'text-white');
                 } else {
@@ -1000,7 +1345,7 @@
             async function sendMessage() {
                 const messageText = messageInput.value.trim();
                 
-                if (!messageText && !selectedImage) return;
+                if (!messageText && !selectedImage && !selectedAudio && !selectedVideo) return;
                 
                 // 添加用户消息到聊天区域
                 const userMessageDiv = document.createElement('div');
@@ -1011,14 +1356,53 @@
                     messageContent += `<p>${messageText}</p>`;
                 }
                 
-                if (selectedImage) {
+                // 添加媒体内容
+                let hasMedia = false;
+                if (selectedImage || selectedAudio || selectedVideo) {
                     if (messageText) {
                         messageContent += '<div class="mt-2">';
                     }
+                    hasMedia = true;
+                }
+                
+                if (selectedImage) {
                     messageContent += `<img src="${selectedImage}" alt="用户上传图片" class="rounded w-full h-auto max-w-xs">`;
-                    if (messageText) {
-                        messageContent += '</div>';
-                    }
+                }
+                
+                if (selectedAudio) {
+                    messageContent += `
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-3 max-w-xs mt-2">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="ri-file-music-line text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-gray-800">音频文件</div>
+                                <audio controls class="w-full mt-1">
+                                    <source src="${selectedAudio}" type="audio/webm">
+                                    您的浏览器不支持音频播放
+                                </audio>
+                            </div>
+                        </div>`;
+                }
+                
+                if (selectedVideo) {
+                    messageContent += `
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
+                            <div class="flex items-center space-x-2 mb-2">
+                                <div class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="ri-video-line text-green-600 text-sm"></i>
+                                </div>
+                                <div class="text-sm font-medium text-gray-800">视频文件</div>
+                            </div>
+                            <video controls class="w-full max-w-xs rounded">
+                                <source src="${selectedVideo}" type="video/mp4">
+                                您的浏览器不支持视频播放
+                            </video>
+                        </div>`;
+                }
+                
+                if (hasMedia && messageText) {
+                    messageContent += '</div>';
                 }
                 
                 userMessageDiv.innerHTML = `
@@ -1033,17 +1417,22 @@
                 const userMessage = {
                     role: 'user',
                     text: messageText,
-                    image: selectedImage
+                    image: selectedImage,
+                    audio: selectedAudio,
+                    video: selectedVideo
                 };
                 conversationHistory.push(userMessage);
                 
                 // 清空输入框和预览
-                const currentImage = selectedImage;
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
                 selectedImage = null;
+                selectedAudio = null;
+                selectedVideo = null;
                 previewArea.classList.add('hidden');
                 imagePreview.classList.add('hidden');
+                audioPreview.classList.add('hidden');
+                videoPreview.classList.add('hidden');
                 
                 // 显示机器人正在输入的状态
                 const typingDiv = document.createElement('div');
@@ -1233,6 +1622,16 @@
             uploadImageBtn.addEventListener('click', function() {
                 imageFileInput.click();
             });
+
+            // 上传音频按钮点击事件
+            uploadAudioBtn.addEventListener('click', function() {
+                audioFileInput.click();
+            });
+
+            // 上传视频按钮点击事件
+            uploadVideoBtn.addEventListener('click', function() {
+                videoFileInput.click();
+            });
             
             // 图片文件选择事件
             imageFileInput.addEventListener('change', async function() {
@@ -1291,48 +1690,337 @@
             removeImageBtn.addEventListener('click', function() {
                 selectedImage = null;
                 imagePreview.classList.add('hidden');
-                if (!isRecording) {
+                if (!isRecording && !selectedAudio && !selectedVideo) {
                     previewArea.classList.add('hidden');
                 }
                 imageFileInput.value = '';
                 updateSendButton();
             });
-            
-            // 语音按钮点击事件
-            startVoiceBtn.addEventListener('click', function() {
-                if (!isRecording) {
-                    // 开始录音
-                    isRecording = true;
-                    previewArea.classList.remove('hidden');
-                    audioRecording.classList.remove('hidden');
+
+            // 音频文件选择事件
+            audioFileInput.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
                     
-                    // 模拟录音 - 实际应用中需要使用Web Audio API
-                    console.log('开始录音...');
+                    // 检查文件大小（10MB限制）
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`音频文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持10MB`);
+                        return;
+                    }
+                    
+                    // 检查文件类型
+                    const allowedTypes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/aac', 'audio/flac', 'audio/webm'];
+                    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|ogg|m4a|aac|flac|webm)$/i)) {
+                        alert('不支持的音频格式，请上传 MP3、WAV、OGG、M4A、AAC、FLAC 或 WebM 格式的音频');
+                        return;
+                    }
+                    
+                    // 显示上传进度
+                    uploadAudioBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
+                    uploadAudioBtn.disabled = true;
+                    
+                    try {
+                        // 使用FormData上传到后端
+                        const formData = new FormData();
+                        formData.append('audio', file);
+                        
+                        const response = await fetch('/api/upload/audio', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            selectedAudio = result.audio_data;
+                            audioFileName.textContent = file.name;
+                            audioFileSize.textContent = `${(file.size / 1024 / 1024).toFixed(1)} MB`;
+                            previewArea.classList.remove('hidden');
+                            audioPreview.classList.remove('hidden');
+                            updateSendButton();
+                        } else {
+                            alert('音频上传失败: ' + result.error);
+                        }
+                    } catch (error) {
+                        alert('音频上传失败: ' + error.message);
+                    } finally {
+                        // 恢复上传按钮
+                        uploadAudioBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-file-music-line"></i></div>';
+                        uploadAudioBtn.disabled = false;
+                    }
+                }
+            });
+
+            // 视频文件选择事件
+            videoFileInput.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    
+                    // 检查文件大小（50MB限制）
+                    if (file.size > 50 * 1024 * 1024) {
+                        alert(`视频文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持50MB`);
+                        return;
+                    }
+                    
+                    // 检查文件类型
+                    const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm', 'video/mkv'];
+                    if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp4|avi|mov|wmv|flv|webm|mkv)$/i)) {
+                        alert('不支持的视频格式，请上传 MP4、AVI、MOV、WMV、FLV、WebM 或 MKV 格式的视频');
+                        return;
+                    }
+                    
+                    // 显示上传进度
+                    uploadVideoBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
+                    uploadVideoBtn.disabled = true;
+                    
+                    try {
+                        // 使用FormData上传到后端
+                        const formData = new FormData();
+                        formData.append('video', file);
+                        
+                        const response = await fetch('/api/upload/video', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            selectedVideo = result.video_data;
+                            videoFileName.textContent = file.name;
+                            videoFileSize.textContent = `${(file.size / 1024 / 1024).toFixed(1)} MB`;
+                            previewArea.classList.remove('hidden');
+                            videoPreview.classList.remove('hidden');
+                            updateSendButton();
+                        } else {
+                            alert('视频上传失败: ' + result.error);
+                        }
+                    } catch (error) {
+                        alert('视频上传失败: ' + error.message);
+                    } finally {
+                        // 恢复上传按钮
+                        uploadVideoBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-video-line"></i></div>';
+                        uploadVideoBtn.disabled = false;
+                    }
+                }
+            });
+
+            // 移除音频预览
+            removeAudioBtn.addEventListener('click', function() {
+                selectedAudio = null;
+                audioPreview.classList.add('hidden');
+                if (!isRecording && !selectedImage && !selectedVideo) {
+                    previewArea.classList.add('hidden');
+                }
+                audioFileInput.value = '';
+                updateSendButton();
+            });
+
+            // 移除视频预览
+            removeVideoBtn.addEventListener('click', function() {
+                selectedVideo = null;
+                videoPreview.classList.add('hidden');
+                if (!isRecording && !selectedImage && !selectedAudio) {
+                    previewArea.classList.add('hidden');
+                }
+                videoFileInput.value = '';
+                updateSendButton();
+            });
+            
+                        // 语音按钮点击事件
+            startVoiceBtn.addEventListener('click', async function() {
+                if (!isRecording) {
+                    try {
+                        // 首先尝试使用浏览器语音识别API
+                        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                            startSpeechRecognition();
+                        } else {
+                            // 回退到录音模式
+                            startAudioRecording();
+                        }
+                    } catch (error) {
+                        alert('无法访问麦克风: ' + error.message);
+                        console.error('录音错误:', error);
+                    }
                 } else {
                     stopRecording();
                 }
             });
             
-            // 停止录音按钮点击事件
-            stopRecordingBtn.addEventListener('click', stopRecording);
-            
-            // 停止录音函数
-            function stopRecording() {
-                if (isRecording) {
+            // 语音识别功能
+            function startSpeechRecognition() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.lang = 'zh-CN'; // 中文
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+                
+                recognition.onstart = function() {
+                    isRecording = true;
+                    previewArea.classList.remove('hidden');
+                    audioRecording.classList.remove('hidden');
+                    console.log('开始语音识别...');
+                };
+                
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    console.log('语音识别结果:', transcript);
+                    
+                    // 直接将识别结果填入输入框
+                    messageInput.value = transcript;
+                    messageInput.focus();
+                    
+                    // 显示成功提示
+                    showSuccessMessage(`🎙️ 语音识别成功！识别文字：${transcript.substring(0, 20)}${transcript.length > 20 ? '...' : ''}`);
+                };
+                
+                recognition.onerror = function(event) {
+                    console.error('语音识别错误:', event.error);
+                    
+                    let errorMessage = '语音识别失败';
+                    switch(event.error) {
+                        case 'no-speech':
+                            errorMessage = '没有检测到语音，请重试';
+                            break;
+                        case 'audio-capture':
+                            errorMessage = '无法访问麦克风';
+                            break;
+                        case 'not-allowed':
+                            errorMessage = '麦克风权限被拒绝';
+                            break;
+                        case 'network':
+                            errorMessage = '网络错误，请检查网络连接';
+                            break;
+                        default:
+                            errorMessage = `语音识别失败: ${event.error}`;
+                    }
+                    
+                    showErrorMessage(errorMessage);
+                    
+                    // 回退到录音模式
+                    startAudioRecording();
+                };
+                
+                recognition.onend = function() {
                     isRecording = false;
                     audioRecording.classList.add('hidden');
-                    if (!selectedImage) {
+                    if (!selectedImage && !selectedAudio && !selectedVideo) {
+                        previewArea.classList.add('hidden');
+                    }
+                };
+                
+                recognition.start();
+            }
+            
+            // 录音功能（作为语音识别的备选方案）
+            function startAudioRecording() {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream);
+                    
+                    mediaRecorder.ondataavailable = function(event) {
+                        if (event.data.size > 0) {
+                            recordedChunks.push(event.data);
+                        }
+                    };
+                    
+                    mediaRecorder.onstop = async function() {
+                        const blob = new Blob(recordedChunks, { type: 'audio/webm' });
+                        const reader = new FileReader();
+                        
+                        reader.onload = async function() {
+                            const audioData = reader.result;
+                            
+                            try {
+                                const response = await fetch('/api/upload/record', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        audio_data: audioData,
+                                        transcribe: true,
+                                        language: 'zh'
+                                    })
+                                });
+                                
+                                const result = await response.json();
+                                
+                                if (result.success) {
+                                    selectedAudio = result.audio_data;
+                                    audioFileName.textContent = result.file_name;
+                                    audioFileSize.textContent = `${(result.file_size / 1024 / 1024).toFixed(2)} MB`;
+                                    audioPreview.classList.remove('hidden');
+                                    updateSendButton();
+                                    
+                                    // 处理语音转文字结果
+                                    if (result.transcription && result.transcription.text) {
+                                        const transcribedText = result.transcription.text.trim();
+                                        if (transcribedText) {
+                                            // 将转录的文字自动填入输入框
+                                            messageInput.value = transcribedText;
+                                            messageInput.focus();
+                                            
+                                            // 显示转录成功的提示
+                                            showSuccessMessage(`🎙️ 语音转文字成功！识别文字：${transcribedText.substring(0, 20)}${transcribedText.length > 20 ? '...' : ''}`);
+                                        } else {
+                                            messageInput.value = '请描述这段录音的内容';
+                                            messageInput.focus();
+                                        }
+                                    } else {
+                                        // 如果转录失败，给出提示
+                                        if (result.transcription_error) {
+                                            console.warn('语音转文字失败:', result.transcription_error);
+                                            showErrorMessage('语音转文字功能暂不可用，请手动描述录音内容');
+                                        }
+                                        
+                                        if (!messageInput.value.trim()) {
+                                            messageInput.value = '请描述这段录音的内容';
+                                            messageInput.focus();
+                                        }
+                                    }
+                                } else {
+                                    alert('录音保存失败: ' + result.error);
+                                }
+                            } catch (error) {
+                                alert('录音保存失败: ' + error.message);
+                            }
+                        };
+                        
+                        reader.readAsDataURL(blob);
+                        
+                        // 停止所有音频轨道
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+                    
+                    isRecording = true;
+                    previewArea.classList.remove('hidden');
+                    audioRecording.classList.remove('hidden');
+                    
+                    mediaRecorder.start();
+                    console.log('开始录音（备选模式）...');
+                    
+                }).catch(function(error) {
+                    alert('无法访问麦克风: ' + error.message);
+                    console.error('录音错误:', error);
+                });
+            }
+            
+            // 停止录音按钮点击事件
+            stopRecordingBtn.addEventListener('click', stopRecording);
+    
+            // 停止录音函数
+            function stopRecording() {
+                if (isRecording && mediaRecorder) {
+                    isRecording = false;
+                    audioRecording.classList.add('hidden');
+                    if (!selectedImage && !selectedAudio && !selectedVideo) {
                         previewArea.classList.add('hidden');
                     }
                     
-                    // 模拟语音转文字
-                    setTimeout(() => {
-                        messageInput.value = '这是通过语音输入的文字';
-                        messageInput.style.height = 'auto';
-                        messageInput.style.height = (messageInput.scrollHeight) + 'px';
-                        updateSendButton();
-                    }, 500);
-                    
+                    mediaRecorder.stop();
                     console.log('停止录音...');
                 }
             }
@@ -1344,11 +2032,26 @@
                     currentSessionId = null;
                     clearChatDisplay();
                     
+                    // 清空所有媒体选择
+                    selectedImage = null;
+                    selectedAudio = null;
+                    selectedVideo = null;
+                    previewArea.classList.add('hidden');
+                    imagePreview.classList.add('hidden');
+                    audioPreview.classList.add('hidden');
+                    videoPreview.classList.add('hidden');
+                    
+                    // 清空文件输入
+                    imageFileInput.value = '';
+                    audioFileInput.value = '';
+                    videoFileInput.value = '';
+                    
                     // 更新会话列表中的选中状态
                     document.querySelectorAll('.session-item').forEach(item => {
                         item.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
                     });
                     
+                    updateSendButton();
                     console.log('对话历史已清空');
                 }
             });
@@ -1389,6 +2092,20 @@
                         document.body.removeChild(successDiv);
                     }
                 }, 3000);
+            }
+            
+            // 显示错误提示
+            function showErrorMessage(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                errorDiv.innerHTML = `<i class="ri-error-warning-line mr-2"></i>${message}`;
+                document.body.appendChild(errorDiv);
+                
+                setTimeout(() => {
+                    if (document.body.contains(errorDiv)) {
+                        document.body.removeChild(errorDiv);
+                    }
+                }, 5000);
             }
             
             // ===== System Prompt 相关事件 =====
@@ -1484,6 +2201,248 @@
             // 初始化
             messageInput.focus();
             updateSendButton();
+
+            // 添加联网搜索功能
+            async function performWebSearch(query) {
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message';
+                loadingDiv.innerHTML = `
+                    <div class="search-indicator">
+                        <span>🔍</span>
+                        <span>正在搜索: ${query}</span>
+                    </div>
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
+                chatContainer.appendChild(loadingDiv);
+                scrollToBottom();
+                
+                try {
+                    const response = await fetch('/api/search/web', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            query: query,
+                            count: 5,
+                            include_images: true,
+                            format_for_ai: true
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    chatContainer.removeChild(loadingDiv);
+                    
+                    if (data.success) {
+                        const searchDiv = document.createElement('div');
+                        searchDiv.className = 'message bot-message';
+                        
+                        let searchHTML = `
+                            <div class="search-indicator">
+                                <span>🌐</span>
+                                <span>搜索结果 (${data.search_provider})</span>
+                            </div>
+                            <div class="search-results">
+                        `;
+                        
+                        data.results.forEach((result, index) => {
+                            searchHTML += `
+                                <div class="search-result-item">
+                                    <div class="search-result-title">${result.title}</div>
+                                    <a href="${result.url}" target="_blank" class="search-result-url">${result.url}</a>
+                                    <div class="search-result-snippet">${result.snippet || result.summary}</div>
+                                </div>
+                            `;
+                        });
+                        
+                        if (data.images && data.images.length > 0) {
+                            searchHTML += `
+                                <div style="margin-top: 15px;">
+                                    <strong>🖼️ 相关图片:</strong>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                            `;
+                            data.images.slice(0, 3).forEach(img => {
+                                searchHTML += `
+                                    <img src="${img.thumbnailUrl}" 
+                                         alt="${img.name}" 
+                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; cursor: pointer;"
+                                         onclick="window.open('${img.contentUrl}', '_blank')">
+                                `;
+                            });
+                            searchHTML += `</div></div>`;
+                        }
+                        
+                        searchHTML += `</div>`;
+                        searchDiv.innerHTML = searchHTML;
+                        chatContainer.appendChild(searchDiv);
+                        scrollToBottom();
+                        
+                        return data;
+                    } else {
+                        throw new Error(data.error || '搜索失败');
+                    }
+                } catch (error) {
+                    chatContainer.removeChild(loadingDiv);
+                    showErrorMessage('搜索失败: ' + error.message);
+                    return null;
+                }
+            }
+
+            // 格式化消息文本
+            function formatMessage(text) {
+                // 简单的格式化，支持换行
+                return text.replace(/\n/g, '<br>');
+            }
+
+            // 添加消息到聊天容器
+            function addMessage(text, role) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = role === 'user' ? 'flex justify-end mb-4' : 'flex mb-4';
+                
+                const bubbleClass = role === 'user' ? 'user-message' : 'bot-message';
+                messageDiv.innerHTML = `
+                    <div class="message-bubble ${bubbleClass} p-3 text-gray-800">
+                        ${text}
+                    </div>
+                `;
+                
+                chatContainer.appendChild(messageDiv);
+                scrollToBottom();
+            }
+
+            // 带搜索的智能对话
+            async function chatWithSearch(message) {
+                const enableSearch = document.getElementById('enableSearch').checked;
+                const model = document.getElementById('modelSelect').value;
+                
+                if (!enableSearch) {
+                    return await sendMessage(message);
+                }
+                
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message bot-message';
+                loadingDiv.innerHTML = `
+                    <div class="search-indicator">
+                        <span>🤖</span>
+                        <span>正在思考并搜索...</span>
+                    </div>
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                `;
+                chatContainer.appendChild(loadingDiv);
+                scrollToBottom();
+                
+                try {
+                    const response = await fetch('/api/chat/search', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            model: model,
+                            auto_search: true,
+                            session_id: currentSessionId || 'default'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    chatContainer.removeChild(loadingDiv);
+                    
+                    if (data.success) {
+                        const responseDiv = document.createElement('div');
+                        responseDiv.className = 'message bot-message';
+                        
+                        let responseHTML = '';
+                        
+                        if (data.search_performed && data.search_results && data.search_results.success) {
+                            responseHTML += `
+                                <div class="search-indicator">
+                                    <span>🔍</span>
+                                    <span>已搜索最新信息</span>
+                                </div>
+                            `;
+                        }
+                        
+                        responseHTML += `<div class="message-content">${formatMessage(data.response)}</div>`;
+                        
+                        if (data.model_used) {
+                            responseHTML += `<div class="model-indicator">模型: ${data.model_used}</div>`;
+                        }
+                        
+                        responseDiv.innerHTML = responseHTML;
+                        chatContainer.appendChild(responseDiv);
+                        scrollToBottom();
+                        
+                        return data;
+                    } else {
+                        throw new Error(data.error || '对话失败');
+                    }
+                } catch (error) {
+                    chatContainer.removeChild(loadingDiv);
+                    showErrorMessage('智能对话失败: ' + error.message);
+                    return null;
+                }
+            }
+
+            // 事件监听器
+            sendMessageBtn.addEventListener('click', () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    addMessage(message, 'user');
+                    messageInput.value = '';
+                    // 使用带搜索的智能对话
+                    chatWithSearch(message);
+                    updateSendButton();
+                }
+            });
+
+            // 独立网络搜索按钮事件
+            webSearchBtn.addEventListener('click', () => {
+                const query = messageInput.value.trim();
+                if (query) {
+                    addMessage(query, 'user');
+                    messageInput.value = '';
+                    // 执行独立搜索
+                    performWebSearch(query);
+                    updateSendButton();
+                } else {
+                    showErrorMessage('请输入搜索关键词');
+                }
+            });
+
+
+
+            // 联网搜索开关状态管理
+            const enableSearchCheckbox = document.getElementById('enableSearch');
+            const searchStatusIcon = document.querySelector('.search-status-icon');
+            const searchControls = document.querySelector('.search-controls-inline');
+
+            function updateSearchStatus() {
+                if (enableSearchCheckbox.checked) {
+                    searchStatusIcon.textContent = '🌐';
+                    searchStatusIcon.title = '智能联网已开启';
+                    searchControls.style.borderColor = 'rgba(102, 126, 234, 0.3)';
+                    searchControls.style.background = 'rgba(102, 126, 234, 0.1)';
+                } else {
+                    searchStatusIcon.textContent = '🔌';
+                    searchStatusIcon.title = '离线模式';
+                    searchControls.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                    searchControls.style.background = 'rgba(0, 0, 0, 0.05)';
+                }
+            }
+
+            enableSearchCheckbox.addEventListener('change', updateSearchStatus);
+            
+            // 初始化状态
+            updateSearchStatus();
         });
     </script>
 
