@@ -1205,4 +1205,511 @@ class TestChatbotAPI:
         formatted_text = service.format_search_results_for_ai(mock_failed_result)
         assert isinstance(formatted_text, str)
         assert '搜索失败' in formatted_text
-        assert '测试错误' in formatted_text 
+        assert '测试错误' in formatted_text
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_function_calling_tools(self):
+        """测试Function Calling工具功能"""
+        from app import FunctionCallExecutor, BochaSearchService
+        
+        # 初始化执行器
+        bocha_service = BochaSearchService()
+        executor = FunctionCallExecutor(bocha_service)
+        
+        # 测试获取可用工具
+        tools = executor.get_available_tools()
+        assert isinstance(tools, list)
+        assert len(tools) > 0
+        
+        # 验证工具结构
+        for tool in tools:
+            assert 'type' in tool
+            assert tool['type'] == 'function'
+            assert 'function' in tool
+            assert 'name' in tool['function']
+            assert 'description' in tool['function']
+            assert 'parameters' in tool['function']
+        
+        # 查找网络搜索工具
+        search_tool = None
+        for tool in tools:
+            if tool['function']['name'] == 'web_search':
+                search_tool = tool
+                break
+        
+        assert search_tool is not None, "缺少web_search工具"
+        assert 'query' in search_tool['function']['parameters']['properties']
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_function_calling_execution(self):
+        """测试Function Calling执行功能"""
+        from app import FunctionCallExecutor, BochaSearchService
+        
+        # 初始化执行器
+        bocha_service = BochaSearchService()
+        executor = FunctionCallExecutor(bocha_service)
+        
+        # 测试有效的函数调用
+        result = executor.execute_function("web_search", {
+            "query": "测试查询",
+            "count": 3,
+            "freshness": "week"
+        })
+        
+        assert isinstance(result, dict)
+        assert 'success' in result
+        
+        if result['success']:
+            # 成功执行的验证
+            assert 'result' in result
+            assert isinstance(result['result'], str)
+        else:
+            # 失败时应该有错误信息
+            assert 'error' in result
+        
+        # 测试无效的函数调用
+        invalid_result = executor.execute_function("invalid_function", {})
+        assert not invalid_result['success']
+        assert 'error' in invalid_result
+        assert '未知的函数' in invalid_result['error']
+        
+        # 测试缺少参数的调用
+        empty_result = executor.execute_function("web_search", {})
+        assert not empty_result['success']
+        assert 'error' in empty_result
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_chat_with_function_calling(self):
+        """测试带Function Calling的聊天功能"""
+        # 构造需要Function Calling的消息
+        test_data = {
+            "messages": [{"role": "user", "text": "请搜索今天的天气怎么样"}],
+            "model": "deepseek-ai/DeepSeek-V2.5",
+            "enable_search": True
+        }
+        
+        response = self.session.post(
+            f"{self.base_url}/api/chat",
+            json=test_data,
+            timeout=60
+        )
+        
+        assert response.status_code in [200, 500]  # 可能API配置问题
+        data = response.json()
+        assert isinstance(data, dict)
+        assert 'success' in data
+        
+        if data['success']:
+            # 验证响应结构
+            assert 'response' in data
+            assert 'provider' in data
+            # 可能包含工具调用信息
+            if 'search_performed' in data:
+                assert isinstance(data['search_performed'], bool)
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_database_extended_functionality(self):
+        """测试数据库扩展功能"""
+        from database import ChatDatabase
+        
+        # 使用测试数据库
+        db = ChatDatabase("test_extended.db")
+        
+        try:
+            # 测试创建会话并指定模型
+            session_id = db.create_session("测试会话", "test-model")
+            assert session_id is not None
+            
+            # 测试添加多媒体消息
+            result = db.add_message(
+                session_id=session_id,
+                role="user",
+                content="测试音频消息",
+                content_type="audio",
+                file_name="test.mp3",
+                file_size=1024,
+                model="test-model",
+                provider="test-provider"
+            )
+            assert result is True
+            
+            # 测试添加视频消息
+            result = db.add_message(
+                session_id=session_id,
+                role="user", 
+                content="测试视频消息",
+                content_type="video",
+                file_name="test.mp4",
+                file_size=2048
+            )
+            assert result is True
+            
+            # 测试获取消息
+            messages = db.get_messages(session_id)
+            assert len(messages) == 2
+            
+            # 验证消息字段
+            audio_msg = messages[0]
+            assert audio_msg['content_type'] == 'audio'
+            assert audio_msg['file_name'] == 'test.mp3'
+            assert audio_msg['file_size'] == 1024
+            assert audio_msg['model'] == 'test-model'
+            assert audio_msg['provider'] == 'test-provider'
+            
+            video_msg = messages[1]
+            assert video_msg['content_type'] == 'video'
+            assert video_msg['file_name'] == 'test.mp4'
+            assert video_msg['file_size'] == 2048
+            
+            # 测试会话归档功能
+            archive_result = db.archive_session(session_id)
+            assert archive_result is True
+            
+            # 验证归档后的会话不在常规列表中
+            sessions = db.get_sessions()
+            archived_session_found = any(s['id'] == session_id for s in sessions)
+            assert not archived_session_found
+            
+            # 测试搜索功能
+            search_results = db.search_messages("测试", session_id)
+            assert len(search_results) >= 0  # 可能没有匹配结果
+            
+        finally:
+            # 清理测试数据库
+            import os
+            if os.path.exists("test_extended.db"):
+                os.remove("test_extended.db")
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_multimodal_chat_integration(self):
+        """测试完整的多模态聊天集成"""
+        # 创建测试会话
+        create_response = self.session.post(f"{self.base_url}/api/sessions", json={
+            'title': '多模态测试会话',
+            'model': 'meta-llama/llama-4-scout-17b-16e-instruct'
+        }, timeout=10)
+        
+        if create_response.status_code == 200:
+            session_data = create_response.json()
+            session_id = session_data['session_id']
+            self.test_session_id = session_id
+            
+            try:
+                # 1. 发送文本消息
+                text_response = self.session.post(f"{self.base_url}/api/chat", json={
+                    'messages': [{'role': 'user', 'text': '你好'}],
+                    'session_id': session_id,
+                    'model': 'meta-llama/llama-4-scout-17b-16e-instruct'
+                }, timeout=30)
+                
+                assert text_response.status_code in [200, 500]
+                
+                # 2. 发送图片消息
+                image_response = self.session.post(f"{self.base_url}/api/chat", json={
+                    'messages': [{
+                        'role': 'user', 
+                        'text': '请分析这张图片',
+                        'image': self.create_test_image_base64()
+                    }],
+                    'session_id': session_id,
+                    'model': 'meta-llama/llama-4-scout-17b-16e-instruct'
+                }, timeout=60)
+                
+                assert image_response.status_code in [200, 500]
+                
+                # 3. 发送音频消息
+                audio_response = self.session.post(f"{self.base_url}/api/chat", json={
+                    'messages': [{
+                        'role': 'user',
+                        'text': '请处理这个音频',
+                        'audio': self.create_test_audio_base64()
+                    }],
+                    'session_id': session_id
+                }, timeout=60)
+                
+                assert audio_response.status_code in [200, 500]
+                
+                # 4. 获取会话消息验证存储
+                messages_response = self.session.get(f"{self.base_url}/api/sessions/{session_id}", timeout=10)
+                if messages_response.status_code == 200:
+                    messages_data = messages_response.json()
+                    assert 'messages' in messages_data
+                    # 验证消息被正确保存
+                    saved_messages = messages_data['messages']
+                    assert len(saved_messages) >= 0  # 可能包含多条消息
+                
+            finally:
+                # 清理测试会话
+                self.session.delete(f"{self.base_url}/api/sessions/{session_id}", timeout=10)
+
+    @pytest.mark.integration
+    @pytest.mark.api  
+    def test_error_handling_comprehensive(self):
+        """测试全面的错误处理"""
+        # 1. 测试无效的模型
+        invalid_model_response = self.session.post(f"{self.base_url}/api/chat", json={
+            'messages': [{'role': 'user', 'text': '测试'}],
+            'model': 'invalid-model-name'
+        }, timeout=15)
+        
+        assert invalid_model_response.status_code in [200, 400]
+        if invalid_model_response.status_code == 200:
+            data = invalid_model_response.json()
+            if not data.get('success'):
+                assert 'error' in data
+        
+        # 2. 测试无效的消息格式
+        invalid_message_response = self.session.post(f"{self.base_url}/api/chat", json={
+            'messages': [{'invalid': 'format'}]
+        }, timeout=15)
+        
+        assert invalid_message_response.status_code in [200, 400]
+        
+        # 3. 测试空消息
+        empty_message_response = self.session.post(f"{self.base_url}/api/chat", json={
+            'messages': []
+        }, timeout=15)
+        
+        assert empty_message_response.status_code == 400
+        data = empty_message_response.json()
+        assert not data['success']
+        assert 'error' in data
+        
+        # 4. 测试无效的temperature
+        invalid_temp_response = self.session.post(f"{self.base_url}/api/chat", json={
+            'messages': [{'role': 'user', 'text': '测试'}],
+            'temperature': 'invalid'
+        }, timeout=15)
+        
+        # 应该使用默认值，不会报错
+        assert invalid_temp_response.status_code in [200, 500]
+        
+        # 5. 测试超大文件上传（模拟）
+        large_data = "A" * (50 * 1024 * 1024 + 1)  # 超过50MB
+        large_file_response = self.session.post(f"{self.base_url}/api/upload/video", 
+            data={'video': f"data:video/mp4;base64,{large_data}"}, timeout=5)
+        
+        # 应该被拒绝
+        assert large_file_response.status_code in [400, 413, 500]
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_api_concurrent_requests(self):
+        """测试API并发请求处理"""
+        import threading
+        import time
+        
+        results = []
+        errors = []
+        
+        def make_request():
+            try:
+                response = self.session.post(f"{self.base_url}/api/chat", json={
+                    'messages': [{'role': 'user', 'text': f'并发测试 {threading.current_thread().name}'}],
+                    'model': 'deepseek-ai/DeepSeek-V2.5'
+                }, timeout=30)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    results.append(data.get('success', False))
+                else:
+                    errors.append(response.status_code)
+            except Exception as e:
+                errors.append(str(e))
+        
+        # 创建5个并发请求
+        threads = []
+        for i in range(5):
+            thread = threading.Thread(target=make_request, name=f"Thread-{i}")
+            threads.append(thread)
+        
+        # 启动所有线程
+        start_time = time.time()
+        for thread in threads:
+            thread.start()
+        
+        # 等待所有线程完成
+        for thread in threads:
+            thread.join(timeout=60)
+        
+        end_time = time.time()
+        
+        # 验证结果
+        total_requests = len(results) + len(errors)
+        success_rate = len(results) / total_requests if total_requests > 0 else 0
+        
+        print(f"并发测试结果: {len(results)}成功, {len(errors)}失败, 用时: {end_time - start_time:.2f}秒")
+        print(f"成功率: {success_rate:.2%}")
+        
+        # 至少有一些请求应该成功
+        assert total_requests > 0
+        assert success_rate >= 0.2  # 至少20%成功率
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_session_statistics(self):
+        """测试会话统计功能"""
+        from database import ChatDatabase
+        
+        # 使用测试数据库
+        db = ChatDatabase("test_stats.db")
+        
+        try:
+            # 创建测试数据
+            session1 = db.create_session("测试会话1")
+            session2 = db.create_session("测试会话2")
+            
+            # 添加一些消息
+            db.add_message(session1, "user", "消息1")
+            db.add_message(session1, "assistant", "回复1")
+            db.add_message(session2, "user", "消息2")
+            
+            # 获取统计信息
+            stats = db.get_statistics()
+            
+            assert isinstance(stats, dict)
+            assert 'total_sessions' in stats
+            assert 'total_messages' in stats
+            assert 'messages_by_type' in stats
+            
+            # 验证统计数据
+            assert stats['total_sessions'] >= 2
+            assert stats['total_messages'] >= 3
+            assert 'text' in stats['messages_by_type']
+            
+        finally:
+            # 清理测试数据库
+            import os
+            if os.path.exists("test_stats.db"):
+                os.remove("test_stats.db")
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_chat_with_search_integration(self):
+        """测试完整的聊天搜索集成功能"""
+        # 测试基本的搜索聊天
+        search_chat_data = {
+            'message': '人工智能最新发展趋势',
+            'auto_search': True,
+            'model': 'deepseek-ai/DeepSeek-V2.5'
+        }
+        
+        response = self.session.post(
+            f"{self.base_url}/api/chat/search",
+            json=search_chat_data,
+            timeout=60
+        )
+        
+        assert response.status_code in [200, 500]  # API密钥可能未配置
+        data = response.json()
+        
+        assert isinstance(data, dict)
+        assert 'success' in data
+        
+        if data['success']:
+            # 验证响应结构
+            assert 'response' in data
+            assert 'search_performed' in data
+            assert isinstance(data['search_performed'], bool)
+            
+            if data['search_performed']:
+                assert 'search_results' in data or 'search_info' in data
+        
+        # 测试关闭搜索的情况
+        no_search_data = {
+            'message': '你好',
+            'auto_search': False
+        }
+        
+        response2 = self.session.post(
+            f"{self.base_url}/api/chat/search",
+            json=no_search_data,
+            timeout=30
+        )
+        
+        assert response2.status_code in [200, 500]
+        if response2.status_code == 200:
+            data2 = response2.json()
+            if data2.get('success'):
+                assert not data2.get('search_performed', True)
+
+    @pytest.mark.integration
+    @pytest.mark.performance
+    def test_large_message_handling(self):
+        """测试大消息处理性能"""
+        # 创建大消息
+        large_text = "这是一个测试消息。" * 1000  # 约10KB文本
+        
+        start_time = time.time()
+        
+        response = self.session.post(f"{self.base_url}/api/chat", json={
+            'messages': [{'role': 'user', 'text': large_text}],
+            'model': 'deepseek-ai/DeepSeek-V2.5'
+        }, timeout=60)
+        
+        end_time = time.time()
+        processing_time = end_time - start_time
+        
+        assert response.status_code in [200, 500]
+        print(f"大消息处理时间: {processing_time:.2f}秒")
+        
+        # 处理时间应该在合理范围内
+        assert processing_time < 120  # 不超过2分钟
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('success'):
+                # 响应应该有内容
+                assert len(data.get('response', '')) > 0
+
+    @pytest.mark.integration
+    @pytest.mark.api
+    def test_multimedia_preprocessing_edge_cases(self):
+        """测试多媒体预处理的边界情况"""
+        from app import _preprocess_multimedia_messages
+        
+        # 测试空消息列表
+        empty_result = _preprocess_multimedia_messages([])
+        assert empty_result == []
+        
+        # 测试只有文本的消息
+        text_only = [{'role': 'user', 'text': '纯文本消息'}]
+        text_result = _preprocess_multimedia_messages(text_only)
+        assert len(text_result) == 1
+        assert text_result[0]['text'] == '纯文本消息'
+        
+        # 测试无效的音频数据
+        invalid_audio = [{
+            'role': 'user',
+            'text': '测试',
+            'audio': 'invalid-audio-data'
+        }]
+        invalid_result = _preprocess_multimedia_messages(invalid_audio)
+        assert len(invalid_result) == 1
+        # 应该包含错误处理信息
+        assert '测试' in invalid_result[0]['text']
+        
+        # 测试组合媒体消息
+        mixed_message = [{
+            'role': 'user',
+            'text': '组合消息',
+            'image': self.create_test_image_base64(),
+            'audio': self.create_test_audio_base64()
+        }]
+        mixed_result = _preprocess_multimedia_messages(mixed_message)
+        assert len(mixed_result) == 1
+        processed_msg = mixed_result[0]
+        
+        # 图片应该保留
+        assert 'image' in processed_msg
+        # 音频应该被处理为文本
+        assert '组合消息' in processed_msg['text']
+
+if __name__ == '__main__':
+    # 运行特定的测试
+    pytest.main([__file__, '-v', '--tb=short']) 

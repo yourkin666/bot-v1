@@ -2320,66 +2320,14 @@ IMPORTANT: The user has provided search results. You MUST use them to answer. Do
             'error': f'对话失败: {str(e)}'
         }), 500
 
-def test_api_connections():
-    """测试API连接状态"""
-    print("🔍 正在测试API连接...")
-    
-    # 测试SiliconFlow API
-    try:
-        response = requests.get("https://api.siliconflow.cn", timeout=10)
-        print("✅ SiliconFlow API连接正常")
-    except requests.exceptions.Timeout:
-        print("⚠️  SiliconFlow API连接超时，可能网络较慢")
-    except requests.exceptions.ConnectionError:
-        print("❌ SiliconFlow API连接失败，请检查网络")
-    except Exception as e:
-        print(f"⚠️  SiliconFlow API测试异常: {e}")
-    
-    # 测试Groq API
-    try:
-        response = requests.get("https://api.groq.com", timeout=10)
-        print("✅ Groq API连接正常")
-    except requests.exceptions.Timeout:
-        print("⚠️  Groq API连接超时，可能网络较慢")
-    except requests.exceptions.ConnectionError:
-        print("❌ Groq API连接失败，请检查网络")
-    except Exception as e:
-        print(f"⚠️  Groq API测试异常: {e}")
-    
-    # 测试博查API
-    try:
-        response = requests.get("https://api.bochaai.com", timeout=10)
-        print("✅ 博查AI API连接正常")
-    except requests.exceptions.Timeout:
-        print("⚠️  博查AI API连接超时，可能网络较慢")
-    except requests.exceptions.ConnectionError:
-        print("❌ 博查AI API连接失败，请检查网络")
-    except Exception as e:
-        print(f"⚠️  博查AI API测试异常: {e}")
-    
-    print("==================================================")
-
 if __name__ == '__main__':
-    print("🚀 启动多模态聊天机器人 Web 应用...")
-    print("📱 前端地址: http://localhost:5000")
-    print("🔗 API 地址: http://localhost:5000/api")
-    print("💡 功能支持:")
-    print(f"   📝 文本对话: {'✅' if SILICONFLOW_API_KEY else '❌'}")
-    print(f"   🖼️  图片分析: {'✅' if GROQ_API_KEY else '❌'}")
-    print(f"   🌐 联网搜索: ✅")
-    print("=" * 50)
-    
-    # 测试API连接
-    test_api_connections()
+    print("🚀 启动聊天机器人...")
+    print("📱 访问地址: http://localhost:5000")
     
     try:
         app.run(debug=True, host='0.0.0.0', port=5000)
     except OSError as e:
         if "Address already in use" in str(e):
-            print("❌ 端口5000已被占用")
-            print("💡 解决方案:")
-            print("   1. 关闭占用5000端口的程序")
-            print("   2. 或者在macOS系统偏好设置中关闭AirPlay接收器")
-            print("   3. 或者使用命令: lsof -ti:5000 | xargs kill -9")
+            print("❌ 端口5000已被占用，请关闭占用端口的程序或使用: lsof -ti:5000 | xargs kill -9")
         else:
             print(f"❌ 启动失败: {e}") 
