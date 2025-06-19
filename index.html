@@ -9,6 +9,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    
+    <!-- Markdown渲染相关 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-shell.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-yaml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-xml.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markdown.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+    
+    <!-- 数学公式支持 -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -198,6 +222,286 @@
         .controls {
             display: flex;
             flex-wrap: wrap;
+        
+        /* Markdown 渲染样式 */
+        .markdown-content {
+            line-height: 1.6;
+        }
+        
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3,
+        .markdown-content h4,
+        .markdown-content h5,
+        .markdown-content h6 {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .markdown-content h1 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.375rem;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.25rem;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.25rem;
+        }
+        
+        .markdown-content h4 {
+            font-size: 1.125rem;
+        }
+        
+        .markdown-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .markdown-content ul,
+        .markdown-content ol {
+            margin-bottom: 1rem;
+            padding-left: 1.5rem;
+        }
+        
+        .markdown-content ul {
+            list-style-type: disc;
+        }
+        
+        .markdown-content ol {
+            list-style-type: decimal;
+        }
+        
+        .markdown-content li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .markdown-content blockquote {
+            border-left: 4px solid #e5e7eb;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #6b7280;
+        }
+        
+        .markdown-content code {
+            background-color: #f3f4f6;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+        }
+        
+        .markdown-content pre {
+            background-color: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid #e9ecef;
+        }
+        
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+        
+        .markdown-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.875rem;
+        }
+        
+        .markdown-content table th,
+        .markdown-content table td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 0.75rem;
+            text-align: left;
+        }
+        
+        .markdown-content table th {
+            background-color: #f9fafb;
+            font-weight: bold;
+        }
+        
+        .markdown-content table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .markdown-content a {
+            color: #1e88e5;
+            text-decoration: underline;
+        }
+        
+        .markdown-content a:hover {
+            color: #1565c0;
+        }
+        
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid #e5e7eb;
+            margin: 1.5rem 0;
+        }
+        
+        /* 代码高亮样式增强 */
+        .markdown-content .token.comment,
+        .markdown-content .token.prolog,
+        .markdown-content .token.doctype,
+        .markdown-content .token.cdata {
+            color: #708090;
+        }
+        
+        .markdown-content .token.punctuation {
+            color: #999;
+        }
+        
+        .markdown-content .token.property,
+        .markdown-content .token.tag,
+        .markdown-content .token.boolean,
+        .markdown-content .token.number,
+        .markdown-content .token.constant,
+        .markdown-content .token.symbol,
+        .markdown-content .token.deleted {
+            color: #905;
+        }
+        
+        .markdown-content .token.selector,
+        .markdown-content .token.attr-name,
+        .markdown-content .token.string,
+        .markdown-content .token.char,
+        .markdown-content .token.builtin,
+        .markdown-content .token.inserted {
+            color: #690;
+        }
+        
+        .markdown-content .token.operator,
+        .markdown-content .token.entity,
+        .markdown-content .token.url,
+        .markdown-content .language-css .token.string,
+        .markdown-content .style .token.string {
+            color: #9a6e3a;
+        }
+        
+        .markdown-content .token.atrule,
+        .markdown-content .token.attr-value,
+        .markdown-content .token.keyword {
+            color: #07a;
+        }
+        
+        .markdown-content .token.function,
+        .markdown-content .token.class-name {
+            color: #dd4a68;
+        }
+        
+        /* 数学公式样式优化 */
+        .markdown-content .MathJax {
+            font-size: 1.1em !important;
+            outline: none;
+        }
+        
+        .markdown-content .MathJax_Display {
+            margin: 1rem 0 !important;
+            text-align: center;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        
+        .markdown-content .MathJax_Preview {
+            color: #888;
+            font-style: italic;
+        }
+        
+        /* SVG渲染的数学公式样式 */
+        .markdown-content mjx-container {
+            display: inline-block;
+            margin: 0.2em 0;
+        }
+        
+        .markdown-content mjx-container[display="block"] {
+            display: block;
+            text-align: center;
+            margin: 1em 0;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        
+        .markdown-content mjx-math {
+            line-height: 1.2;
+        }
+        
+        /* 处理长公式的滚动 */
+        .markdown-content mjx-container[display="block"] mjx-math {
+            min-width: min-content;
+        }
+        
+        /* 行内数学公式的基线对齐 */
+        .markdown-content mjx-container:not([display="block"]) {
+            vertical-align: baseline;
+        }
+        
+        /* 数学公式的错误显示 */
+        .markdown-content .MathJax_Error {
+            color: #cc0000 !important;
+            background-color: #ffeeee !important;
+            border: 1px solid #cc0000;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        /* 数学公式显示容器 */
+        .markdown-content .math-display-container {
+            text-align: center;
+            margin: 1.5em 0;
+            padding: 0.5em;
+            overflow-x: auto;
+            overflow-y: visible;
+            border-radius: 8px;
+            background-color: #fafafa;
+            border: 1px solid #e1e5e9;
+        }
+        
+        /* 数学公式错误提示 */
+        .markdown-content .math-error {
+            display: inline-block;
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 2px;
+        }
+        
+        /* 响应式数学公式 */
+        @media (max-width: 768px) {
+            .markdown-content .math-display-container {
+                font-size: 0.9em;
+                padding: 0.3em;
+                margin: 1em 0;
+            }
+            
+            .markdown-content mjx-container {
+                font-size: 0.9em !important;
+            }
+        }
+        
+        .controls {
             gap: 15px;
             align-items: center;
             margin-bottom: 20px;
@@ -726,6 +1030,234 @@
     </div>
 
     <script id="chatFunctionality">
+        // 配置MathJax
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics']},
+                processEscapes: true,
+                processEnvironments: true,
+                tags: 'ams',
+                processRefs: true,
+                macros: {
+                    // 添加一些常用的数学宏
+                    RR: "{\\mathbb{R}}",
+                    CC: "{\\mathbb{C}}",
+                    NN: "{\\mathbb{N}}",
+                    ZZ: "{\\mathbb{Z}}",
+                    QQ: "{\\mathbb{Q}}",
+                    vec: ["\\mathbf{#1}", 1],
+                    norm: ["\\left\\|#1\\right\\|", 1]
+                }
+            },
+            svg: {
+                fontCache: 'global',
+                scale: 1.1,
+                minScale: 0.8,
+                mtextInheritFont: true
+            },
+            chtml: {
+                scale: 1.1,
+                minScale: 0.8,
+                mtextInheritFont: true
+            },
+            options: {
+                processHtmlClass: 'markdown-content',
+                ignoreHtmlClass: 'tex2jax_ignore',
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+                renderActions: {
+                    addMenu: [0, '', '']
+                }
+            },
+            loader: {
+                load: ['[tex]/ams', '[tex]/color', '[tex]/newcommand', '[tex]/autoload']
+            },
+            startup: {
+                pageReady: () => {
+                    console.log('MathJax页面准备就绪');
+                    return MathJax.startup.defaultPageReady().then(() => {
+                        console.log('MathJax初始化完成');
+                    });
+                },
+                ready: () => {
+                    MathJax.startup.defaultReady();
+                    console.log('MathJax已准备就绪');
+                }
+            }
+        };
+        
+        // 配置Marked.js
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            highlight: function(code, lang) {
+                if (Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                } else {
+                    return code;
+                }
+            }
+        });
+        
+        // Markdown渲染函数
+        function renderMarkdown(text) {
+            console.log('渲染Markdown文本:', text.substring(0, 100) + '...');
+            
+            // 预处理：处理数学公式避免被markdown解析
+            let processedText = text;
+            
+            // 先保护数学公式
+            const mathBlocks = [];
+            let mathCounter = 0;
+            
+            // 保护块级数学公式 $$...$$（必须先于行内公式处理）
+            processedText = processedText.replace(/\$\$([\s\S]*?)\$\$/g, (match, content) => {
+                const placeholder = `___MATH_BLOCK_${mathCounter}___`;
+                mathBlocks.push({placeholder, content: match});
+                console.log(`保护块级数学公式 ${mathCounter}:`, match.substring(0, 50));
+                mathCounter++;
+                return placeholder;
+            });
+            
+            // 保护LaTeX块级格式 \[...\]
+            processedText = processedText.replace(/\\\[([\s\S]*?)\\\]/g, (match, content) => {
+                const placeholder = `___MATH_LATEX_BLOCK_${mathCounter}___`;
+                mathBlocks.push({placeholder, content: match});
+                console.log(`保护LaTeX块级公式 ${mathCounter}:`, match.substring(0, 50));
+                mathCounter++;
+                return placeholder;
+            });
+            
+            // 保护LaTeX行内格式 \(...\)
+            processedText = processedText.replace(/\\\(([\s\S]*?)\\\)/g, (match, content) => {
+                const placeholder = `___MATH_LATEX_INLINE_${mathCounter}___`;
+                mathBlocks.push({placeholder, content: match});
+                console.log(`保护LaTeX行内公式 ${mathCounter}:`, match.substring(0, 50));
+                mathCounter++;
+                return placeholder;
+            });
+            
+            // 保护行内数学公式 $...$（排除已经处理的$$）
+            processedText = processedText.replace(/(?<!\$)\$([^$\n]+?)\$(?!\$)/g, (match, content) => {
+                const placeholder = `___MATH_INLINE_${mathCounter}___`;
+                mathBlocks.push({placeholder, content: match});
+                console.log(`保护行内数学公式 ${mathCounter}:`, match);
+                mathCounter++;
+                return placeholder;
+            });
+            
+            console.log(`共保护了 ${mathBlocks.length} 个数学公式`);
+            
+            // 使用marked渲染markdown
+            let html = marked.parse(processedText);
+            
+            // 恢复数学公式，并添加适当的包装
+            mathBlocks.forEach(({placeholder, content}) => {
+                console.log(`恢复数学公式:`, placeholder, '->', content.substring(0, 30));
+                
+                // 使用简单可靠的字符串替换方法
+                if (placeholder.includes('BLOCK') || content.startsWith('$$') || content.startsWith('\\[')) {
+                    const wrappedContent = `<div class="math-display-container">${content}</div>`;
+                    html = html.split(placeholder).join(wrappedContent);
+                } else {
+                    // 行内数学公式直接替换
+                    html = html.split(placeholder).join(content);
+                }
+                
+                // 调试：检查替换是否成功
+                if (html.includes(placeholder)) {
+                    console.error(`占位符 ${placeholder} 替换失败！原始内容:`, content);
+                } else {
+                    console.log(`占位符 ${placeholder} 替换成功`);
+                }
+            });
+            
+            console.log('Markdown渲染完成，包含数学公式:', mathBlocks.length > 0);
+            return html;
+        }
+        
+        // 渲染消息内容的函数
+        function renderMessageContent(text, isMarkdown = true) {
+            if (!text) return '';
+            
+            if (isMarkdown) {
+                const html = renderMarkdown(text);
+                return `<div class="markdown-content">${html}</div>`;
+            } else {
+                // 简单的文本处理，保留换行
+                return text.replace(/\n/g, '<br>');
+            }
+        }
+        
+        // 处理代码高亮的函数
+        function highlightCode(element) {
+            // 对所有pre code元素应用语法高亮
+            element.querySelectorAll('pre code').forEach((codeBlock) => {
+                Prism.highlightElement(codeBlock);
+            });
+        }
+        
+        // 处理数学公式渲染的函数
+        function renderMath(element) {
+            console.log('开始渲染数学公式，元素:', element);
+            
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                // 检查是否包含数学公式
+                const mathPatterns = [
+                    /\\\((.*?)\\\)/g,  // \( ... \)
+                    /\\\[(.*?)\\\]/g,  // \[ ... \]
+                    /\$\$(.*?)\$\$/g,  // $$ ... $$
+                    /\$([^$\n]+?)\$/g  // $ ... $
+                ];
+                
+                let hasMath = false;
+                const textContent = element.textContent || element.innerHTML;
+                for (const pattern of mathPatterns) {
+                    if (pattern.test(textContent)) {
+                        hasMath = true;
+                        break;
+                    }
+                }
+                
+                if (!hasMath) {
+                    console.log('未检测到数学公式');
+                    return;
+                }
+                
+                console.log('检测到数学公式，开始MathJax渲染');
+                
+                // 重新渲染数学公式
+                window.MathJax.typesetPromise([element]).then(() => {
+                    console.log('MathJax渲染完成');
+                    
+                    // 确保长公式可以横向滚动
+                    element.querySelectorAll('mjx-container[display="block"]').forEach(container => {
+                        const parent = container.parentElement;
+                        if (parent && container.scrollWidth > parent.clientWidth) {
+                            parent.style.overflowX = 'auto';
+                        }
+                    });
+                    
+                    // 滚动到底部确保新内容可见
+                    scrollToBottom();
+                }).catch((err) => {
+                    console.error('MathJax渲染错误:', err);
+                    
+                    // 如果渲染失败，尝试显示错误信息
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'math-error';
+                    errorDiv.style.cssText = 'color: #dc3545; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 4px 8px; border-radius: 4px; font-family: monospace; margin: 4px 0;';
+                    errorDiv.textContent = `数学公式渲染失败: ${err.message}`;
+                    element.appendChild(errorDiv);
+                });
+            } else {
+                console.log('MathJax未加载，500ms后重试');
+                // MathJax未加载，延迟重试
+                setTimeout(() => renderMath(element), 500);
+            }
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             const chatContainer = document.getElementById('chatContainer');
             const messageInput = document.getElementById('messageInput');
@@ -1217,7 +1749,7 @@
                 chatContainer.appendChild(userMessageDiv);
             }
             
-            // 显示机器人消息
+            // 显示机器人消息（支持Markdown渲染）
             function displayBotMessage(text, provider) {
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'flex mb-4';
@@ -1226,14 +1758,38 @@
                     '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
                     '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
                 
+                // 检查是否包含Markdown格式或数学公式
+                const hasMarkdown = /[#*`|\\]/.test(text) || 
+                                    text.includes('```') || 
+                                    text.includes('|') ||
+                                    text.includes('$$') ||
+                                    text.includes('\\(') ||
+                                    text.includes('\\[') ||
+                                    /\$[^$]+\$/.test(text);
+                
+                let contentHtml;
+                if (hasMarkdown) {
+                    // 使用Markdown渲染
+                    contentHtml = renderMessageContent(text, true);
+                } else {
+                    // 简单的文本处理
+                    contentHtml = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                }
+                
                 botMessageDiv.innerHTML = `
                     <div class="message-bubble bot-message p-3 text-gray-800">
                         ${providerBadge}
-                        <div class="mt-1">${text.replace(/\n/g, '<br>')}</div>
+                        <div class="mt-1">${contentHtml}</div>
                     </div>
                 `;
                 
                 chatContainer.appendChild(botMessageDiv);
+                
+                // 应用代码高亮和数学公式渲染
+                if (hasMarkdown) {
+                    highlightCode(botMessageDiv);
+                    renderMath(botMessageDiv);
+                }
             }
             
             // 侧边栏控制事件
@@ -1576,34 +2132,61 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
             
-            // 打字机效果函数
+            // 打字机效果函数（支持Markdown渲染）
             function typewriterEffect(element, text, speed = 30) {
                 return new Promise((resolve) => {
-                    let i = 0;
                     const textSpan = element.querySelector('.typewriter-text');
                     const cursor = element.querySelector('.typewriter-cursor');
                     
-                    function type() {
-                        if (i < text.length) {
-                            // 处理换行符
-                            if (text.charAt(i) === '\n') {
-                                textSpan.innerHTML += '<br>';
-                            } else {
-                                textSpan.innerHTML += text.charAt(i);
-                            }
-                            i++;
-                            scrollToBottom(); // 在打字过程中保持滚动到底部
-                            setTimeout(type, speed);
-                        } else {
-                            // 打字完成后移除光标
-                            if (cursor) {
-                                cursor.remove();
-                            }
-                            resolve();
-                        }
-                    }
+                    // 检查是否包含Markdown格式或数学公式
+                    const hasMarkdown = /[#*`|\\]/.test(text) || 
+                                        text.includes('```') || 
+                                        text.includes('|') ||
+                                        text.includes('$$') ||
+                                        text.includes('\\(') ||
+                                        text.includes('\\[') ||
+                                        /\$[^$]+\$/.test(text);
                     
-                    type();
+                    if (hasMarkdown) {
+                        // 使用Markdown渲染
+                        const renderedContent = renderMessageContent(text, true);
+                        
+                        // 移除打字机结构，直接显示渲染的内容
+                        element.innerHTML = renderedContent;
+                        
+                        // 应用代码高亮
+                        highlightCode(element);
+                        
+                        // 渲染数学公式
+                        renderMath(element);
+                        
+                        resolve();
+                    } else {
+                        // 原有的打字机效果
+                        let i = 0;
+                        
+                        function type() {
+                            if (i < text.length) {
+                                // 处理换行符
+                                if (text.charAt(i) === '\n') {
+                                    textSpan.innerHTML += '<br>';
+                                } else {
+                                    textSpan.innerHTML += text.charAt(i);
+                                }
+                                i++;
+                                scrollToBottom(); // 在打字过程中保持滚动到底部
+                                setTimeout(type, speed);
+                            } else {
+                                // 打字完成后移除光标
+                                if (cursor) {
+                                    cursor.remove();
+                                }
+                                resolve();
+                            }
+                        }
+                        
+                        type();
+                    }
                 });
             }
             
