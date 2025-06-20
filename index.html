@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
-    
+
     <!-- Markdown渲染相关 -->
     <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
@@ -29,7 +30,7 @@
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-markdown.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
-    
+
     <!-- 数学公式支持 -->
     <script>
         // 优化的MathJax配置 - 平衡功能性和可靠性
@@ -39,7 +40,7 @@
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true,
                 processEnvironments: true,
-                packages: {'[+]': ['base', 'ams', 'newcommand', 'configmacros', 'action', 'unicode']},
+                packages: { '[+]': ['base', 'ams', 'newcommand', 'configmacros', 'action', 'unicode'] },
                 macros: {
                     // 常用数学集合
                     RR: "{\\mathbb{R}}",
@@ -85,7 +86,7 @@
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-    
+
     <script>
         tailwind.config = {
             theme: {
@@ -110,32 +111,32 @@
             }
         }
     </script>
-    
+
     <style>
-        :where([class^="ri-"])::before { 
-            content: "\f3c2"; 
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
         }
-        
+
         .message-bubble {
             max-width: 80%;
             word-wrap: break-word;
         }
-        
+
         .user-message {
             background-color: #E8E8E8;
             border-radius: 18px 18px 0 18px;
         }
-        
+
         .bot-message {
             background-color: #E3F2FD;
             border-radius: 18px 18px 18px 0;
         }
-        
+
         .typing-indicator {
             display: inline-flex;
             align-items: center;
         }
-        
+
         .typing-indicator span {
             height: 8px;
             width: 8px;
@@ -145,33 +146,36 @@
             margin: 0 2px;
             opacity: 0.6;
         }
-        
+
         .typing-indicator span:nth-child(1) {
             animation: bounce 1s infinite 0s;
         }
-        
+
         .typing-indicator span:nth-child(2) {
             animation: bounce 1s infinite 0.2s;
         }
-        
+
         .typing-indicator span:nth-child(3) {
             animation: bounce 1s infinite 0.4s;
         }
-        
+
         @keyframes bounce {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-5px);
             }
         }
-        
+
         /* 打字机效果样式 */
         .typewriter-text {
             display: inline;
         }
-        
+
         .typewriter-cursor {
             display: inline-block;
             background-color: #1E88E5;
@@ -180,64 +184,68 @@
             height: 1.2em;
             animation: blink 1s infinite;
         }
-        
+
         @keyframes blink {
-            0%, 50% {
+
+            0%,
+            50% {
                 opacity: 1;
             }
-            51%, 100% {
+
+            51%,
+            100% {
                 opacity: 0;
             }
         }
-        
+
         .chat-container::-webkit-scrollbar {
             width: 6px;
         }
-        
+
         .chat-container::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
+
         .chat-container::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 3px;
         }
-        
+
         .chat-container::-webkit-scrollbar-thumb:hover {
             background: #a1a1a1;
         }
-        
+
         .input-area {
             border-top: 1px solid #E5E7EB;
         }
-        
+
         .message-input {
             resize: none;
             min-height: 24px;
             max-height: 120px;
             overflow-y: auto;
         }
-        
+
         .message-input::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .message-input::-webkit-scrollbar-track {
             background: #f1f1f1;
         }
-        
+
         .message-input::-webkit-scrollbar-thumb {
             background: #c1c1c1;
             border-radius: 2px;
         }
-        
+
         .audio-wave {
             display: flex;
             align-items: center;
             justify-content: center;
             height: 40px;
         }
-        
+
         .audio-wave span {
             display: inline-block;
             width: 3px;
@@ -247,29 +255,29 @@
             border-radius: 3px;
             animation: wave 1s infinite ease-in-out;
         }
-        
+
         .audio-wave span:nth-child(2) {
             animation-delay: 0.1s;
         }
-        
+
         .audio-wave span:nth-child(3) {
             animation-delay: 0.2s;
         }
-        
+
         .audio-wave span:nth-child(4) {
             animation-delay: 0.3s;
         }
-        
+
         .audio-wave span:nth-child(5) {
             animation-delay: 0.4s;
         }
-        
-                /* 优化的数学公式样式 */
+
+        /* 优化的数学公式样式 */
         .markdown-content mjx-container {
             margin: 0.3em 0;
             line-height: 1.4;
         }
-        
+
         /* 行内数学公式样式 */
         .markdown-content mjx-container[display="inline"] {
             display: inline-block;
@@ -280,7 +288,7 @@
             border-radius: 3px;
             border: 1px solid rgba(173, 216, 230, 0.3);
         }
-        
+
         /* 块级数学公式样式 */
         .markdown-content mjx-container[display="block"] {
             display: block;
@@ -291,23 +299,23 @@
             overflow-x: auto;
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border: 1px solid #dee2e6;
         }
-        
+
         /* 数学公式字体优化 */
         .markdown-content mjx-container[jax="CHTML"] {
             font-size: 1.05em;
             font-family: 'Times New Roman', 'STIX Two Math', serif;
         }
-        
+
         /* 数学公式悬停效果 */
         .markdown-content mjx-container[display="block"]:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
             transform: translateY(-1px);
             transition: all 0.2s ease;
         }
-        
+
         /* 数学公式错误样式 */
         .math-error {
             color: #721c24;
@@ -320,14 +328,14 @@
             margin: 10px 0;
             box-shadow: 0 2px 4px rgba(220, 53, 69, 0.1);
         }
-        
+
         /* 长公式横向滚动优化 */
         .markdown-content mjx-container[display="block"] mjx-math {
             max-width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
         }
-        
+
         /* 移动设备优化 */
         @media (max-width: 768px) {
             .markdown-content mjx-container[display="block"] {
@@ -335,25 +343,29 @@
                 margin: 1em 0;
                 padding: 0.8em;
             }
-            
+
             .markdown-content mjx-container[display="inline"] {
                 font-size: 0.9em;
                 margin: 0 0.1em;
                 padding: 0.05em 0.1em;
             }
         }
-        
+
         /* 高分辨率屏幕优化 */
-        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        @media (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
             .markdown-content mjx-container[jax="CHTML"] {
                 font-size: 1.1em;
             }
         }
-        
+
         @keyframes wave {
-            0%, 100% {
+
+            0%,
+            100% {
                 height: 15px;
             }
+
             50% {
                 height: 30px;
             }
@@ -362,494 +374,500 @@
         .controls {
             display: flex;
             flex-wrap: wrap;
-        
-        /* Markdown 渲染样式 */
-        .markdown-content {
-            line-height: 1.6;
-        }
-        
-        .markdown-content h1,
-        .markdown-content h2,
-        .markdown-content h3,
-        .markdown-content h4,
-        .markdown-content h5,
-        .markdown-content h6 {
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .markdown-content h1 {
-            font-size: 1.5rem;
-            border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-        }
-        
-        .markdown-content h2 {
-            font-size: 1.375rem;
-            border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 0.25rem;
-        }
-        
-        .markdown-content h3 {
-            font-size: 1.25rem;
-        }
-        
-        .markdown-content h4 {
-            font-size: 1.125rem;
-        }
-        
-        .markdown-content p {
-            margin-bottom: 1rem;
-        }
-        
-        .markdown-content ul,
-        .markdown-content ol {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
-        }
-        
-        .markdown-content ul {
-            list-style-type: disc;
-        }
-        
-        .markdown-content ol {
-            list-style-type: decimal;
-        }
-        
-        .markdown-content li {
-            margin-bottom: 0.25rem;
-        }
-        
-        .markdown-content blockquote {
-            border-left: 4px solid #e5e7eb;
-            padding-left: 1rem;
-            margin: 1rem 0;
-            font-style: italic;
-            color: #6b7280;
-        }
-        
-        .markdown-content code {
-            background-color: #f3f4f6;
-            padding: 0.125rem 0.25rem;
-            border-radius: 0.25rem;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.875rem;
-        }
-        
-        .markdown-content pre {
-            background-color: #f8f9fa;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            overflow-x: auto;
-            margin: 1rem 0;
-            border: 1px solid #e9ecef;
-        }
-        
-        .markdown-content pre code {
-            background-color: transparent;
-            padding: 0;
-            border-radius: 0;
-        }
-        
-        .markdown-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-            font-size: 0.875rem;
-        }
-        
-        .markdown-content table th,
-        .markdown-content table td {
-            border: 1px solid #e5e7eb;
-            padding: 0.5rem 0.75rem;
-            text-align: left;
-        }
-        
-        .markdown-content table th {
-            background-color: #f9fafb;
-            font-weight: bold;
-        }
-        
-        .markdown-content table tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-        
-        .markdown-content a {
-            color: #1e88e5;
-            text-decoration: underline;
-        }
-        
-        .markdown-content a:hover {
-            color: #1565c0;
-        }
-        
-        .markdown-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 0.5rem;
-            margin: 0.5rem 0;
-        }
-        
-        .markdown-content hr {
-            border: none;
-            border-top: 1px solid #e5e7eb;
-            margin: 1.5rem 0;
-        }
-        
-        /* 代码高亮样式增强 */
-        .markdown-content .token.comment,
-        .markdown-content .token.prolog,
-        .markdown-content .token.doctype,
-        .markdown-content .token.cdata {
-            color: #708090;
-        }
-        
-        .markdown-content .token.punctuation {
-            color: #999;
-        }
-        
-        .markdown-content .token.property,
-        .markdown-content .token.tag,
-        .markdown-content .token.boolean,
-        .markdown-content .token.number,
-        .markdown-content .token.constant,
-        .markdown-content .token.symbol,
-        .markdown-content .token.deleted {
-            color: #905;
-        }
-        
-        .markdown-content .token.selector,
-        .markdown-content .token.attr-name,
-        .markdown-content .token.string,
-        .markdown-content .token.char,
-        .markdown-content .token.builtin,
-        .markdown-content .token.inserted {
-            color: #690;
-        }
-        
-        .markdown-content .token.operator,
-        .markdown-content .token.entity,
-        .markdown-content .token.url,
-        .markdown-content .language-css .token.string,
-        .markdown-content .style .token.string {
-            color: #9a6e3a;
-        }
-        
-        .markdown-content .token.atrule,
-        .markdown-content .token.attr-value,
-        .markdown-content .token.keyword {
-            color: #07a;
-        }
-        
-        .markdown-content .token.function,
-        .markdown-content .token.class-name {
-            color: #dd4a68;
-        }
-        
-        /* 数学公式样式优化 */
-        .markdown-content .MathJax {
-            font-size: 1.15em !important;
-            outline: none;
-            color: #2d3748 !important;
-        }
-        
-        .markdown-content .MathJax_Display {
-            margin: 1.5rem 0 !important;
-            text-align: center;
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 0.5rem 0;
-        }
-        
-        .markdown-content .MathJax_Preview {
-            color: #888;
-            font-style: italic;
-            background-color: #f7fafc;
-            padding: 2px 4px;
-            border-radius: 3px;
-        }
-        
-        /* SVG渲染的数学公式样式 */
-        .markdown-content mjx-container {
-            display: inline-block;
-            margin: 0.3em 0.1em;
-            color: #2d3748 !important;
-        }
-        
-        .markdown-content mjx-container[display="block"] {
-            display: block;
-            text-align: center;
-            margin: 1.5em 0;
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 0.8em 0;
-            background-color: #f8fafc;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .markdown-content mjx-math {
-            line-height: 1.3;
-            font-size: 1.1em !important;
-        }
-        
-        /* 处理长公式的滚动 */
-        .markdown-content mjx-container[display="block"] mjx-math {
-            min-width: min-content;
-            padding: 0 1em;
-        }
-        
-        /* 行内数学公式的基线对齐 */
-        .markdown-content mjx-container:not([display="block"]) {
-            vertical-align: baseline;
-            background-color: #f7fafc;
-            padding: 2px 4px;
-            border-radius: 3px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        /* 数学公式的错误显示 */
-        .markdown-content .MathJax_Error {
-            color: #e53e3e !important;
-            background-color: #fed7d7 !important;
-            border: 1px solid #feb2b2;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9em;
-        }
-        
-        /* 数学公式显示容器 */
-        .markdown-content .math-display-container {
-            text-align: center;
-            margin: 1.5em 0;
-            padding: 1em;
-            overflow-x: auto;
-            overflow-y: visible;
-            border-radius: 10px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* 数学公式错误提示 */
-        .markdown-content .math-error {
-            display: inline-block;
-            color: #e53e3e;
-            background-color: #fed7d7;
-            border: 1px solid #feb2b2;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9em;
-            margin: 4px;
-            font-weight: 500;
-        }
-        
-        /* 响应式数学公式 */
-        @media (max-width: 768px) {
-            .markdown-content .math-display-container {
-                font-size: 0.95em;
-                padding: 0.8em;
-                margin: 1.2em 0;
+
+            /* Markdown 渲染样式 */
+            .markdown-content {
+                line-height: 1.6;
             }
-            
+
+            .markdown-content h1,
+            .markdown-content h2,
+            .markdown-content h3,
+            .markdown-content h4,
+            .markdown-content h5,
+            .markdown-content h6 {
+                font-weight: bold;
+                margin-bottom: 0.5rem;
+                margin-top: 1rem;
+            }
+
+            .markdown-content h1 {
+                font-size: 1.5rem;
+                border-bottom: 2px solid #e5e7eb;
+                padding-bottom: 0.5rem;
+            }
+
+            .markdown-content h2 {
+                font-size: 1.375rem;
+                border-bottom: 1px solid #e5e7eb;
+                padding-bottom: 0.25rem;
+            }
+
+            .markdown-content h3 {
+                font-size: 1.25rem;
+            }
+
+            .markdown-content h4 {
+                font-size: 1.125rem;
+            }
+
+            .markdown-content p {
+                margin-bottom: 1rem;
+            }
+
+            .markdown-content ul,
+            .markdown-content ol {
+                margin-bottom: 1rem;
+                padding-left: 1.5rem;
+            }
+
+            .markdown-content ul {
+                list-style-type: disc;
+            }
+
+            .markdown-content ol {
+                list-style-type: decimal;
+            }
+
+            .markdown-content li {
+                margin-bottom: 0.25rem;
+            }
+
+            .markdown-content blockquote {
+                border-left: 4px solid #e5e7eb;
+                padding-left: 1rem;
+                margin: 1rem 0;
+                font-style: italic;
+                color: #6b7280;
+            }
+
+            .markdown-content code {
+                background-color: #f3f4f6;
+                padding: 0.125rem 0.25rem;
+                border-radius: 0.25rem;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 0.875rem;
+            }
+
+            .markdown-content pre {
+                background-color: #f8f9fa;
+                border-radius: 0.5rem;
+                padding: 1rem;
+                overflow-x: auto;
+                margin: 1rem 0;
+                border: 1px solid #e9ecef;
+            }
+
+            .markdown-content pre code {
+                background-color: transparent;
+                padding: 0;
+                border-radius: 0;
+            }
+
+            .markdown-content table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 1rem 0;
+                font-size: 0.875rem;
+            }
+
+            .markdown-content table th,
+            .markdown-content table td {
+                border: 1px solid #e5e7eb;
+                padding: 0.5rem 0.75rem;
+                text-align: left;
+            }
+
+            .markdown-content table th {
+                background-color: #f9fafb;
+                font-weight: bold;
+            }
+
+            .markdown-content table tr:nth-child(even) {
+                background-color: #f9fafb;
+            }
+
+            .markdown-content a {
+                color: #1e88e5;
+                text-decoration: underline;
+            }
+
+            .markdown-content a:hover {
+                color: #1565c0;
+            }
+
+            .markdown-content img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 0.5rem;
+                margin: 0.5rem 0;
+            }
+
+            .markdown-content hr {
+                border: none;
+                border-top: 1px solid #e5e7eb;
+                margin: 1.5rem 0;
+            }
+
+            /* 代码高亮样式增强 */
+            .markdown-content .token.comment,
+            .markdown-content .token.prolog,
+            .markdown-content .token.doctype,
+            .markdown-content .token.cdata {
+                color: #708090;
+            }
+
+            .markdown-content .token.punctuation {
+                color: #999;
+            }
+
+            .markdown-content .token.property,
+            .markdown-content .token.tag,
+            .markdown-content .token.boolean,
+            .markdown-content .token.number,
+            .markdown-content .token.constant,
+            .markdown-content .token.symbol,
+            .markdown-content .token.deleted {
+                color: #905;
+            }
+
+            .markdown-content .token.selector,
+            .markdown-content .token.attr-name,
+            .markdown-content .token.string,
+            .markdown-content .token.char,
+            .markdown-content .token.builtin,
+            .markdown-content .token.inserted {
+                color: #690;
+            }
+
+            .markdown-content .token.operator,
+            .markdown-content .token.entity,
+            .markdown-content .token.url,
+            .markdown-content .language-css .token.string,
+            .markdown-content .style .token.string {
+                color: #9a6e3a;
+            }
+
+            .markdown-content .token.atrule,
+            .markdown-content .token.attr-value,
+            .markdown-content .token.keyword {
+                color: #07a;
+            }
+
+            .markdown-content .token.function,
+            .markdown-content .token.class-name {
+                color: #dd4a68;
+            }
+
+            /* 数学公式样式优化 */
+            .markdown-content .MathJax {
+                font-size: 1.15em !important;
+                outline: none;
+                color: #2d3748 !important;
+            }
+
+            .markdown-content .MathJax_Display {
+                margin: 1.5rem 0 !important;
+                text-align: center;
+                overflow-x: auto;
+                overflow-y: visible;
+                padding: 0.5rem 0;
+            }
+
+            .markdown-content .MathJax_Preview {
+                color: #888;
+                font-style: italic;
+                background-color: #f7fafc;
+                padding: 2px 4px;
+                border-radius: 3px;
+            }
+
+            /* SVG渲染的数学公式样式 */
             .markdown-content mjx-container {
-                font-size: 0.95em !important;
+                display: inline-block;
+                margin: 0.3em 0.1em;
+                color: #2d3748 !important;
             }
-            
+
             .markdown-content mjx-container[display="block"] {
-                padding: 0.6em 0;
+                display: block;
+                text-align: center;
+                margin: 1.5em 0;
+                overflow-x: auto;
+                overflow-y: visible;
+                padding: 0.8em 0;
+                background-color: #f8fafc;
+                border-radius: 8px;
+                border: 1px solid #e2e8f0;
             }
-            
+
+            .markdown-content mjx-math {
+                line-height: 1.3;
+                font-size: 1.1em !important;
+            }
+
+            /* 处理长公式的滚动 */
             .markdown-content mjx-container[display="block"] mjx-math {
-                padding: 0 0.5em;
+                min-width: min-content;
+                padding: 0 1em;
             }
-        }
-        
-        .controls {
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
 
-        .search-controls-inline {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.05);
-            padding: 6px 10px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
+            /* 行内数学公式的基线对齐 */
+            .markdown-content mjx-container:not([display="block"]) {
+                vertical-align: baseline;
+                background-color: #f7fafc;
+                padding: 2px 4px;
+                border-radius: 3px;
+                border: 1px solid #e2e8f0;
+            }
 
-        .search-controls-inline:hover {
-            background: rgba(0, 0, 0, 0.08);
-            border-color: rgba(0, 0, 0, 0.15);
-        }
+            /* 数学公式的错误显示 */
+            .markdown-content .MathJax_Error {
+                color: #e53e3e !important;
+                background-color: #fed7d7 !important;
+                border: 1px solid #feb2b2;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 0.9em;
+            }
 
-        .search-label-inline {
-            font-size: 16px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-        }
+            /* 数学公式显示容器 */
+            .markdown-content .math-display-container {
+                text-align: center;
+                margin: 1.5em 0;
+                padding: 1em;
+                overflow-x: auto;
+                overflow-y: visible;
+                border-radius: 10px;
+                background-color: #f8fafc;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
 
-        /* 开关样式 */
-        .switch, .switch-inline {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
+            /* 数学公式错误提示 */
+            .markdown-content .math-error {
+                display: inline-block;
+                color: #e53e3e;
+                background-color: #fed7d7;
+                border: 1px solid #feb2b2;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+                font-size: 0.9em;
+                margin: 4px;
+                font-weight: 500;
+            }
 
-        .switch input, .switch-inline input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+            /* 响应式数学公式 */
+            @media (max-width: 768px) {
+                .markdown-content .math-display-container {
+                    font-size: 0.95em;
+                    padding: 0.8em;
+                    margin: 1.2em 0;
+                }
 
-        .slider, .slider-inline {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
+                .markdown-content mjx-container {
+                    font-size: 0.95em !important;
+                }
 
-        .slider:before, .slider-inline:before {
-            position: absolute;
-            content: "";
-            height: 14px;
-            width: 14px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
+                .markdown-content mjx-container[display="block"] {
+                    padding: 0.6em 0;
+                }
 
-        input:checked + .slider, input:checked + .slider-inline {
-            background-color: #1E88E5;
-        }
+                .markdown-content mjx-container[display="block"] mjx-math {
+                    padding: 0 0.5em;
+                }
+            }
 
-        input:checked + .slider:before, input:checked + .slider-inline:before {
-            transform: translateX(20px);
-        }
+            .controls {
+                gap: 15px;
+                align-items: center;
+                margin-bottom: 20px;
+                padding: 15px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+            }
 
-        /* 搜索结果样式 */
-        .search-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            background: rgba(30, 136, 229, 0.1);
-            border-radius: 8px;
-            font-weight: 500;
-            color: #1E88E5;
-        }
+            .search-controls-inline {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(0, 0, 0, 0.05);
+                padding: 6px 10px;
+                border-radius: 12px;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                transition: all 0.3s ease;
+            }
 
-        .search-results {
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 10px;
-        }
+            .search-controls-inline:hover {
+                background: rgba(0, 0, 0, 0.08);
+                border-color: rgba(0, 0, 0, 0.15);
+            }
 
-        .search-result-item {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        }
+            .search-label-inline {
+                font-size: 16px;
+                cursor: pointer;
+                user-select: none;
+                display: flex;
+                align-items: center;
+            }
 
-        .search-result-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
+            /* 开关样式 */
+            .switch,
+            .switch-inline {
+                position: relative;
+                display: inline-block;
+                width: 40px;
+                height: 20px;
+            }
 
-        .search-result-title {
-            font-weight: 600;
-            color: #1565C0;
-            margin-bottom: 5px;
-            line-height: 1.3;
-        }
+            .switch input,
+            .switch-inline input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
 
-        .search-result-url {
-            color: #4CAF50;
-            text-decoration: none;
-            font-size: 14px;
-            display: block;
-            margin-bottom: 8px;
-            word-break: break-all;
-        }
+            .slider,
+            .slider-inline {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 34px;
+            }
 
-        .search-result-url:hover {
-            text-decoration: underline;
-        }
+            .slider:before,
+            .slider-inline:before {
+                position: absolute;
+                content: "";
+                height: 14px;
+                width: 14px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
 
-        .search-result-snippet {
-            color: #666;
-            line-height: 1.4;
-            font-size: 14px;
-        }
+            input:checked+.slider,
+            input:checked+.slider-inline {
+                background-color: #1E88E5;
+            }
 
-        .model-indicator {
-            font-size: 12px;
-            color: #888;
-            margin-top: 8px;
-            font-style: italic;
-        }
+            input:checked+.slider:before,
+            input:checked+.slider-inline:before {
+                transform: translateX(20px);
+            }
 
-        #modelSelect {
-            padding: 12px 20px;
-            border-radius: 25px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            min-width: 280px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-        }
+            /* 搜索结果样式 */
+            .search-indicator {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 10px;
+                padding: 8px 12px;
+                background: rgba(30, 136, 229, 0.1);
+                border-radius: 8px;
+                font-weight: 500;
+                color: #1E88E5;
+            }
 
-        #modelSelect:hover {
-            border-color: rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
+            .search-results {
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 12px;
+                padding: 15px;
+                margin-top: 10px;
+            }
 
-        #modelSelect option {
-            background: #2d3748;
-            color: white;
-            padding: 10px;
-            font-weight: 600;
-            font-size: 14px;
-        }
+            .search-result-item {
+                margin-bottom: 15px;
+                padding-bottom: 15px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
 
+            .search-result-item:last-child {
+                border-bottom: none;
+                margin-bottom: 0;
+                padding-bottom: 0;
+            }
 
+            .search-result-title {
+                font-weight: 600;
+                color: #1565C0;
+                margin-bottom: 5px;
+                line-height: 1.3;
+            }
+
+            .search-result-url {
+                color: #4CAF50;
+                text-decoration: none;
+                font-size: 14px;
+                display: block;
+                margin-bottom: 8px;
+                word-break: break-all;
+            }
+
+            .search-result-url:hover {
+                text-decoration: underline;
+            }
+
+            .search-result-snippet {
+                color: #666;
+                line-height: 1.4;
+                font-size: 14px;
+            }
+
+            .model-indicator {
+                font-size: 12px;
+                color: #888;
+                margin-top: 8px;
+                font-style: italic;
+            }
+
+            #modelSelect {
+                padding: 12px 20px;
+                border-radius: 25px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                font-size: 15px;
+                font-weight: 600;
+                min-width: 280px;
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+                text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            }
+
+            #modelSelect:hover {
+                border-color: rgba(255, 255, 255, 0.5);
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            #modelSelect option {
+                background: #2d3748;
+                color: white;
+                padding: 10px;
+                font-weight: 600;
+                font-size: 14px;
+            }
     </style>
 </head>
+
 <body class="bg-gray-50 h-screen flex flex-col">
     <!-- 头部导航 -->
     <header class="bg-white shadow-sm py-3 px-4 flex items-center justify-between">
         <div class="flex items-center">
-            <button id="toggleSidebar" class="lg:hidden mr-3 w-8 h-8 rounded flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
+            <button id="toggleSidebar"
+                class="lg:hidden mr-3 w-8 h-8 rounded flex items-center justify-center text-gray-600 hover:bg-gray-100 transition-colors">
                 <i class="ri-menu-line"></i>
             </button>
             <span class="text-xl font-['Pacifico'] text-primary">logo</span>
@@ -862,27 +880,29 @@
                     <option value="loading">加载中...</option>
                 </select>
             </div>
-            
+
             <!-- 快速设置区域 -->
             <div class="flex items-center space-x-2 border-l border-gray-300 pl-3">
                 <!-- Temperature快速调节 -->
                 <div class="flex items-center bg-gray-100 rounded-lg px-2 py-1">
                     <span class="text-xs text-gray-600 mr-1">创造性:</span>
-                    <span id="headerTemperatureValue" class="text-xs font-semibold text-blue-600 min-w-[24px]">0.7</span>
+                    <span id="headerTemperatureValue"
+                        class="text-xs font-semibold text-blue-600 min-w-[24px]">0.7</span>
                     <button id="headerTemperatureBtn" class="ml-1 text-gray-500 hover:text-gray-700">
                         <i class="ri-settings-4-line text-sm"></i>
                     </button>
                 </div>
-                
+
                 <!-- System Prompt状态指示 -->
                 <div class="flex items-center">
-                    <button id="headerSystemPromptBtn" class="flex items-center bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 transition-colors">
+                    <button id="headerSystemPromptBtn"
+                        class="flex items-center bg-gray-100 hover:bg-gray-200 rounded-lg px-2 py-1 transition-colors">
                         <i id="systemPromptIcon" class="ri-chat-settings-line text-sm text-gray-500 mr-1"></i>
                         <span id="systemPromptStatus" class="text-xs text-gray-600">系统提示</span>
                     </button>
                 </div>
             </div>
-            
+
             <div class="border-l border-gray-300 pl-3 flex items-center space-x-3">
                 <button id="newChatBtn" class="flex items-center text-gray-600 hover:text-primary transition-colors">
                     <div class="w-5 h-5 flex items-center justify-center">
@@ -907,7 +927,8 @@
     </header>
 
     <!-- System Prompt 设置弹窗 -->
-    <div id="systemPromptModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div id="systemPromptModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 w-full max-w-lg mx-4">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">
@@ -917,40 +938,49 @@
                     <i class="ri-close-line text-xl"></i>
                 </button>
             </div>
-            
+
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">系统提示内容</label>
-                <textarea id="systemPromptInput" 
-                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                          rows="4"
-                          placeholder="输入系统提示，例如：你是一个专业的技术助手，请用简洁明了的语言回答问题..."></textarea>
+                <textarea id="systemPromptInput"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                    rows="4" placeholder="输入系统提示，例如：你是一个专业的技术助手，请用简洁明了的语言回答问题..."></textarea>
                 <p class="text-xs text-gray-500 mt-1">系统提示将影响AI的回答风格和行为，留空则不设置系统提示</p>
             </div>
-            
+
             <!-- 预设模板 -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">快速模板</label>
                 <div class="grid grid-cols-2 gap-2">
-                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个专业的技术助手，请用简洁明了的语言回答编程和技术相关问题。">
+                    <button
+                        class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border"
+                        data-template="你是一个专业的技术助手，请用简洁明了的语言回答编程和技术相关问题。">
                         💻 技术助手
                     </button>
-                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个创意写作助手，擅长创作故事、诗歌和文案，请用富有想象力的语言回答。">
+                    <button
+                        class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border"
+                        data-template="你是一个创意写作助手，擅长创作故事、诗歌和文案，请用富有想象力的语言回答。">
                         ✍️ 创意写作
                     </button>
-                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个学习助手，请用通俗易懂的语言解释复杂概念，多举例说明。">
+                    <button
+                        class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border"
+                        data-template="你是一个学习助手，请用通俗易懂的语言解释复杂概念，多举例说明。">
                         📚 学习助手
                     </button>
-                    <button class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border" data-template="你是一个商务助手，请用专业、正式的语言处理商业相关问题。">
+                    <button
+                        class="system-prompt-template text-left text-xs p-2 bg-gray-50 hover:bg-gray-100 rounded border"
+                        data-template="你是一个商务助手，请用专业、正式的语言处理商业相关问题。">
                         💼 商务助手
                     </button>
                 </div>
             </div>
-            
+
             <div class="flex justify-end space-x-3">
-                <button id="clearSystemPromptBtn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button id="clearSystemPromptBtn"
+                    class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                     清空
                 </button>
-                <button id="saveSystemPromptBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <button id="saveSystemPromptBtn"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                     保存
                 </button>
             </div>
@@ -958,7 +988,8 @@
     </div>
 
     <!-- Temperature 快速调节弹窗 -->
-    <div id="temperatureModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+    <div id="temperatureModal"
+        class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 w-full max-w-sm mx-4">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-800">
@@ -968,37 +999,40 @@
                     <i class="ri-close-line text-xl"></i>
                 </button>
             </div>
-            
+
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 mb-3">
                     当前值: <span id="temperatureValue" class="text-blue-600 font-semibold text-lg">0.7</span>
                 </label>
                 <div class="flex items-center space-x-2 mb-3">
                     <span class="text-xs text-gray-500">精确(0)</span>
-                    <input type="range" id="temperatureSlider" 
-                           min="0" max="2" step="0.1" value="0.7"
-                           class="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                    <input type="range" id="temperatureSlider" min="0" max="2" step="0.1" value="0.7"
+                        class="flex-1 h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer">
                     <span class="text-xs text-gray-500">创造(2)</span>
                 </div>
-                
+
                 <!-- 预设值 -->
                 <div class="grid grid-cols-3 gap-2 mb-3">
-                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="0.1">
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border"
+                        data-temp="0.1">
                         精准 (0.1)
                     </button>
-                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="0.7">
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border"
+                        data-temp="0.7">
                         平衡 (0.7)
                     </button>
-                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border" data-temp="1.5">
+                    <button class="temperature-preset px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border"
+                        data-temp="1.5">
                         创意 (1.5)
                     </button>
                 </div>
-                
+
                 <p class="text-xs text-gray-500">数值越低回答越准确，数值越高回答越有创意</p>
             </div>
-            
+
             <div class="flex justify-end">
-                <button id="saveTemperatureBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <button id="saveTemperatureBtn"
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                     保存
                 </button>
             </div>
@@ -1008,7 +1042,8 @@
     <!-- 主要内容区域 -->
     <div class="flex flex-1 overflow-hidden relative">
         <!-- 历史对话侧边栏 -->
-        <div id="sidebar" class="w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 -translate-x-full absolute lg:relative z-30 h-full lg:translate-x-0">
+        <div id="sidebar"
+            class="w-80 bg-white border-r border-gray-200 flex flex-col transform transition-transform duration-300 -translate-x-full absolute lg:relative z-30 h-full lg:translate-x-0">
             <!-- 侧边栏头部 -->
             <div class="p-4 border-b border-gray-200">
                 <div class="flex items-center justify-between mb-4">
@@ -1019,15 +1054,15 @@
                         <i class="ri-close-line text-xl"></i>
                     </button>
                 </div>
-                
+
                 <!-- 搜索框 -->
                 <div class="relative">
-                    <input type="text" id="searchInput" placeholder="搜索对话..." 
-                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="searchInput" placeholder="搜索对话..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
                 </div>
             </div>
-            
+
             <!-- 统计信息 -->
             <div id="statsSection" class="px-4 py-3 bg-gray-50 border-b border-gray-200">
                 <div class="grid grid-cols-2 gap-4 text-center">
@@ -1041,7 +1076,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- 对话列表 -->
             <div class="flex-1 overflow-y-auto">
                 <div id="sessionsList" class="p-2">
@@ -1053,135 +1088,158 @@
             </div>
         </div>
 
-        <!-- 聊天内容区域 -->
-        <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-gray-50">
-        <!-- 欢迎消息 -->
-        <div class="flex mb-4">
-            <div class="message-bubble bot-message p-3 text-gray-800">
-                <p>你好！我是多模态智能AI助手，集成了SiliconFlow和Groq的强大能力：</p>
-                <ul class="mt-2 ml-4 list-disc text-sm text-gray-600">
-                    <li>📝 <strong>文本对话</strong>：回答问题、创意写作、知识问答</li>
-                    <li>🖼️ <strong>图片分析</strong>：描述图片内容、图片问答、OCR识别</li>
-                    <li>🎵 <strong>音频分析</strong>：自动转录语音内容，支持对话分析</li>
-                    <li>🎬 <strong>视频分析</strong>：基于您的描述提供深度内容分析</li>
-                    <li>🎤 <strong>语音录制</strong>：实时语音转文字，智能对话输入</li>
-                    <li>🚀 <strong>智能切换</strong>：自动选择最适合的模型处理您的请求</li>
-                </ul>
-                <p class="mt-2"><strong>使用提示：</strong>上传音频文件时，系统会自动转录内容；上传视频时，请详细描述视频内容以获得最佳分析效果。</p>
+        <!-- 右侧主要内容区域 -->
+        <div class="flex-1 flex flex-col">
+            <!-- 聊天内容区域 -->
+            <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-gray-50">
+                <!-- 欢迎消息 -->
+                <div class="flex mb-4">
+                    <div class="message-bubble bot-message p-3 text-gray-800">
+                        <p>你好！我是多模态智能AI助手，集成了SiliconFlow和Groq的强大能力：</p>
+                        <ul class="mt-2 ml-4 list-disc text-sm text-gray-600">
+                            <li>📝 <strong>文本对话</strong>：回答问题、创意写作、知识问答</li>
+                            <li>🖼️ <strong>图片分析</strong>：描述图片内容、图片问答、OCR识别</li>
+                            <li>🎵 <strong>音频分析</strong>：自动转录语音内容，支持对话分析</li>
+                            <li>🎬 <strong>视频分析</strong>：基于您的描述提供深度内容分析</li>
+                            <li>🎤 <strong>语音录制</strong>：实时语音转文字，智能对话输入</li>
+                            <li>🚀 <strong>智能切换</strong>：自动选择最适合的模型处理您的请求</li>
+                        </ul>
+                        <p class="mt-2"><strong>使用提示：</strong>上传音频文件时，系统会自动转录内容；上传视频时，请详细描述视频内容以获得最佳分析效果。</p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
 
-    <!-- 输入区域 -->
-    <div class="input-area bg-white px-4 py-3">
-        <!-- 预览区域 -->
-        <div id="previewArea" class="hidden mb-3">
-            <div id="imagePreview" class="hidden relative inline-block mr-2 mb-2">
-                <img id="previewImage" class="h-20 w-auto rounded" alt="预览图片">
-                <button id="removeImageBtn" class="absolute -top-2 -right-2 bg-gray-800 bg-opacity-70 rounded-full w-5 h-5 flex items-center justify-center text-white">
-                    <div class="w-3 h-3 flex items-center justify-center">
-                        <i class="ri-close-line"></i>
+            <!-- 输入区域 -->
+            <div class="input-area bg-white px-4 py-3">
+                <!-- 预览区域 -->
+                <div id="previewArea" class="hidden mb-3">
+                    <div id="imagePreview" class="hidden relative inline-block mr-2 mb-2">
+                        <img id="previewImage" class="h-20 w-auto rounded" alt="预览图片">
+                        <button id="removeImageBtn"
+                            class="absolute -top-2 -right-2 bg-gray-800 bg-opacity-70 rounded-full w-5 h-5 flex items-center justify-center text-white">
+                            <div class="w-3 h-3 flex items-center justify-center">
+                                <i class="ri-close-line"></i>
+                            </div>
+                        </button>
                     </div>
-                </button>
-            </div>
-            
-            <div id="audioPreview" class="hidden relative inline-block mr-2 mb-2">
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
-                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="ri-file-music-line text-blue-600"></i>
+
+                    <div id="audioPreview" class="hidden relative inline-block mr-2 mb-2">
+                        <div
+                            class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="ri-file-music-line text-blue-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div id="audioFileName" class="text-sm font-medium text-gray-800">音频文件</div>
+                                <div id="audioFileSize" class="text-xs text-gray-500">0 MB</div>
+                            </div>
+                            <button id="removeAudioBtn"
+                                class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
+                                <i class="ri-close-line text-sm"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex-1">
-                        <div id="audioFileName" class="text-sm font-medium text-gray-800">音频文件</div>
-                        <div id="audioFileSize" class="text-xs text-gray-500">0 MB</div>
+
+                    <div id="videoPreview" class="hidden relative inline-block mr-2 mb-2">
+                        <div
+                            class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="ri-video-line text-green-600"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div id="videoFileName" class="text-sm font-medium text-gray-800">视频文件</div>
+                                <div id="videoFileSize" class="text-xs text-gray-500">0 MB</div>
+                            </div>
+                            <button id="removeVideoBtn"
+                                class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
+                                <i class="ri-close-line text-sm"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button id="removeAudioBtn" class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
-                        <i class="ri-close-line text-sm"></i>
+
+                    <div id="audioRecording"
+                        class="hidden bg-red-50 border border-red-200 rounded-lg p-3 inline-flex items-center space-x-3">
+                        <div class="audio-wave">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span class="text-sm text-red-700 font-medium">正在录音...</span>
+                        <button id="stopRecordingBtn"
+                            class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600">
+                            <i class="ri-stop-circle-fill"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-end">
+                    <div class="flex space-x-2 mr-3">
+                        <button id="uploadImageBtn"
+                            class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                            title="上传图片">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-image-line"></i>
+                            </div>
+                        </button>
+                        <button id="uploadAudioBtn"
+                            class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                            title="上传音频">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-file-music-line"></i>
+                            </div>
+                        </button>
+                        <button id="uploadVideoBtn"
+                            class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                            title="上传视频">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-video-line"></i>
+                            </div>
+                        </button>
+                        <button id="startVoiceBtn"
+                            class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors"
+                            title="录音">
+                            <div class="w-5 h-5 flex items-center justify-center">
+                                <i class="ri-mic-line"></i>
+                            </div>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 relative">
+                        <textarea id="messageInput"
+                            class="message-input w-full border-none focus:ring-0 rounded-xl bg-gray-100 px-4 py-2 text-gray-800 placeholder-gray-500"
+                            placeholder="输入您想说的话..." rows="1"></textarea>
+                    </div>
+
+                    <!-- 联网搜索开关 -->
+                    <div class="search-controls-inline ml-3">
+                        <label class="switch-inline">
+                            <input type="checkbox" id="enableSearch" checked>
+                            <span class="slider-inline round"></span>
+                        </label>
+                        <label for="enableSearch" class="search-label-inline">
+                            <span class="search-status-icon">🌐</span>
+                        </label>
+                    </div>
+
+                    <!-- 独立搜索按钮 -->
+                    <button id="webSearchBtn"
+                        class="ml-2 px-3 py-2 !rounded-button bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors whitespace-nowrap"
+                        title="独立网络搜索">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            🔍
+                        </div>
+                    </button>
+
+                    <button id="sendMessageBtn"
+                        class="ml-3 px-4 py-2 !rounded-button bg-gray-200 text-gray-500 hover:bg-gray-300 transition-colors disabled:opacity-50 whitespace-nowrap">
+                        <div class="w-5 h-5 flex items-center justify-center">
+                            <i class="ri-send-plane-fill"></i>
+                        </div>
                     </button>
                 </div>
             </div>
-            
-            <div id="videoPreview" class="hidden relative inline-block mr-2 mb-2">
-                <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center space-x-3 min-w-48">
-                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="ri-video-line text-green-600"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div id="videoFileName" class="text-sm font-medium text-gray-800">视频文件</div>
-                        <div id="videoFileSize" class="text-xs text-gray-500">0 MB</div>
-                    </div>
-                    <button id="removeVideoBtn" class="w-6 h-6 bg-gray-800 bg-opacity-70 rounded-full flex items-center justify-center text-white hover:bg-opacity-90">
-                        <i class="ri-close-line text-sm"></i>
-                    </button>
-                </div>
-            </div>
-            
-            <div id="audioRecording" class="hidden bg-red-50 border border-red-200 rounded-lg p-3 inline-flex items-center space-x-3">
-                <div class="audio-wave">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                <span class="text-sm text-red-700 font-medium">正在录音...</span>
-                <button id="stopRecordingBtn" class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600">
-                    <i class="ri-stop-circle-fill"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div class="flex items-end">
-            <div class="flex space-x-2 mr-3">
-                <button id="uploadImageBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传图片">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-image-line"></i>
-                    </div>
-                </button>
-                <button id="uploadAudioBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传音频">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-file-music-line"></i>
-                    </div>
-                </button>
-                <button id="uploadVideoBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="上传视频">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-video-line"></i>
-                    </div>
-                </button>
-                <button id="startVoiceBtn" class="w-10 h-10 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors" title="录音">
-                    <div class="w-5 h-5 flex items-center justify-center">
-                        <i class="ri-mic-line"></i>
-                    </div>
-                </button>
-            </div>
-            
-            <div class="flex-1 relative">
-                <textarea id="messageInput" class="message-input w-full border-none focus:ring-0 rounded-xl bg-gray-100 px-4 py-2 text-gray-800 placeholder-gray-500" placeholder="输入您想说的话..." rows="1"></textarea>
-            </div>
-            
-            <!-- 联网搜索开关 -->
-            <div class="search-controls-inline ml-3">
-                <label class="switch-inline">
-                    <input type="checkbox" id="enableSearch" checked>
-                    <span class="slider-inline round"></span>
-                </label>
-                <label for="enableSearch" class="search-label-inline">
-                    <span class="search-status-icon">🌐</span>
-                </label>
-            </div>
-            
-            <!-- 独立搜索按钮 -->
-            <button id="webSearchBtn" class="ml-2 px-3 py-2 !rounded-button bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors whitespace-nowrap" title="独立网络搜索">
-                <div class="w-5 h-5 flex items-center justify-center">
-                    🔍
-                </div>
-            </button>
-            
-            <button id="sendMessageBtn" class="ml-3 px-4 py-2 !rounded-button bg-gray-200 text-gray-500 hover:bg-gray-300 transition-colors disabled:opacity-50 whitespace-nowrap">
-                <div class="w-5 h-5 flex items-center justify-center">
-                    <i class="ri-send-plane-fill"></i>
-                </div>
-            </button>
-        </div>
         </div>
     </div>
 
@@ -1202,7 +1260,7 @@
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
-                packages: {'[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics', 'cancel', 'mathtools']},
+                packages: { '[+]': ['ams', 'newcommand', 'autoload', 'color', 'physics', 'cancel', 'mathtools'] },
                 processEscapes: true,
                 processEnvironments: true,
                 tags: 'ams',
@@ -1267,12 +1325,12 @@
                 }
             }
         };
-        
+
         // 配置Marked.js
         marked.setOptions({
             breaks: true,
             gfm: true,
-            highlight: function(code, lang) {
+            highlight: function (code, lang) {
                 if (Prism.languages[lang]) {
                     return Prism.highlight(code, Prism.languages[lang], lang);
                 } else {
@@ -1280,20 +1338,20 @@
                 }
             }
         });
-        
+
         // 简化的Markdown渲染函数
         function renderMarkdown(text) {
             console.log('渲染Markdown文本:', text.substring(0, 100) + '...');
-            
+
             // 直接使用marked.js渲染，不做复杂的数学公式保护
             // MathJax会在后续处理数学公式
             return marked.parse(text);
         }
-        
+
         // 渲染消息内容的函数
         function renderMessageContent(text, isMarkdown = true) {
             if (!text) return '';
-            
+
             if (isMarkdown) {
                 const html = renderMarkdown(text);
                 return `<div class="markdown-content">${html}</div>`;
@@ -1302,7 +1360,7 @@
                 return text.replace(/\n/g, '<br>');
             }
         }
-        
+
         // 处理代码高亮的函数
         function highlightCode(element) {
             // 对所有pre code元素应用语法高亮
@@ -1310,20 +1368,20 @@
                 Prism.highlightElement(codeBlock);
             });
         }
-        
+
         // 优化的数学公式渲染函数
         function renderMath(element) {
             console.log('开始渲染数学公式');
-            
+
             // 检查是否包含数学公式
             const text = element.textContent || element.innerText || '';
             const hasMath = /\$|\\\(|\\\[|\\int|\\sum|\\frac|\\sqrt|\\alpha|\\beta|\\gamma|\\pi|\\theta|\\phi|\\psi|\\omega/.test(text);
-            
+
             if (!hasMath) {
                 console.log('未检测到数学公式标记，跳过渲染');
                 return;
             }
-            
+
             if (window.MathJax && window.MathJax.typesetPromise) {
                 // 清除之前可能存在的渲染结果
                 element.querySelectorAll('mjx-container').forEach(container => {
@@ -1331,10 +1389,10 @@
                         container.remove();
                     }
                 });
-                
+
                 window.MathJax.typesetPromise([element]).then(() => {
                     console.log('MathJax渲染完成');
-                    
+
                     // 优化渲染后的显示效果
                     element.querySelectorAll('mjx-container[display="block"]').forEach(container => {
                         // 确保块级公式居中显示
@@ -1342,32 +1400,32 @@
                         if (parent && !parent.style.textAlign) {
                             parent.style.textAlign = 'center';
                         }
-                        
+
                         // 处理长公式的滚动
                         if (container.scrollWidth > container.clientWidth) {
                             container.style.overflowX = 'auto';
                             container.style.overflowY = 'hidden';
                         }
                     });
-                    
+
                     // 为行内公式添加适当的间距
                     element.querySelectorAll('mjx-container[display="inline"]').forEach(container => {
                         container.style.verticalAlign = 'middle';
                     });
-                    
+
                     // 滚动到底部
                     if (typeof scrollToBottom === 'function') {
                         setTimeout(scrollToBottom, 150);
                     }
-                    
+
                     // 触发自定义事件，通知渲染完成
                     element.dispatchEvent(new CustomEvent('mathRendered', {
                         detail: { element: element }
                     }));
-                    
+
                 }).catch((err) => {
                     console.error('MathJax渲染错误:', err);
-                    
+
                     // 显示友好的错误信息
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'math-error';
@@ -1384,7 +1442,7 @@
                 if (!element._mathRetryCount) {
                     element._mathRetryCount = 0;
                 }
-                
+
                 if (element._mathRetryCount < 5) {
                     element._mathRetryCount++;
                     setTimeout(() => renderMath(element), 500);
@@ -1397,7 +1455,7 @@
                 }
             }
         }
-        
+
         // 强制重新渲染所有数学公式的辅助函数
         function forceRerenderMath() {
             console.log('强制重新渲染所有数学公式');
@@ -1412,8 +1470,8 @@
                 }
             }
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             const chatContainer = document.getElementById('chatContainer');
             const messageInput = document.getElementById('messageInput');
             const sendMessageBtn = document.getElementById('sendMessageBtn');
@@ -1441,44 +1499,44 @@
             const clearChatBtn = document.getElementById('clearChatBtn');
             const modelSelect = document.getElementById('modelSelect');
             const webSearchBtn = document.getElementById('webSearchBtn');
-            
+
             // 设置相关元素
             const headerTemperatureBtn = document.getElementById('headerTemperatureBtn');
             const headerTemperatureValue = document.getElementById('headerTemperatureValue');
             const headerSystemPromptBtn = document.getElementById('headerSystemPromptBtn');
             const systemPromptStatus = document.getElementById('systemPromptStatus');
             const systemPromptIcon = document.getElementById('systemPromptIcon');
-            
+
             // System Prompt 弹窗元素
             const systemPromptModal = document.getElementById('systemPromptModal');
             const closeSystemPromptBtn = document.getElementById('closeSystemPromptBtn');
             const systemPromptInput = document.getElementById('systemPromptInput');
             const saveSystemPromptBtn = document.getElementById('saveSystemPromptBtn');
             const clearSystemPromptBtn = document.getElementById('clearSystemPromptBtn');
-            
+
             // Temperature 弹窗元素
             const temperatureModal = document.getElementById('temperatureModal');
             const closeTemperatureBtn = document.getElementById('closeTemperatureBtn');
             const temperatureSlider = document.getElementById('temperatureSlider');
             const temperatureValue = document.getElementById('temperatureValue');
             const saveTemperatureBtn = document.getElementById('saveTemperatureBtn');
-            
+
             let isRecording = false;
             let selectedImage = null;
             let selectedAudio = null;
             let selectedVideo = null;
             let mediaRecorder = null;
             let recordedChunks = [];
-            
+
             // 设置相关变量
             let systemPrompt = '';
             let temperature = 0.7;
-            
+
             // 更新界面状态显示
             function updateUIStatus() {
                 // 更新temperature显示
                 headerTemperatureValue.textContent = temperature;
-                
+
                 // 更新system prompt状态
                 if (systemPrompt && systemPrompt.trim()) {
                     systemPromptStatus.textContent = '已设置';
@@ -1498,7 +1556,7 @@
             let sessionsData = [];
             let currentPage = 1;
             let isLoadingSessions = false;
-            
+
             // 模型图标和描述映射
             const modelDisplayInfo = {
                 'deepseek-ai/DeepSeek-V2.5': {
@@ -1524,33 +1582,33 @@
                 try {
                     const response = await fetch('/api/models');
                     const data = await response.json();
-                    
+
                     if (data.success && data.models.length > 0) {
                         modelSelect.innerHTML = '';
-                        
+
                         data.models.forEach(model => {
                             const option = document.createElement('option');
                             option.value = model.id;
-                            
+
                             // 获取模型显示信息
                             const displayInfo = modelDisplayInfo[model.id] || {
                                 icon: '🤖',
                                 description: '智能助手'
                             };
-                            
+
                             // 构建显示文本
                             const modelName = model.name.replace(/\(文本\)|\(多模态\)/g, '').trim();
                             const supportText = model.supports_image ? ' (多模态)' : ' (文本)';
-                            
+
                             option.textContent = `${displayInfo.icon} ${modelName} - ${displayInfo.description}${supportText}`;
-                            
+
                             if (model.default || model.id === currentModel) {
                                 option.selected = true;
                                 currentModel = model.id;
                             }
                             modelSelect.appendChild(option);
                         });
-                        
+
                         console.log('已加载模型:', data.models.length, '个');
                     } else {
                         modelSelect.innerHTML = '<option value="">无可用模型</option>';
@@ -1560,17 +1618,17 @@
                     modelSelect.innerHTML = '<option value="">加载失败</option>';
                 }
             }
-            
+
             // 模型选择事件
-            modelSelect.addEventListener('change', function() {
+            modelSelect.addEventListener('change', function () {
                 currentModel = this.value;
                 console.log('切换模型:', currentModel);
             });
-            
+
             // 页面加载时加载模型和历史记录
             loadModels();
             loadSessions();
-            
+
             // 历史对话相关的DOM元素
             const sidebar = document.getElementById('sidebar');
             const toggleSidebar = document.getElementById('toggleSidebar');
@@ -1582,18 +1640,18 @@
             const totalSessions = document.getElementById('totalSessions');
             const totalMessages = document.getElementById('totalMessages');
             const loadMoreSessions = document.getElementById('loadMoreSessions');
-            
+
             // 历史对话相关功能
-            
+
             // 加载会话列表
             async function loadSessions(page = 1, reset = false) {
                 if (isLoadingSessions) return;
                 isLoadingSessions = true;
-                
+
                 try {
                     const response = await fetch(`/api/sessions?page=${page}&limit=20`);
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         if (reset) {
                             sessionsData = data.sessions;
@@ -1601,10 +1659,10 @@
                         } else {
                             sessionsData = [...sessionsData, ...data.sessions];
                         }
-                        
+
                         renderSessions(data.sessions, !reset);
                         updateStatistics(data.statistics);
-                        
+
                         // 显示/隐藏"加载更多"按钮
                         if (data.pagination.has_more) {
                             loadMoreSessions.classList.remove('hidden');
@@ -1619,25 +1677,25 @@
                     isLoadingSessions = false;
                 }
             }
-            
+
             // 渲染会话列表
             function renderSessions(sessions, append = false) {
                 if (!append) {
                     sessionsList.innerHTML = '';
                 }
-                
+
                 sessions.forEach(session => {
                     const sessionDiv = document.createElement('div');
                     sessionDiv.className = `session-item p-3 mb-2 bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors ${currentSessionId === session.id ? 'bg-blue-50 border-2 border-blue-200' : ''}`;
                     sessionDiv.dataset.sessionId = session.id;
-                    
+
                     const timeStr = new Date(session.updated_at).toLocaleString('zh-CN', {
                         month: 'short',
                         day: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
                     });
-                    
+
                     sessionDiv.innerHTML = `
                         <div class="flex items-start justify-between">
                             <div class="flex-1 min-w-0">
@@ -1660,7 +1718,7 @@
                             </div>
                         </div>
                     `;
-                    
+
                     // 点击会话项
                     sessionDiv.addEventListener('click', (e) => {
                         if (e.target.closest('.session-rename') || e.target.closest('.session-delete')) {
@@ -1668,29 +1726,29 @@
                         }
                         loadSession(session.id);
                     });
-                    
+
                     // 重命名按钮
                     sessionDiv.querySelector('.session-rename').addEventListener('click', (e) => {
                         e.stopPropagation();
                         renameSession(session.id, session.title);
                     });
-                    
+
                     // 删除按钮
                     sessionDiv.querySelector('.session-delete').addEventListener('click', (e) => {
                         e.stopPropagation();
                         deleteSession(session.id);
                     });
-                    
+
                     sessionsList.appendChild(sessionDiv);
                 });
             }
-            
+
             // 更新统计信息
             function updateStatistics(stats) {
                 totalSessions.textContent = stats.total_sessions;
                 totalMessages.textContent = stats.total_messages;
             }
-            
+
             // 创建新对话
             async function createNewSession() {
                 try {
@@ -1703,14 +1761,14 @@
                             model: currentModel
                         })
                     });
-                    
+
                     const data = await response.json();
                     if (data.success) {
                         currentSessionId = data.session.id;
                         conversationHistory = [];
                         clearChatDisplay();
                         loadSessions(1, true); // 重新加载会话列表
-                        
+
                         // 关闭侧边栏（移动端）
                         if (window.innerWidth < 1024) {
                             sidebar.classList.add('-translate-x-full');
@@ -1720,18 +1778,18 @@
                     console.error('创建新对话失败:', error);
                 }
             }
-            
+
             // 加载指定会话
             async function loadSession(sessionId) {
                 try {
                     const response = await fetch(`/api/sessions/${sessionId}`);
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         currentSessionId = sessionId;
                         conversationHistory = [];
                         clearChatDisplay();
-                        
+
                         // 渲染历史消息
                         data.messages.forEach(msg => {
                             if (msg.role === 'user') {
@@ -1742,17 +1800,17 @@
                                 };
                                 conversationHistory.push(userMessage);
                                 // 根据内容类型确定媒体类型
-                        let image = null, audio = null, video = null;
-                        
-                        if (msg.content_type === 'image') {
-                            image = msg.image_data;
-                        } else if (msg.content_type === 'audio') {
-                            audio = msg.image_data; // image_data字段现在存储所有媒体数据
-                        } else if (msg.content_type === 'video') {
-                            video = msg.image_data;
-                        }
-                        
-                        displayUserMessage(msg.content, image, audio, video, msg.content_type);
+                                let image = null, audio = null, video = null;
+
+                                if (msg.content_type === 'image') {
+                                    image = msg.image_data;
+                                } else if (msg.content_type === 'audio') {
+                                    audio = msg.image_data; // image_data字段现在存储所有媒体数据
+                                } else if (msg.content_type === 'video') {
+                                    video = msg.image_data;
+                                }
+
+                                displayUserMessage(msg.content, image, audio, video, msg.content_type);
                             } else if (msg.role === 'assistant') {
                                 conversationHistory.push({
                                     role: 'assistant',
@@ -1761,7 +1819,7 @@
                                 displayBotMessage(msg.content, msg.provider);
                             }
                         });
-                        
+
                         // 更新会话列表中的选中状态
                         document.querySelectorAll('.session-item').forEach(item => {
                             if (item.dataset.sessionId === sessionId) {
@@ -1770,19 +1828,19 @@
                                 item.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
                             }
                         });
-                        
+
                         // 关闭侧边栏（移动端）
                         if (window.innerWidth < 1024) {
                             sidebar.classList.add('-translate-x-full');
                         }
-                        
+
                         scrollToBottom();
                     }
                 } catch (error) {
                     console.error('加载会话失败:', error);
                 }
             }
-            
+
             // 重命名会话
             async function renameSession(sessionId, currentTitle) {
                 const newTitle = prompt('请输入新的对话标题:', currentTitle);
@@ -1797,7 +1855,7 @@
                                 title: newTitle
                             })
                         });
-                        
+
                         const data = await response.json();
                         if (data.success) {
                             loadSessions(1, true); // 重新加载会话列表
@@ -1807,7 +1865,7 @@
                     }
                 }
             }
-            
+
             // 删除会话
             async function deleteSession(sessionId) {
                 if (confirm('确定要删除这个对话吗？此操作不可撤销。')) {
@@ -1815,7 +1873,7 @@
                         const response = await fetch(`/api/sessions/${sessionId}`, {
                             method: 'DELETE'
                         });
-                        
+
                         const data = await response.json();
                         if (data.success) {
                             if (currentSessionId === sessionId) {
@@ -1830,7 +1888,7 @@
                     }
                 }
             }
-            
+
             // 清空聊天显示
             function clearChatDisplay() {
                 chatContainer.innerHTML = `
@@ -1848,21 +1906,21 @@
                     </div>
                 `;
             }
-            
+
             // 显示用户消息
             function displayUserMessage(text, image, audio, video, contentType) {
                 const userMessageDiv = document.createElement('div');
                 userMessageDiv.className = 'flex mb-4 justify-end';
-                
+
                 let messageContent = '';
                 if (text) {
                     messageContent += `<div>${text}</div>`;
                 }
-                
+
                 if (image) {
                     messageContent += `<img src="${image}" class="max-w-xs rounded mt-2 block">`;
                 }
-                
+
                 if (audio) {
                     messageContent += `
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-2 max-w-xs">
@@ -1878,7 +1936,7 @@
                             </audio>
                         </div>`;
                 }
-                
+
                 if (video) {
                     messageContent += `
                         <div class="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
@@ -1894,58 +1952,58 @@
                             </video>
                         </div>`;
                 }
-                
+
                 userMessageDiv.innerHTML = `
                     <div class="message-bubble user-message p-3 text-gray-800">
                         ${messageContent}
                     </div>
                 `;
-                
+
                 chatContainer.appendChild(userMessageDiv);
             }
-            
+
             // 显示机器人消息（支持Markdown渲染）
             function displayBotMessage(text, provider) {
                 const botMessageDiv = document.createElement('div');
                 botMessageDiv.className = 'flex mb-4';
-                
-                const providerBadge = provider === 'groq' ? 
-                    '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
+
+                const providerBadge = provider === 'groq' ?
+                    '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' :
                     '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
-                
+
                 // 始终使用Markdown渲染，移除不可靠的hasMarkdown判断
                 const contentHtml = renderMessageContent(text, true);
-                
+
                 botMessageDiv.innerHTML = `
                     <div class="message-bubble bot-message p-3 text-gray-800">
                         ${providerBadge}
                         <div class="mt-1">${contentHtml}</div>
                     </div>
                 `;
-                
+
                 chatContainer.appendChild(botMessageDiv);
-                
+
                 // 始终应用代码高亮和数学公式渲染
                 highlightCode(botMessageDiv);
                 renderMath(botMessageDiv);
             }
-            
+
             // 侧边栏控制事件
             toggleSidebar.addEventListener('click', () => {
                 sidebar.classList.toggle('-translate-x-full');
             });
-            
+
             closeSidebar.addEventListener('click', () => {
                 sidebar.classList.add('-translate-x-full');
             });
-            
+
             historyToggle.addEventListener('click', () => {
                 sidebar.classList.toggle('-translate-x-full');
             });
-            
+
             // 新对话按钮
             newChatBtn.addEventListener('click', createNewSession);
-            
+
             // 搜索功能
             let searchTimeout;
             searchInput.addEventListener('input', () => {
@@ -1959,21 +2017,21 @@
                     }
                 }, 300);
             });
-            
+
             // 搜索消息
             async function searchMessages(query) {
                 try {
                     const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
                     const data = await response.json();
-                    
+
                     if (data.success) {
                         sessionsList.innerHTML = '';
-                        
+
                         if (data.results.length === 0) {
                             sessionsList.innerHTML = '<div class="p-4 text-center text-gray-500">未找到相关内容</div>';
                             return;
                         }
-                        
+
                         // 按会话分组显示搜索结果
                         const groupedResults = {};
                         data.results.forEach(msg => {
@@ -1985,25 +2043,25 @@
                             }
                             groupedResults[msg.session_id].messages.push(msg);
                         });
-                        
+
                         Object.entries(groupedResults).forEach(([sessionId, sessionData]) => {
                             const sessionDiv = document.createElement('div');
                             sessionDiv.className = 'p-3 mb-2 bg-gray-50 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors';
                             sessionDiv.dataset.sessionId = sessionId;
-                            
+
                             const previewText = sessionData.messages[0].content.substring(0, 100) + (sessionData.messages[0].content.length > 100 ? '...' : '');
-                            
+
                             sessionDiv.innerHTML = `
                                 <div class="text-sm font-medium text-gray-800 mb-1">${sessionData.session_title}</div>
                                 <div class="text-xs text-gray-600 mb-2">${previewText}</div>
                                 <div class="text-xs text-blue-600">找到 ${sessionData.messages.length} 条匹配消息</div>
                             `;
-                            
+
                             sessionDiv.addEventListener('click', () => {
                                 loadSession(sessionId);
                                 searchInput.value = '';
                             });
-                            
+
                             sessionsList.appendChild(sessionDiv);
                         });
                     }
@@ -2011,19 +2069,19 @@
                     console.error('搜索失败:', error);
                 }
             }
-            
+
             // 加载更多会话
             loadMoreSessions.addEventListener('click', () => {
                 loadSessions(currentPage + 1);
             });
-            
+
             // 自动调整文本框高度
-            messageInput.addEventListener('input', function() {
+            messageInput.addEventListener('input', function () {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
                 updateSendButton();
             });
-            
+
             // 更新发送按钮状态
             function updateSendButton() {
                 if (messageInput.value.trim() || selectedImage || selectedAudio || selectedVideo) {
@@ -2034,22 +2092,22 @@
                     sendMessageBtn.classList.remove('bg-primary', 'text-white');
                 }
             }
-            
+
             // 发送消息
             async function sendMessage() {
                 const messageText = messageInput.value.trim();
-                
+
                 if (!messageText && !selectedImage && !selectedAudio && !selectedVideo) return;
-                
+
                 // 添加用户消息到聊天区域
                 const userMessageDiv = document.createElement('div');
                 userMessageDiv.className = 'flex justify-end mb-4';
-                
+
                 let messageContent = '';
                 if (messageText) {
                     messageContent += `<p>${messageText}</p>`;
                 }
-                
+
                 // 添加媒体内容
                 let hasMedia = false;
                 if (selectedImage || selectedAudio || selectedVideo) {
@@ -2058,11 +2116,11 @@
                     }
                     hasMedia = true;
                 }
-                
+
                 if (selectedImage) {
                     messageContent += `<img src="${selectedImage}" alt="用户上传图片" class="rounded w-full h-auto max-w-xs">`;
                 }
-                
+
                 if (selectedAudio) {
                     messageContent += `
                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center space-x-3 max-w-xs mt-2">
@@ -2078,7 +2136,7 @@
                             </div>
                         </div>`;
                 }
-                
+
                 if (selectedVideo) {
                     messageContent += `
                         <div class="bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
@@ -2094,19 +2152,19 @@
                             </video>
                         </div>`;
                 }
-                
+
                 if (hasMedia && messageText) {
                     messageContent += '</div>';
                 }
-                
+
                 userMessageDiv.innerHTML = `
                     <div class="message-bubble user-message p-3 text-gray-800">
                         ${messageContent}
                     </div>
                 `;
-                
+
                 chatContainer.appendChild(userMessageDiv);
-                
+
                 // 保存到对话历史
                 const userMessage = {
                     role: 'user',
@@ -2116,7 +2174,7 @@
                     video: selectedVideo
                 };
                 conversationHistory.push(userMessage);
-                
+
                 // 清空输入框和预览
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
@@ -2127,7 +2185,7 @@
                 imagePreview.classList.add('hidden');
                 audioPreview.classList.add('hidden');
                 videoPreview.classList.add('hidden');
-                
+
                 // 显示机器人正在输入的状态
                 const typingDiv = document.createElement('div');
                 typingDiv.className = 'flex mb-4 typing-message';
@@ -2140,10 +2198,10 @@
                         </div>
                     </div>
                 `;
-                
+
                 chatContainer.appendChild(typingDiv);
                 scrollToBottom();
-                
+
                 try {
                     // 如果当前没有会话，先创建一个新会话
                     if (!currentSessionId) {
@@ -2157,14 +2215,14 @@
                                 model: currentModel
                             })
                         });
-                        
+
                         const sessionData = await sessionResponse.json();
                         if (sessionData.success) {
                             currentSessionId = sessionData.session.id;
                             loadSessions(1, true); // 重新加载会话列表
                         }
                     }
-                    
+
                     // 发送到后端API
                     const response = await fetch('/api/chat', {
                         method: 'POST',
@@ -2179,15 +2237,15 @@
                             temperature: temperature
                         })
                     });
-                    
+
                     const data = await response.json();
-                    
+
                     // 移除输入中状态
                     const typingMessages = document.getElementsByClassName('typing-message');
                     if (typingMessages.length > 0) {
                         chatContainer.removeChild(typingMessages[0]);
                     }
-                    
+
                     if (response.ok && data.success) {
                         // 检查是否自动切换了模型
                         if (data.model && data.model !== currentModel) {
@@ -2201,16 +2259,16 @@
                             `;
                             chatContainer.appendChild(switchNoticeDiv);
                         }
-                        
+
                         // 添加机器人回复容器（带打字机效果）
                         const botMessageDiv = document.createElement('div');
                         botMessageDiv.className = 'flex mb-4';
-                        
+
                         // 显示使用的服务提供商信息
-                        const providerBadge = data.provider === 'groq' ? 
-                            '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' : 
+                        const providerBadge = data.provider === 'groq' ?
+                            '<span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-2">Groq 🖼️</span>' :
                             '<span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full mr-2">SiliconFlow 📝</span>';
-                        
+
                         botMessageDiv.innerHTML = `
                             <div class="message-bubble bot-message p-3 text-gray-800">
                                 ${providerBadge}
@@ -2219,14 +2277,14 @@
                                 </div>
                             </div>
                         `;
-                        
+
                         chatContainer.appendChild(botMessageDiv);
                         scrollToBottom();
-                        
+
                         // 使用打字机效果显示回复
                         const messageElement = botMessageDiv.querySelector('.message-bubble > div');
                         await typewriterEffect(messageElement, data.response, 25);
-                        
+
                         // 保存机器人回复到历史
                         conversationHistory.push({
                             role: 'assistant',
@@ -2249,7 +2307,7 @@
                     if (typingMessages.length > 0) {
                         chatContainer.removeChild(typingMessages[0]);
                     }
-                    
+
                     // 显示网络错误
                     const errorMessageDiv = document.createElement('div');
                     errorMessageDiv.className = 'flex mb-4';
@@ -2260,49 +2318,49 @@
                     `;
                     chatContainer.appendChild(errorMessageDiv);
                 }
-                
+
                 scrollToBottom();
                 updateSendButton();
             }
-            
+
             // 滚动到底部
             function scrollToBottom() {
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }
-            
+
             // 打字机效果函数（支持Markdown渲染）
             function typewriterEffect(element, text, speed = 30) {
                 return new Promise((resolve) => {
                     const textSpan = element.querySelector('.typewriter-text');
                     const cursor = element.querySelector('.typewriter-cursor');
-                    
+
                     // 检查是否包含Markdown格式或数学公式
-                    const hasMarkdown = /[#*`|\\]/.test(text) || 
-                                        text.includes('```') || 
-                                        text.includes('|') ||
-                                        text.includes('$$') ||
-                                        text.includes('\\(') ||
-                                        text.includes('\\[') ||
-                                        /\$[^$]+\$/.test(text);
-                    
+                    const hasMarkdown = /[#*`|\\]/.test(text) ||
+                        text.includes('```') ||
+                        text.includes('|') ||
+                        text.includes('$$') ||
+                        text.includes('\\(') ||
+                        text.includes('\\[') ||
+                        /\$[^$]+\$/.test(text);
+
                     if (hasMarkdown) {
                         // 使用Markdown渲染
                         const renderedContent = renderMessageContent(text, true);
-                        
+
                         // 移除打字机结构，直接显示渲染的内容
                         element.innerHTML = renderedContent;
-                        
+
                         // 应用代码高亮
                         highlightCode(element);
-                        
+
                         // 渲染数学公式
                         renderMath(element);
-                        
+
                         resolve();
                     } else {
                         // 原有的打字机效果
                         let i = 0;
-                        
+
                         function type() {
                             if (i < text.length) {
                                 // 处理换行符
@@ -2322,72 +2380,72 @@
                                 resolve();
                             }
                         }
-                        
+
                         type();
                     }
                 });
             }
-            
+
             // 发送按钮点击事件
             sendMessageBtn.addEventListener('click', sendMessage);
-            
+
             // 回车键发送消息
-            messageInput.addEventListener('keydown', function(e) {
+            messageInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
             });
-            
+
             // 上传图片按钮点击事件
-            uploadImageBtn.addEventListener('click', function() {
+            uploadImageBtn.addEventListener('click', function () {
                 imageFileInput.click();
             });
 
             // 上传音频按钮点击事件
-            uploadAudioBtn.addEventListener('click', function() {
+            uploadAudioBtn.addEventListener('click', function () {
                 audioFileInput.click();
             });
 
             // 上传视频按钮点击事件
-            uploadVideoBtn.addEventListener('click', function() {
+            uploadVideoBtn.addEventListener('click', function () {
                 videoFileInput.click();
             });
-            
+
             // 图片文件选择事件
-            imageFileInput.addEventListener('change', async function() {
+            imageFileInput.addEventListener('change', async function () {
                 if (this.files && this.files[0]) {
                     const file = this.files[0];
-                    
+
                     // 检查文件大小（4MB限制）
                     if (file.size > 4 * 1024 * 1024) {
                         alert(`图片文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持4MB`);
                         return;
                     }
-                    
+
                     // 检查文件类型
                     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
                     if (!allowedTypes.includes(file.type)) {
                         alert('不支持的文件格式，请上传 PNG、JPG、JPEG、GIF 或 WebP 格式的图片');
                         return;
                     }
-                    
+
                     // 显示上传进度
                     uploadImageBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
                     uploadImageBtn.disabled = true;
-                    
+
                     try {
                         // 使用FormData上传到后端
                         const formData = new FormData();
                         formData.append('image', file);
-                        
+
                         const response = await fetch('/api/upload', {
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             selectedImage = result.image_data;
                             previewImage.src = selectedImage;
@@ -2406,9 +2464,9 @@
                     }
                 }
             });
-            
+
             // 移除预览图片
-            removeImageBtn.addEventListener('click', function() {
+            removeImageBtn.addEventListener('click', function () {
                 selectedImage = null;
                 imagePreview.classList.add('hidden');
                 if (!isRecording && !selectedAudio && !selectedVideo) {
@@ -2419,39 +2477,39 @@
             });
 
             // 音频文件选择事件
-            audioFileInput.addEventListener('change', async function() {
+            audioFileInput.addEventListener('change', async function () {
                 if (this.files && this.files[0]) {
                     const file = this.files[0];
-                    
+
                     // 检查文件大小（10MB限制）
                     if (file.size > 10 * 1024 * 1024) {
                         alert(`音频文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持10MB`);
                         return;
                     }
-                    
+
                     // 检查文件类型
                     const allowedTypes = ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/m4a', 'audio/aac', 'audio/flac', 'audio/webm'];
                     if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp3|wav|ogg|m4a|aac|flac|webm)$/i)) {
                         alert('不支持的音频格式，请上传 MP3、WAV、OGG、M4A、AAC、FLAC 或 WebM 格式的音频');
                         return;
                     }
-                    
+
                     // 显示上传进度
                     uploadAudioBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
                     uploadAudioBtn.disabled = true;
-                    
+
                     try {
                         // 使用FormData上传到后端
                         const formData = new FormData();
                         formData.append('audio', file);
-                        
+
                         const response = await fetch('/api/upload/audio', {
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             selectedAudio = result.audio_data;
                             audioFileName.textContent = file.name;
@@ -2473,39 +2531,39 @@
             });
 
             // 视频文件选择事件
-            videoFileInput.addEventListener('change', async function() {
+            videoFileInput.addEventListener('change', async function () {
                 if (this.files && this.files[0]) {
                     const file = this.files[0];
-                    
+
                     // 检查文件大小（50MB限制）
                     if (file.size > 50 * 1024 * 1024) {
                         alert(`视频文件过大 (${(file.size / 1024 / 1024).toFixed(1)}MB)，最大支持50MB`);
                         return;
                     }
-                    
+
                     // 检查文件类型
                     const allowedTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm', 'video/mkv'];
                     if (!allowedTypes.includes(file.type) && !file.name.match(/\.(mp4|avi|mov|wmv|flv|webm|mkv)$/i)) {
                         alert('不支持的视频格式，请上传 MP4、AVI、MOV、WMV、FLV、WebM 或 MKV 格式的视频');
                         return;
                     }
-                    
+
                     // 显示上传进度
                     uploadVideoBtn.innerHTML = '<div class="w-5 h-5 flex items-center justify-center"><i class="ri-loader-4-line animate-spin"></i></div>';
                     uploadVideoBtn.disabled = true;
-                    
+
                     try {
                         // 使用FormData上传到后端
                         const formData = new FormData();
                         formData.append('video', file);
-                        
+
                         const response = await fetch('/api/upload/video', {
                             method: 'POST',
                             body: formData
                         });
-                        
+
                         const result = await response.json();
-                        
+
                         if (result.success) {
                             selectedVideo = result.video_data;
                             videoFileName.textContent = file.name;
@@ -2527,7 +2585,7 @@
             });
 
             // 移除音频预览
-            removeAudioBtn.addEventListener('click', function() {
+            removeAudioBtn.addEventListener('click', function () {
                 selectedAudio = null;
                 audioPreview.classList.add('hidden');
                 if (!isRecording && !selectedImage && !selectedVideo) {
@@ -2538,7 +2596,7 @@
             });
 
             // 移除视频预览
-            removeVideoBtn.addEventListener('click', function() {
+            removeVideoBtn.addEventListener('click', function () {
                 selectedVideo = null;
                 videoPreview.classList.add('hidden');
                 if (!isRecording && !selectedImage && !selectedAudio) {
@@ -2547,9 +2605,9 @@
                 videoFileInput.value = '';
                 updateSendButton();
             });
-            
-                        // 语音按钮点击事件
-            startVoiceBtn.addEventListener('click', async function() {
+
+            // 语音按钮点击事件
+            startVoiceBtn.addEventListener('click', async function () {
                 if (!isRecording) {
                     try {
                         // 首先尝试使用浏览器语音识别API
@@ -2567,41 +2625,41 @@
                     stopRecording();
                 }
             });
-            
+
             // 语音识别功能
             function startSpeechRecognition() {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 const recognition = new SpeechRecognition();
-                
+
                 recognition.lang = 'zh-CN'; // 中文
                 recognition.continuous = false;
                 recognition.interimResults = false;
                 recognition.maxAlternatives = 1;
-                
-                recognition.onstart = function() {
+
+                recognition.onstart = function () {
                     isRecording = true;
                     previewArea.classList.remove('hidden');
                     audioRecording.classList.remove('hidden');
                     console.log('开始语音识别...');
                 };
-                
-                recognition.onresult = function(event) {
+
+                recognition.onresult = function (event) {
                     const transcript = event.results[0][0].transcript;
                     console.log('语音识别结果:', transcript);
-                    
+
                     // 直接将识别结果填入输入框
                     messageInput.value = transcript;
                     messageInput.focus();
-                    
+
                     // 显示成功提示
                     showSuccessMessage(`🎙️ 语音识别成功！识别文字：${transcript.substring(0, 20)}${transcript.length > 20 ? '...' : ''}`);
                 };
-                
-                recognition.onerror = function(event) {
+
+                recognition.onerror = function (event) {
                     console.error('语音识别错误:', event.error);
-                    
+
                     let errorMessage = '语音识别失败';
-                    switch(event.error) {
+                    switch (event.error) {
                         case 'no-speech':
                             errorMessage = '没有检测到语音，请重试';
                             break;
@@ -2617,43 +2675,43 @@
                         default:
                             errorMessage = `语音识别失败: ${event.error}`;
                     }
-                    
+
                     showErrorMessage(errorMessage);
-                    
+
                     // 回退到录音模式
                     startAudioRecording();
                 };
-                
-                recognition.onend = function() {
+
+                recognition.onend = function () {
                     isRecording = false;
                     audioRecording.classList.add('hidden');
                     if (!selectedImage && !selectedAudio && !selectedVideo) {
                         previewArea.classList.add('hidden');
                     }
                 };
-                
+
                 recognition.start();
             }
-            
+
             // 录音功能（作为语音识别的备选方案）
             function startAudioRecording() {
-                navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+                navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
                     recordedChunks = [];
                     mediaRecorder = new MediaRecorder(stream);
-                    
-                    mediaRecorder.ondataavailable = function(event) {
+
+                    mediaRecorder.ondataavailable = function (event) {
                         if (event.data.size > 0) {
                             recordedChunks.push(event.data);
                         }
                     };
-                    
-                    mediaRecorder.onstop = async function() {
+
+                    mediaRecorder.onstop = async function () {
                         const blob = new Blob(recordedChunks, { type: 'audio/webm' });
                         const reader = new FileReader();
-                        
-                        reader.onload = async function() {
+
+                        reader.onload = async function () {
                             const audioData = reader.result;
-                            
+
                             try {
                                 const response = await fetch('/api/upload/record', {
                                     method: 'POST',
@@ -2666,16 +2724,16 @@
                                         language: 'zh'
                                     })
                                 });
-                                
+
                                 const result = await response.json();
-                                
+
                                 if (result.success) {
                                     selectedAudio = result.audio_data;
                                     audioFileName.textContent = result.file_name;
                                     audioFileSize.textContent = `${(result.file_size / 1024 / 1024).toFixed(2)} MB`;
                                     audioPreview.classList.remove('hidden');
                                     updateSendButton();
-                                    
+
                                     // 处理语音转文字结果
                                     if (result.transcription && result.transcription.text) {
                                         const transcribedText = result.transcription.text.trim();
@@ -2683,7 +2741,7 @@
                                             // 将转录的文字自动填入输入框
                                             messageInput.value = transcribedText;
                                             messageInput.focus();
-                                            
+
                                             // 显示转录成功的提示
                                             showSuccessMessage(`🎙️ 语音转文字成功！识别文字：${transcribedText.substring(0, 20)}${transcribedText.length > 20 ? '...' : ''}`);
                                         } else {
@@ -2696,7 +2754,7 @@
                                             console.warn('语音转文字失败:', result.transcription_error);
                                             showErrorMessage('语音转文字功能暂不可用，请手动描述录音内容');
                                         }
-                                        
+
                                         if (!messageInput.value.trim()) {
                                             messageInput.value = '请描述这段录音的内容';
                                             messageInput.focus();
@@ -2709,29 +2767,29 @@
                                 alert('录音保存失败: ' + error.message);
                             }
                         };
-                        
+
                         reader.readAsDataURL(blob);
-                        
+
                         // 停止所有音频轨道
                         stream.getTracks().forEach(track => track.stop());
                     };
-                    
+
                     isRecording = true;
                     previewArea.classList.remove('hidden');
                     audioRecording.classList.remove('hidden');
-                    
+
                     mediaRecorder.start();
                     console.log('开始录音（备选模式）...');
-                    
-                }).catch(function(error) {
+
+                }).catch(function (error) {
                     alert('无法访问麦克风: ' + error.message);
                     console.error('录音错误:', error);
                 });
             }
-            
+
             // 停止录音按钮点击事件
             stopRecordingBtn.addEventListener('click', stopRecording);
-    
+
             // 停止录音函数
             function stopRecording() {
                 if (isRecording && mediaRecorder) {
@@ -2740,19 +2798,19 @@
                     if (!selectedImage && !selectedAudio && !selectedVideo) {
                         previewArea.classList.add('hidden');
                     }
-                    
+
                     mediaRecorder.stop();
                     console.log('停止录音...');
                 }
             }
-            
+
             // 清空聊天记录
-            clearChatBtn.addEventListener('click', function() {
+            clearChatBtn.addEventListener('click', function () {
                 if (confirm('确定要清空当前对话吗？')) {
                     conversationHistory = [];
                     currentSessionId = null;
                     clearChatDisplay();
-                    
+
                     // 清空所有媒体选择
                     selectedImage = null;
                     selectedAudio = null;
@@ -2761,164 +2819,164 @@
                     imagePreview.classList.add('hidden');
                     audioPreview.classList.add('hidden');
                     videoPreview.classList.add('hidden');
-                    
+
                     // 清空文件输入
                     imageFileInput.value = '';
                     audioFileInput.value = '';
                     videoFileInput.value = '';
-                    
+
                     // 更新会话列表中的选中状态
                     document.querySelectorAll('.session-item').forEach(item => {
                         item.classList.remove('bg-blue-50', 'border-2', 'border-blue-200');
                     });
-                    
+
                     updateSendButton();
                     console.log('对话历史已清空');
                 }
             });
-            
+
             // 设置功能相关事件处理
-            
+
             // 加载设置
             function loadSettings() {
                 const savedSystemPrompt = localStorage.getItem('chatbot_system_prompt');
                 const savedTemperature = localStorage.getItem('chatbot_temperature');
-                
+
                 if (savedSystemPrompt) {
                     systemPrompt = savedSystemPrompt;
                 }
-                
+
                 if (savedTemperature) {
                     temperature = parseFloat(savedTemperature);
                 }
-                
+
                 updateUIStatus();
             }
-            
+
             // 保存设置
             function saveSettings() {
                 localStorage.setItem('chatbot_system_prompt', systemPrompt);
                 localStorage.setItem('chatbot_temperature', temperature.toString());
             }
-            
+
             // 显示成功提示
             function showSuccessMessage(message) {
                 const successDiv = document.createElement('div');
                 successDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
                 successDiv.innerHTML = `<i class="ri-check-line mr-2"></i>${message}`;
                 document.body.appendChild(successDiv);
-                
+
                 setTimeout(() => {
                     if (document.body.contains(successDiv)) {
                         document.body.removeChild(successDiv);
                     }
                 }, 3000);
             }
-            
+
             // 显示错误提示
             function showErrorMessage(message) {
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
                 errorDiv.innerHTML = `<i class="ri-error-warning-line mr-2"></i>${message}`;
                 document.body.appendChild(errorDiv);
-                
+
                 setTimeout(() => {
                     if (document.body.contains(errorDiv)) {
                         document.body.removeChild(errorDiv);
                     }
                 }, 5000);
             }
-            
+
             // ===== System Prompt 相关事件 =====
-            
+
             // 打开系统提示设置
-            headerSystemPromptBtn.addEventListener('click', function() {
+            headerSystemPromptBtn.addEventListener('click', function () {
                 systemPromptInput.value = systemPrompt;
                 systemPromptModal.classList.remove('hidden');
             });
-            
+
             // 关闭系统提示弹窗
-            closeSystemPromptBtn.addEventListener('click', function() {
+            closeSystemPromptBtn.addEventListener('click', function () {
                 systemPromptModal.classList.add('hidden');
             });
-            
+
             // 点击弹窗背景关闭
-            systemPromptModal.addEventListener('click', function(e) {
+            systemPromptModal.addEventListener('click', function (e) {
                 if (e.target === systemPromptModal) {
                     systemPromptModal.classList.add('hidden');
                 }
             });
-            
+
             // 系统提示模板按钮
             document.querySelectorAll('.system-prompt-template').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const template = this.dataset.template;
                     systemPromptInput.value = template;
                 });
             });
-            
+
             // 清空系统提示
-            clearSystemPromptBtn.addEventListener('click', function() {
+            clearSystemPromptBtn.addEventListener('click', function () {
                 systemPromptInput.value = '';
             });
-            
+
             // 保存系统提示
-            saveSystemPromptBtn.addEventListener('click', function() {
+            saveSystemPromptBtn.addEventListener('click', function () {
                 systemPrompt = systemPromptInput.value.trim();
                 saveSettings();
                 updateUIStatus();
                 systemPromptModal.classList.add('hidden');
                 showSuccessMessage('系统提示已保存');
             });
-            
+
             // ===== Temperature 相关事件 =====
-            
+
             // 打开温度设置
-            headerTemperatureBtn.addEventListener('click', function() {
+            headerTemperatureBtn.addEventListener('click', function () {
                 temperatureSlider.value = temperature;
                 temperatureValue.textContent = temperature;
                 temperatureModal.classList.remove('hidden');
             });
-            
+
             // 关闭温度弹窗
-            closeTemperatureBtn.addEventListener('click', function() {
+            closeTemperatureBtn.addEventListener('click', function () {
                 temperatureModal.classList.add('hidden');
             });
-            
+
             // 点击弹窗背景关闭
-            temperatureModal.addEventListener('click', function(e) {
+            temperatureModal.addEventListener('click', function (e) {
                 if (e.target === temperatureModal) {
                     temperatureModal.classList.add('hidden');
                 }
             });
-            
+
             // Temperature滑块变化事件
-            temperatureSlider.addEventListener('input', function() {
+            temperatureSlider.addEventListener('input', function () {
                 const value = parseFloat(this.value);
                 temperatureValue.textContent = value;
             });
-            
+
             // 温度预设按钮
             document.querySelectorAll('.temperature-preset').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const temp = parseFloat(this.dataset.temp);
                     temperatureSlider.value = temp;
                     temperatureValue.textContent = temp;
                 });
             });
-            
+
             // 保存温度设置
-            saveTemperatureBtn.addEventListener('click', function() {
+            saveTemperatureBtn.addEventListener('click', function () {
                 temperature = parseFloat(temperatureSlider.value);
                 saveSettings();
                 updateUIStatus();
                 temperatureModal.classList.add('hidden');
                 showSuccessMessage('创造性设置已保存');
             });
-            
+
             // 页面加载时加载设置
             loadSettings();
-            
+
             // 初始化
             messageInput.focus();
             updateSendButton();
@@ -2940,7 +2998,7 @@
                 `;
                 chatContainer.appendChild(loadingDiv);
                 scrollToBottom();
-                
+
                 try {
                     const response = await fetch('/api/search/web', {
                         method: 'POST',
@@ -2954,14 +3012,14 @@
                             format_for_ai: true
                         })
                     });
-                    
+
                     const data = await response.json();
                     chatContainer.removeChild(loadingDiv);
-                    
+
                     if (data.success) {
                         const searchDiv = document.createElement('div');
                         searchDiv.className = 'message bot-message';
-                        
+
                         let searchHTML = `
                             <div class="search-indicator">
                                 <span>🌐</span>
@@ -2969,7 +3027,7 @@
                             </div>
                             <div class="search-results">
                         `;
-                        
+
                         data.results.forEach((result, index) => {
                             searchHTML += `
                                 <div class="search-result-item">
@@ -2979,7 +3037,7 @@
                                 </div>
                             `;
                         });
-                        
+
                         if (data.images && data.images.length > 0) {
                             searchHTML += `
                                 <div style="margin-top: 15px;">
@@ -2996,12 +3054,12 @@
                             });
                             searchHTML += `</div></div>`;
                         }
-                        
+
                         searchHTML += `</div>`;
                         searchDiv.innerHTML = searchHTML;
                         chatContainer.appendChild(searchDiv);
                         scrollToBottom();
-                        
+
                         return data;
                     } else {
                         throw new Error(data.error || '搜索失败');
@@ -3023,14 +3081,14 @@
             function addMessage(text, role) {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = role === 'user' ? 'flex justify-end mb-4' : 'flex mb-4';
-                
+
                 const bubbleClass = role === 'user' ? 'user-message' : 'bot-message';
                 messageDiv.innerHTML = `
                     <div class="message-bubble ${bubbleClass} p-3 text-gray-800">
                         ${text}
                     </div>
                 `;
-                
+
                 chatContainer.appendChild(messageDiv);
                 scrollToBottom();
             }
@@ -3039,11 +3097,11 @@
             async function chatWithSearch(message) {
                 const enableSearch = document.getElementById('enableSearch').checked;
                 const model = document.getElementById('modelSelect').value;
-                
+
                 if (!enableSearch) {
                     return await sendMessage(message);
                 }
-                
+
                 const loadingDiv = document.createElement('div');
                 loadingDiv.className = 'message bot-message';
                 loadingDiv.innerHTML = `
@@ -3059,7 +3117,7 @@
                 `;
                 chatContainer.appendChild(loadingDiv);
                 scrollToBottom();
-                
+
                 try {
                     const response = await fetch('/api/chat/search', {
                         method: 'POST',
@@ -3073,16 +3131,16 @@
                             session_id: currentSessionId || 'default'
                         })
                     });
-                    
+
                     const data = await response.json();
                     chatContainer.removeChild(loadingDiv);
-                    
+
                     if (data.success) {
                         const responseDiv = document.createElement('div');
                         responseDiv.className = 'message bot-message';
-                        
+
                         let responseHTML = '';
-                        
+
                         if (data.search_performed && data.search_results && data.search_results.success) {
                             responseHTML += `
                                 <div class="search-indicator">
@@ -3091,17 +3149,17 @@
                                 </div>
                             `;
                         }
-                        
+
                         responseHTML += `<div class="message-content">${formatMessage(data.response)}</div>`;
-                        
+
                         if (data.model_used) {
                             responseHTML += `<div class="model-indicator">模型: ${data.model_used}</div>`;
                         }
-                        
+
                         responseDiv.innerHTML = responseHTML;
                         chatContainer.appendChild(responseDiv);
                         scrollToBottom();
-                        
+
                         return data;
                     } else {
                         throw new Error(data.error || '对话失败');
@@ -3161,28 +3219,29 @@
             }
 
             enableSearchCheckbox.addEventListener('change', updateSearchStatus);
-            
+
             // 初始化状态
             updateSearchStatus();
         });
     </script>
 
     <script id="textareaAutoResize">
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const messageInput = document.getElementById('messageInput');
-            
+
             // 自动调整文本框高度的函数
             function adjustTextareaHeight() {
                 messageInput.style.height = 'auto';
                 messageInput.style.height = (messageInput.scrollHeight) + 'px';
             }
-            
+
             // 监听输入事件
             messageInput.addEventListener('input', adjustTextareaHeight);
-            
+
             // 初始化
             adjustTextareaHeight();
         });
     </script>
 </body>
-</html> 
+
+</html>
