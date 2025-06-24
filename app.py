@@ -1600,6 +1600,13 @@ $$
             # 获取AI判断
             result = chatbot_service.get_response(processed_messages, model, final_system_prompt, temperature)
             
+            if not result['success']:
+                # AI判断失败，返回错误
+                return jsonify({
+                    'success': False,
+                    'error': f'AI判断失败: {result.get("error")}'
+                }), 500
+            
             if result['success']:
                 response_text = result['response']
                 
