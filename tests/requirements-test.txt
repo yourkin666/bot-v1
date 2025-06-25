@@ -1,0 +1,34 @@
+# 测试依赖包
+# 基础测试框架
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-html>=3.2.0
+pytest-metadata>=3.0.0
+
+# 性能和监控
+psutil>=5.9.0
+
+# HTTP测试
+requests>=2.31.0
+
+# 数据处理
+python-dotenv>=1.0.0
+
+# 并发测试
+pytest-xdist>=3.3.0
+
+# 测试数据生成
+faker>=19.0.0
+
+# 类型检查
+mypy>=1.5.0
+
+# 代码质量
+flake8>=6.0.0
+black>=23.7.0
+
+# 安全测试
+bandit>=1.7.5
+
+# 覆盖率报告
+coverage>=7.3.0 
