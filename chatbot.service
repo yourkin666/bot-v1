@@ -1,0 +1,27 @@
+[Unit]
+Description=Gunicorn instance to serve the Chatbot
+Documentation=https://github.com/yourkin666/bot-v1
+After=network.target
+
+[Service]
+# 为了安全，建议创建一个专用用户来运行服务
+User=root
+Group=root
+
+WorkingDirectory=/root/bot-v1
+# 确保虚拟环境路径正确
+Environment="PATH=/root/bot-v1/venv/bin"
+
+# 启动命令
+ExecStart=/root/bot-v1/venv/bin/gunicorn --config /root/bot-v1/gunicorn_config.py app:app
+
+# 失败时自动重启
+Restart=always
+RestartSec=5s
+
+# 标准输出和错误将重定向到 systemd-journald
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target 
