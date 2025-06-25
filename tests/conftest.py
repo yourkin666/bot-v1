@@ -92,6 +92,18 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers", "api: 标记为API测试"
     )
+    config.addinivalue_line(
+        "markers", "performance: 标记为性能测试"
+    )
+    config.addinivalue_line(
+        "markers", "security: 标记为安全测试"
+    )
+    config.addinivalue_line(
+        "markers", "edge_case: 标记为边界情况测试"
+    )
+    config.addinivalue_line(
+        "markers", "stress: 标记为压力测试"
+    )
 
 
 def pytest_collection_modifyitems(config, items):

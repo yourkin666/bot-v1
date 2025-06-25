@@ -19,6 +19,8 @@ from dotenv import load_dotenv
 from database import ChatDatabase
 from datetime import datetime, timedelta
 import re
+import html
+import bleach
 
 # 加载环境变量
 load_dotenv()
@@ -29,6 +31,94 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 CORS(app)  # 允许跨域请求
+
+# 安全配置
+MAX_MESSAGE_LENGTH = 10000  # 最大消息长度
+MAX_MESSAGES_COUNT = 50     # 最大消息数量
+REQUEST_TIMEOUT = 30        # API请求超时时间（秒）
+MAX_FILE_SIZE = 4 * 1024 * 1024  # 最大文件大小 4MB
+
+def validate_input_data(data: dict) -> tuple:
+    """验证输入数据，返回(is_valid, error_message, status_code)"""
+    if not data:
+        return False, "请求数据不能为空", 400
+    
+    # 验证消息
+    messages = data.get('messages', [])
+    if not messages:
+        return False, "消息列表不能为空", 400
+    
+    if not isinstance(messages, list):
+        return False, "消息必须是数组格式", 400
+    
+    if len(messages) > MAX_MESSAGES_COUNT:
+        return False, f"消息数量超过限制（最大{MAX_MESSAGES_COUNT}条）", 400
+    
+    # 验证每条消息
+    for i, msg in enumerate(messages):
+        if not isinstance(msg, dict):
+            return False, f"第{i+1}条消息格式错误", 400
+        
+        role = msg.get('role')
+        if role not in ['user', 'assistant', 'system']:
+            return False, f"第{i+1}条消息角色无效", 400
+        
+        text = msg.get('text', '')
+        if isinstance(text, str) and len(text) > MAX_MESSAGE_LENGTH:
+            return False, f"第{i+1}条消息长度超过限制（最大{MAX_MESSAGE_LENGTH}字符）", 400
+    
+    # 验证模型
+    model = data.get('model', '')
+    if model and not any(m['id'] == model for m in AVAILABLE_MODELS):
+        return False, "指定的模型不存在", 400
+    
+    # 验证温度参数
+    temperature = data.get('temperature')
+    if temperature is not None:
+        if not isinstance(temperature, (int, float)):
+            return False, "温度参数必须是数字", 400
+        if not (0 <= temperature <= 2):
+            return False, "温度参数必须在0-2之间", 400
+    
+    return True, None, None
+
+def sanitize_input(text: str) -> str:
+    """清理输入文本，防止XSS攻击"""
+    if not isinstance(text, str):
+        return str(text)
+    
+    # HTML转义
+    text = html.escape(text)
+    
+    # 使用bleach清理
+    allowed_tags = []
+    text = bleach.clean(text, tags=allowed_tags, strip=True)
+    
+    return text
+
+def handle_api_error(error, context: str = "API调用") -> tuple:
+    """统一处理API错误，返回(error_message, status_code)"""
+    if isinstance(error, requests.exceptions.Timeout):
+        return f"{context}超时，请稍后重试", 408
+    elif isinstance(error, requests.exceptions.ConnectionError):
+        return f"{context}连接失败，请检查网络", 503
+    elif isinstance(error, requests.exceptions.HTTPError):
+        if error.response.status_code == 400:
+            return f"{context}请求参数错误", 400
+        elif error.response.status_code == 401:
+            return f"{context}认证失败，请检查API密钥", 401
+        elif error.response.status_code == 403:
+            return f"{context}权限不足", 403
+        elif error.response.status_code == 429:
+            return f"{context}请求过于频繁，请稍后重试", 429
+        elif error.response.status_code >= 500:
+            return f"{context}服务器错误", 502
+        else:
+            return f"{context}失败: {error.response.status_code}", 400
+    elif isinstance(error, ValueError):
+        return f"{context}数据格式错误", 400
+    else:
+        return f"{context}未知错误: {str(error)}", 500
 
 # API配置
 SILICONFLOW_API_KEY = os.environ.get("SILICONFLOW_API_KEY", "sk-icupqsqwcgsfnqbwpcgfertxbdlkksapxtacxlupjzanguyv")
@@ -198,7 +288,7 @@ class MultiModalChatBotService:
         
         # 尝试多次调用，处理网络超时问题
         max_retries = 2
-        timeout_seconds = 60  # 增加超时时间
+        timeout_seconds = REQUEST_TIMEOUT  # 使用配置的超时时间
         
         for attempt in range(max_retries):
             try:
@@ -358,7 +448,7 @@ class MultiModalChatBotService:
         
         try:
             logger.info(f"调用Groq API，模型: {model}")
-            response = requests.post(self.groq_base_url, headers=headers, json=data, timeout=60)
+            response = requests.post(self.groq_base_url, headers=headers, json=data, timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             
             result = response.json()
@@ -1489,13 +1579,22 @@ def get_models():
 def chat():
     """处理聊天请求，支持Function Calling"""
     try:
-        data = request.get_json()
-        
-        if not data:
+        # 检查Content-Type
+        if not request.is_json:
             return jsonify({
                 'success': False,
-                'error': '无效的请求数据'
+                'error': '请求必须包含JSON数据'
             }), 400
+            
+        data = request.get_json()
+        
+        # 验证输入数据
+        is_valid, error_msg, status_code = validate_input_data(data)
+        if not is_valid:
+            return jsonify({
+                'success': False,
+                'error': error_msg
+            }), status_code
         
         messages = data.get('messages', [])
         model = data.get('model', 'deepseek-ai/DeepSeek-V2.5')
@@ -1504,11 +1603,13 @@ def chat():
         temperature = data.get('temperature', 0.7)  # 温度参数
         enable_search = data.get('enable_search', True)  # 是否启用搜索功能
         
-        if not messages:
-            return jsonify({
-                'success': False,
-                'error': '消息不能为空'
-            }), 400
+        # 清理输入数据
+        for message in messages:
+            if message.get('text'):
+                message['text'] = sanitize_input(message['text'])
+        
+        if system_prompt:
+            system_prompt = sanitize_input(system_prompt)
         
         # 验证temperature参数
         if not isinstance(temperature, (int, float)) or not (0 <= temperature <= 2):
@@ -1602,10 +1703,21 @@ $$
             
             if not result['success']:
                 # AI判断失败，返回错误
+                error_msg = result.get("error", "未知错误")
+                # 根据错误类型返回适当的状态码
+                if "超时" in error_msg or "timeout" in error_msg.lower():
+                    status_code = 408
+                elif "连接" in error_msg or "connection" in error_msg.lower():
+                    status_code = 503
+                elif "认证" in error_msg or "auth" in error_msg.lower():
+                    status_code = 401
+                else:
+                    status_code = 502
+                    
                 return jsonify({
                     'success': False,
-                    'error': f'AI判断失败: {result.get("error")}'
-                }), 500
+                    'error': f'AI服务暂时不可用: {error_msg}'
+                }), status_code
             
             if result['success']:
                 response_text = result['response']
@@ -1867,7 +1979,7 @@ def upload_image():
         file_size = file.tell()
         file.seek(0)  # 回到文件开头
         
-        if file_size > 4 * 1024 * 1024:  # 4MB
+        if file_size > MAX_FILE_SIZE:
             return jsonify({
                 'success': False,
                 'error': f'文件过大 ({file_size / 1024 / 1024:.1f}MB)，最大支持4MB'
@@ -2405,6 +2517,11 @@ def web_search():
         if not query or not query.strip():
             return jsonify({'success': False, 'error': '搜索查询不能为空'}), 400
         
+        # 清理和验证输入
+        query = sanitize_input(query.strip())
+        if len(query) > 200:  # 限制搜索查询长度
+            return jsonify({'success': False, 'error': '搜索查询过长（最大200字符）'}), 400
+        
         # 获取搜索参数
         count = data.get('count', 5)
         freshness = data.get('freshness', 'noLimit')
@@ -2448,6 +2565,11 @@ def chat_with_search():
         user_message = data.get('message')
         if not user_message or not user_message.strip():
             return jsonify({'success': False, 'error': '消息内容不能为空'}), 400
+        
+        # 清理和验证输入
+        user_message = sanitize_input(user_message.strip())
+        if len(user_message) > MAX_MESSAGE_LENGTH:
+            return jsonify({'success': False, 'error': f'消息过长（最大{MAX_MESSAGE_LENGTH}字符）'}), 400
         
         session_id = data.get('session_id', 'default')
         model = data.get('model', 'deepseek-ai/DeepSeek-V2.5')

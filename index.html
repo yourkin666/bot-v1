@@ -928,8 +928,8 @@
 
         /* 迷你侧边栏按钮悬停效果 */
         #miniSidebar button:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(229, 231, 235, 0.8) !important;
+            border: 1px solid rgba(209, 213, 219, 0.5);
         }
 
         #miniSidebar button:active {
@@ -962,10 +962,21 @@
             }
         }
 
+        /* 当迷你侧边栏显示时，给主要内容区域增加左边距避免遮挡 */
+        #miniSidebar.show ~ #mainContent {
+            margin-left: 64px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
         /* 响应式调整 - 移动端隐藏迷你侧边栏 */
         @media (max-width: 1024px) {
             #miniSidebar {
                 display: none !important;
+            }
+            
+            /* 移动端不需要左边距调整 */
+            #miniSidebar.show ~ #mainContent {
+                margin-left: 0 !important;
             }
         }
 
@@ -2615,48 +2626,36 @@
     <div class="flex flex-1 overflow-hidden relative">
         <!-- 迷你侧边栏（当主侧边栏收起时显示） -->
         <div id="miniSidebar"
-            class="w-16 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 flex flex-col items-center py-4 space-y-4 absolute z-40 h-full left-0 top-0">
-            <!-- Logo 区域 -->
-            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mb-2">
-                <i class="ri-robot-line text-white text-xl"></i>
-            </div>
-
+            class="w-16 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-300 flex flex-col items-center py-4 space-y-4 absolute z-40 h-full left-0 top-0">
             <!-- 导航按钮 -->
             <div class="flex flex-col space-y-3">
                 <!-- 展开历史对话 -->
                 <button id="miniExpandSidebar"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="展开对话历史">
                     <i class="ri-history-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
 
                 <!-- 新建对话 -->
                 <button id="miniNewChat"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="新建对话">
                     <i class="ri-add-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
 
                 <!-- 搜索 -->
                 <button id="miniSearch"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="搜索对话">
                     <i class="ri-search-line text-lg group-hover:scale-110 transition-transform"></i>
-                </button>
-
-                <!-- 设置 -->
-                <button id="miniSettings"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
-                    title="设置">
-                    <i class="ri-settings-3-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
             </div>
 
             <!-- 底部用户头像 -->
             <div class="flex-1 flex flex-col justify-end">
-                <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors cursor-pointer"
+                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 transition-colors cursor-pointer"
                     title="用户设置">
-                    <i class="ri-user-line text-white text-lg"></i>
+                    <i class="ri-user-line text-gray-700 text-lg"></i>
                 </div>
             </div>
         </div>
@@ -2671,6 +2670,12 @@
                         <i class="ri-history-line mr-2"></i>对话历史
                     </h2>
                     <div class="flex items-center space-x-2">
+                        <!-- 展开侧边栏按钮（当侧边栏收起时显示） -->
+                        <button id="expandSidebar"
+                            class="hidden lg:block p-1 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors"
+                            title="展开对话历史栏">
+                            <i class="ri-arrow-right-line text-xl"></i>
+                        </button>
                         <!-- 桌面端收起按钮 -->
                         <button id="collapseSidebar"
                             class="hidden lg:block p-1 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors"
@@ -2718,14 +2723,7 @@
         </div>
 
         <!-- 右侧主要内容区域 -->
-        <div class="flex-1 flex flex-col relative">
-            <!-- 展开侧边栏按钮（当侧边栏收起时显示） -->
-            <button id="expandSidebar"
-                class="absolute top-4 left-4 z-20 hidden lg:flex p-2 bg-bg-primary border border-border-primary rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors shadow-sm"
-                title="展开对话历史栏">
-                <i class="ri-arrow-right-line text-xl"></i>
-            </button>
-
+        <div id="mainContent" class="flex-1 flex flex-col relative">
             <!-- 聊天内容区域 -->
             <div id="chatContainer" class="chat-container flex-1 overflow-y-auto p-4 bg-bg-secondary">
                 <!-- 欢迎消息 -->
@@ -3612,7 +3610,6 @@
             const miniExpandSidebar = document.getElementById('miniExpandSidebar');
             const miniNewChat = document.getElementById('miniNewChat');
             const miniSearch = document.getElementById('miniSearch');
-            const miniSettings = document.getElementById('miniSettings');
 
             // 侧边栏控制事件
             toggleSidebar.addEventListener('click', () => {
@@ -3693,11 +3690,7 @@
                 localStorage.setItem('sidebarCollapsed', 'false');
             });
 
-            // 迷你侧边栏设置按钮
-            miniSettings.addEventListener('click', () => {
-                console.log('打开设置面板');
-                // 可以在这里添加设置面板的打开逻辑
-            });
+
 
             // 页面加载时恢复侧边栏状态
             const sidebarCollapsed = localStorage.getItem('sidebarCollapsed');
