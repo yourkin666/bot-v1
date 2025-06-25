@@ -928,8 +928,8 @@
 
         /* 迷你侧边栏按钮悬停效果 */
         #miniSidebar button:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(229, 231, 235, 0.8) !important;
+            border: 1px solid rgba(209, 213, 219, 0.5);
         }
 
         #miniSidebar button:active {
@@ -2615,7 +2615,7 @@
     <div class="flex flex-1 overflow-hidden relative">
         <!-- 迷你侧边栏（当主侧边栏收起时显示） -->
         <div id="miniSidebar"
-            class="w-16 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 flex flex-col items-center py-4 space-y-4 absolute z-40 h-full left-0 top-0">
+            class="w-16 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-300 flex flex-col items-center py-4 space-y-4 absolute z-40 h-full left-0 top-0">
             <!-- Logo 区域 -->
             <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mb-2">
                 <i class="ri-robot-line text-white text-xl"></i>
@@ -2625,28 +2625,28 @@
             <div class="flex flex-col space-y-3">
                 <!-- 展开历史对话 -->
                 <button id="miniExpandSidebar"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="展开对话历史">
                     <i class="ri-history-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
 
                 <!-- 新建对话 -->
                 <button id="miniNewChat"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="新建对话">
                     <i class="ri-add-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
 
                 <!-- 搜索 -->
                 <button id="miniSearch"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="搜索对话">
                     <i class="ri-search-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
 
                 <!-- 设置 -->
                 <button id="miniSettings"
-                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    class="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-all duration-200 group"
                     title="设置">
                     <i class="ri-settings-3-line text-lg group-hover:scale-110 transition-transform"></i>
                 </button>
@@ -2654,9 +2654,9 @@
 
             <!-- 底部用户头像 -->
             <div class="flex-1 flex flex-col justify-end">
-                <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors cursor-pointer"
+                <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center hover:bg-gray-400 transition-colors cursor-pointer"
                     title="用户设置">
-                    <i class="ri-user-line text-white text-lg"></i>
+                    <i class="ri-user-line text-gray-700 text-lg"></i>
                 </div>
             </div>
         </div>
