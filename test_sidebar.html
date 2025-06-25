@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>侧边栏测试</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <style>
+        /* 侧边栏收起/展开样式 */
+        .sidebar-collapsed {
+            transform: translateX(-100%) !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* 迷你侧边栏样式 */
+        #miniSidebar {
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(-100%);
+            opacity: 0;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #miniSidebar.show {
+            display: flex !important;
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* 迷你侧边栏按钮悬停效果 */
+        #miniSidebar button:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        #miniSidebar button:active {
+            transform: scale(0.95);
+        }
+
+        /* 桌面端侧边栏收起时的动画效果 */
+        @media (min-width: 1024px) {
+            #sidebar {
+                transition: transform 0.3s ease-in-out, width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            }
+
+            #expandSidebar {
+                opacity: 0;
+                transform: scale(0.8);
+                transition: all 0.3s ease-in-out;
+            }
+
+            #expandSidebar.show {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 响应式调整 - 移动端隐藏迷你侧边栏 */
+        @media (max-width: 1024px) {
+            #miniSidebar {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="h-screen flex">
+        <!-- 迷你侧边栏 -->
+        <div id="miniSidebar"
+            class="w-16 bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 flex flex-col items-center py-4 space-y-4 absolute lg:relative z-30 h-full left-0 top-0">
+            <!-- Logo 区域 -->
+            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mb-2">
+                <i class="ri-robot-line text-white text-xl"></i>
+            </div>
+            
+            <!-- 导航按钮 -->
+            <div class="flex flex-col space-y-3">
+                <button id="miniExpandSidebar" 
+                    class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    title="展开对话历史">
+                    <i class="ri-history-line text-lg group-hover:scale-110 transition-transform"></i>
+                </button>
+                
+                <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    title="新建对话">
+                    <i class="ri-add-line text-lg group-hover:scale-110 transition-transform"></i>
+                </button>
+                
+                <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    title="搜索对话">
+                    <i class="ri-search-line text-lg group-hover:scale-110 transition-transform"></i>
+                </button>
+                
+                <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all duration-200 group"
+                    title="设置">
+                    <i class="ri-settings-3-line text-lg group-hover:scale-110 transition-transform"></i>
+                </button>
+            </div>
+            
+            <!-- 底部用户头像 -->
+            <div class="flex-1 flex flex-col justify-end">
+                <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center hover:bg-gray-500 transition-colors cursor-pointer"
+                     title="用户设置">
+                    <i class="ri-user-line text-white text-lg"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主侧边栏 -->
+        <div id="sidebar" class="w-80 bg-white border-r border-gray-300 flex flex-col transition-all duration-300 relative z-20">
+            <div class="p-4 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-800">
+                        <i class="ri-history-line mr-2"></i>对话历史
+                    </h2>
+                    <button id="collapseSidebar"
+                        class="p-1 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors"
+                        title="收起对话历史栏">
+                        <i class="ri-arrow-left-line text-xl"></i>
+                    </button>
+                </div>
+                <div class="relative">
+                    <input type="text" placeholder="搜索对话..."
+                        class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="ri-search-line absolute left-3 top-2.5 text-gray-400"></i>
+                </div>
+            </div>
+            <div class="flex-1 p-4">
+                <p class="text-gray-600">这里是对话历史列表...</p>
+            </div>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="flex-1 flex flex-col relative">
+            <!-- 展开按钮 -->
+            <button id="expandSidebar"
+                class="absolute top-4 left-4 z-20 hidden p-2 bg-white border border-gray-300 rounded-lg text-gray-600 hover:text-gray-800 hover:bg-gray-50 transition-colors shadow-sm"
+                title="展开对话历史栏">
+                <i class="ri-arrow-right-line text-xl"></i>
+            </button>
+
+            <div class="flex-1 p-8 bg-gray-50">
+                <h1 class="text-2xl font-bold text-gray-800 mb-4">侧边栏测试页面</h1>
+                <p class="text-gray-600 mb-4">点击左侧的收起按钮测试侧边栏收起效果。</p>
+                <div class="space-y-2">
+                    <p><strong>预期效果：</strong></p>
+                    <ul class="list-disc list-inside text-gray-600 space-y-1">
+                        <li>主侧边栏应该完全消失（宽度变为0，完全透明）</li>
+                        <li>迷你侧边栏应该平滑滑入显示</li>
+                        <li>点击迷你侧边栏的历史按钮应该恢复主侧边栏</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const collapseSidebar = document.getElementById('collapseSidebar');
+        const expandSidebar = document.getElementById('expandSidebar');
+        const miniSidebar = document.getElementById('miniSidebar');
+        const miniExpandSidebar = document.getElementById('miniExpandSidebar');
+
+        // 收起主侧边栏
+        collapseSidebar.addEventListener('click', () => {
+            sidebar.classList.add('sidebar-collapsed');
+            expandSidebar.classList.remove('hidden');
+            expandSidebar.classList.add('show');
+
+            // 延迟显示迷你侧边栏
+            setTimeout(() => {
+                miniSidebar.classList.add('show');
+            }, 150);
+        });
+
+        // 展开主侧边栏（从展开按钮）
+        expandSidebar.addEventListener('click', () => {
+            miniSidebar.classList.remove('show');
+            
+            setTimeout(() => {
+                sidebar.classList.remove('sidebar-collapsed');
+                expandSidebar.classList.remove('show');
+                
+                setTimeout(() => {
+                    expandSidebar.classList.add('hidden');
+                }, 300);
+            }, 150);
+        });
+
+        // 展开主侧边栏（从迷你侧边栏）
+        miniExpandSidebar.addEventListener('click', () => {
+            miniSidebar.classList.remove('show');
+            
+            setTimeout(() => {
+                sidebar.classList.remove('sidebar-collapsed');
+                expandSidebar.classList.remove('show');
+                
+                setTimeout(() => {
+                    expandSidebar.classList.add('hidden');
+                }, 300);
+            }, 150);
+        });
+    </script>
+</body>
+</html> 
